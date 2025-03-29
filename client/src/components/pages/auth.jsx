@@ -21,7 +21,7 @@ import {
 import { useNavigate } from "react-router";
 
 const SignInForm = ({ onSignUpClick }) => {
-  const { handleSubmit, register } = useForm();
+  const form = useForm();
 
   const onSubmit = (data) => {
     console.log("Sign In Form submitted:", data);
@@ -39,9 +39,10 @@ const SignInForm = ({ onSignUpClick }) => {
         </p>
       </div>
 
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <form className="space-y-4">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
+            control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -53,7 +54,6 @@ const SignInForm = ({ onSignUpClick }) => {
                       type="email"
                       placeholder="email@example.com"
                       className="pl-10"
-                      {...register("email")}
                     />
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
@@ -64,6 +64,7 @@ const SignInForm = ({ onSignUpClick }) => {
           />
 
           <FormField
+            control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
@@ -75,7 +76,6 @@ const SignInForm = ({ onSignUpClick }) => {
                       type="password"
                       placeholder="••••••••"
                       className="pl-10"
-                      {...register("password")}
                     />
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
@@ -106,7 +106,8 @@ const SignInForm = ({ onSignUpClick }) => {
 
 const SignUpForm = ({ onSignInClick }) => {
   const [role, setRole] = useState("adopter");
-  const { handleSubmit, register, watch } = useForm();
+  const form = useForm();
+  const { handleSubmit, watch } = form;
   const password = watch("password");
 
   const onSubmit = (data) => {
@@ -125,9 +126,10 @@ const SignUpForm = ({ onSignInClick }) => {
         </p>
       </div>
 
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <form className="space-y-4">
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <FormField
+            control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
@@ -138,7 +140,6 @@ const SignUpForm = ({ onSignInClick }) => {
                       {...field}
                       placeholder="John Doe"
                       className="pl-10"
-                      {...register("name")}
                     />
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
@@ -163,6 +164,7 @@ const SignUpForm = ({ onSignInClick }) => {
             </Select>
           </div>
           <FormField
+            control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -174,7 +176,6 @@ const SignUpForm = ({ onSignInClick }) => {
                       type="email"
                       placeholder="email@example.com"
                       className="pl-10"
-                      {...register("email")}
                     />
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
@@ -185,6 +186,7 @@ const SignUpForm = ({ onSignInClick }) => {
           />
 
           <FormField
+            control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
@@ -196,7 +198,6 @@ const SignUpForm = ({ onSignInClick }) => {
                       type="password"
                       placeholder="••••••••"
                       className="pl-10"
-                      {...register("password")}
                     />
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
@@ -207,6 +208,7 @@ const SignUpForm = ({ onSignInClick }) => {
           />
 
           <FormField
+            control={form.control}
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
@@ -218,7 +220,6 @@ const SignUpForm = ({ onSignInClick }) => {
                       type="password"
                       placeholder="••••••••"
                       className="pl-10"
-                      {...register("confirmPassword")}
                     />
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
@@ -254,39 +255,23 @@ const AuthForm = () => {
 
   return (
     <div className="min-h-screen dark:bg-gray-900">
-      <div className="grid lg:grid-cols-2 h-screen">
-        {/* Image Section */}
-        <div className="hidden lg:block relative bg-gray-100 dark:bg-gray-800">
-          <img
-            src="https://images.unsplash.com/photo-1563460716037-460a3ad24ba9?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3"
-            alt="Happy pets"
-            className="w-full h-screen object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-8">
-            <h1 className="text-4xl font-bold text-white text-center">
-              Find Your New Best Friend
-            </h1>
-          </div>
-        </div>
+      {/* Form Section */}
+      <div className="flex items-center justify-center p-8">
+        <div className="w-full max-w-md space-y-6">
+          <Button
+            variant=""
+            className="absolute top-4 left-4 hover:bg-accent hover:text-primary"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft />
+            Back
+          </Button>
 
-        {/* Form Section */}
-        <div className="flex items-center justify-center p-8">
-          <div className="w-full max-w-md space-y-6">
-            <Button
-              variant=""
-              className="absolute top-4 left-4 hover:bg-accent hover:text-primary"
-              onClick={() => navigate(-1)}
-            >
-              <ArrowLeft />
-              Back
-            </Button>
-
-            {isLogin ? (
-              <SignInForm onSignUpClick={() => setIsLogin(false)} />
-            ) : (
-              <SignUpForm onSignInClick={() => setIsLogin(true)} />
-            )}
-          </div>
+          {isLogin ? (
+            <SignInForm onSignUpClick={() => setIsLogin(false)} />
+          ) : (
+            <SignUpForm onSignInClick={() => setIsLogin(true)} />
+          )}
         </div>
       </div>
     </div>
