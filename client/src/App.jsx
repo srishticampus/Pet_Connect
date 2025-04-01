@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router";
-import PetConnectLanding from "./components/pages/landing";
+import PetConnectLanding from "./components/pages/landing/landing-page";
 import AuthForm from "./components/pages/auth";
 import PetSearch from "./components/pages/pet-search";
 import AdminDashboard from "./components/pages/admin";
