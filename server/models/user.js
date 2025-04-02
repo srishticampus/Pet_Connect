@@ -38,6 +38,12 @@ const UserSchema = new mongoose.Schema({
     enum: ["adopter", "foster", "rescue", "admin", "pet_owner"],
     default: "adopter",
   },
+  aadhaarNumber: {
+    type: String,
+  },
+  certificate: {
+    type: String,
+  },
   date: {
     type: Date,
     default: Date.now,
