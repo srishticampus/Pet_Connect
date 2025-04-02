@@ -1,6 +1,11 @@
 import { Button } from "../ui/button";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { Input } from "../ui/input";
 
 export default function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="flex items-center justify-center min-h-[80vh]">
       <div className="px-8 py-6 mx-4 mt-4 text-left md:w-1/3 lg:w-1/3 sm:w-1/3">
@@ -12,26 +17,27 @@ export default function Login() {
             <label className="block text-gray-700 text-sm mb-2" htmlFor="email">
               Username
             </label>
-            <input
-              className="shadow-xs appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="email"
-              type="email"
-              placeholder="Enter email"
-            />
+            <Input id="email" type="email" placeholder="Enter email" />
           </div>
-          <div className="mt-4">
+          <div className="mt-4 relative">
             <label
               className="block text-gray-700 text-sm mb-2"
               htmlFor="password"
             >
               Password
             </label>
-            <input
-              className="shadow-xs appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            <Input
               id="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Enter password"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-7/12 right-3 text-gray-700 pr-3 flex items-center"
+            >
+              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+            </button>
           </div>
           <div className="mt-6 text-center">
             <Button type="submit">Login</Button>
