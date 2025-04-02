@@ -69,7 +69,7 @@ const Navbar = ({ user }) => {
             <Link to="/register" className="hover:text-[#E54C00] transition">
               Register
             </Link>
-            <Button asChild className="bg-[#E54C00] text-white">
+            <Button asChild>
               <Link to="/login">
                 Login <MoveRight className="ml-2" size={16} />
               </Link>
