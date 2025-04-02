@@ -6,19 +6,21 @@ import AdminDashboard from "./components/pages/admin";
 import About from "./components/pages/about";
 import { Layout } from "./components/pages/layout";
 import Login from "./components/pages/login";
-
+import { AuthProvider } from "./lib/auth";
 function App() {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Landing />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/login" element={<Login />} />
-      </Route>
-      <Route path="/auth" element={<AuthForm />} />
-      <Route path="/pets" element={<PetSearch />} />
-      <Route path="/admin" element={<AdminDashboard />} />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/login" element={<Login />} />
+        </Route>
+        <Route path="/auth" element={<AuthForm />} />
+        <Route path="/pets" element={<PetSearch />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+      </Routes>
+    </AuthProvider>
   );
 }
 

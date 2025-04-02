@@ -31,6 +31,9 @@ async function createUserAdmin() {
       },
     );
 
+    // Delete existing user with the same email
+    await UserModel.deleteOne({ email: email });
+
     const hashedPassword = await hash(password);
 
     const newUser = new UserModel({

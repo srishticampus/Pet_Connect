@@ -2,9 +2,10 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "../ui/input";
-
+import { useAuth } from "@/lib/auth";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
 
   return (
     <div className="flex items-center justify-center min-h-[80vh]">
@@ -12,10 +13,10 @@ export default function Login() {
         <div className="flex justify-center">
           <h1 className="text-3xl font-bold">Login!</h1>
         </div>
-        <form className="mt-4">
+        <form className="mt-4" onSubmit={login}>
           <div className="mt-4">
             <label className="block text-gray-700 text-sm mb-2" htmlFor="email">
-              Username
+              Email
             </label>
             <Input id="email" type="email" placeholder="Enter email" />
           </div>
