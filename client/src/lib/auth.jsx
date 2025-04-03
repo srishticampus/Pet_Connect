@@ -51,6 +51,14 @@ const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+/**
+ *
+ * @returns {{
+ *  token: (string | null),
+ *  login: (e: React.FormEvent<HTMLFormElement>) => void,
+ *  logout: () => void
+ }} AuthContext
+ */
 const useAuth = () => {
   return useContext(AuthContext);
 };

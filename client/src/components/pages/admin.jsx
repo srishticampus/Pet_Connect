@@ -21,8 +21,14 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+import { useAuth } from "@/lib/auth";
 
 export default function AdminPage() {
+  const { token } = useAuth();
+  if (!token) {
+    return <div>Please login</div>;
+  }
+
   const advertisers = [
     {
       id: 1,

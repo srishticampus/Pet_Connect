@@ -1,19 +1,13 @@
 import { Link } from "react-router";
-import { Button } from "@/components/ui/button";
-import {
-  Dog,
-  ArrowUpRight,
-  User,
-  ShoppingCart,
-  MoveRight,
-  LogOut,
-} from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ArrowUpRight } from "lucide-react";
 
 import hero from "./hero.png";
 import cardimg1 from "./cardimg-1.png";
 import cardimg2 from "./cardimg-2.png";
 import cardimg3 from "./cardimg-3.png";
+import work1 from "./work-1.png";
+import work2 from "./work-2.png";
+import work3 from "./work-3.png";
 
 export default function LandingPage({ user }) {
   const stats = [
@@ -112,6 +106,56 @@ export default function LandingPage({ user }) {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="container mx-auto px-3 lg:px-0 py-8">
+        <h2 className="text-2xl font-semibold text-center mb-12 text-[#e54c00]">
+          How it works
+        </h2>
+        <div className="flex flex-col md:flex-row justify-evenly text-center my-8 gap-4">
+          <div className="flex flex-col items-center">
+            <img
+              src={work1}
+              alt="dog"
+              className="w-24 h-24 object-cover object-center mb-3"
+            />
+            <h3 className="text-xl text-[#4c4c4c] font-semibold mb-4">
+              Report a Stray Pet
+            </h3>
+            <p className="text-sm">
+              Spotted an animal in need? Upload a photo and location details to
+              alert our rescue team. Every report helps save a life.
+            </p>
+          </div>
+          <div className="flex flex-col items-center">
+            <img
+              src={work2}
+              alt="dog"
+              className="w-24 h-24 object-cover object-center mb-3"
+            />
+            <h3 className="text-xl text-[#4c4c4c] font-semibold mb-4">
+              Volunteers Take Action
+            </h3>
+            <p className="text-sm">
+              Our dedicated volunteers step in! Once verified, our team quickly
+              reaches the pet’s location, ensuring safe rescue and care.
+            </p>
+          </div>
+          <div className="flex flex-col items-center">
+            <img
+              src={work3}
+              alt="dog"
+              className="w-24 h-24 object-cover object-center mb-3"
+            />
+            <h3 className="text-xl text-[#4c4c4c] font-semibold mb-4">
+              Find a Loving Home
+            </h3>
+            <p className="text-sm">
+              After recovery, pets are ready for adoption. We connect them with
+              loving families, ensuring a happy and secure future.
+            </p>
+          </div>
         </div>
       </section>
 
