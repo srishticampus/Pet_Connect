@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, Outlet, useLocation } from "react-router";
 import {
   LayoutDashboard,
   User,
@@ -92,6 +92,7 @@ const items = [
 ];
 
 function AppSidebar() {
+  const { pathname } = useLocation();
   return (
     <Sidebar className="border-none" collapsible="icon">
       <SidebarContent>
@@ -110,16 +111,15 @@ function AppSidebar() {
                     size="md"
                     asChild
                     className="hover:bg-[#F8F6FF]"
+                    isActive={item.url === pathname}
                   >
-                    <div className="">
-                      <Link
-                        to={item.url}
-                        className="flex items-center w-full px-4 py-12! text-gray-700  rounded-md transition-colors"
-                      >
-                        <item.icon className="w-5 h-5 mr-3" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </div>
+                    <Link
+                      to={item.url}
+                      className="flex items-center w-full px-4 text-gray-700  rounded-md transition-colors"
+                    >
+                      <item.icon className="w-5 h-5 mr-3" />
+                      <span>{item.title}</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -131,7 +131,7 @@ function AppSidebar() {
   );
 }
 
-export default function Admin() {
+export default function Layout() {
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full bg-[#F6F7F9]">
@@ -177,16 +177,7 @@ export default function Admin() {
               </DialogContent>
             </Dialog>
           </header>
-
-          {/* Content */}
-          <main className="flex-1 px-6 pb-6">
-            <div className="bg-white rounded-lg h-full p-6">
-              {/* Dashboard content would go here */}
-              <p className="text-gray-500 text-center mt-10">
-                Select an option from the sidebar to get started
-              </p>
-            </div>
-          </main>
+          <Outlet />
         </div>
       </div>
     </SidebarProvider>

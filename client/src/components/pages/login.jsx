@@ -2,7 +2,7 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "../ui/input";
-import { useAuth } from "@/lib/auth";
+import { useAuth } from "@/hooks/auth";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
