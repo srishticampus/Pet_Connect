@@ -9,7 +9,7 @@ import work1 from "./work-1.png";
 import work2 from "./work-2.png";
 import work3 from "./work-3.png";
 
-export default function LandingPage({ user }) {
+export default function LandingPage() {
   const stats = [
     { value: "400+", label: "Successful Adoptions" },
     { value: "200+", label: "Volunteers" },
