@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router";
 import { AuthProvider } from "./hooks/auth";
 
 import { Layout } from "./components/pages/layout";
-import Landing from "./components/pages/landing";
+import Landing from "./components/pages";
 import PetSearch from "./components/pages/pet-search";
 import AdminLayout from "./components/pages/admin/layout";
 import Dashboard from "./components/pages/admin/dashboard";
@@ -17,7 +17,8 @@ import ChooseRegister from "./components/pages/auth/register/choose";
 import PetOwnerSignUp from "./components/pages/auth/register/pet-owner";
 import PetShopSignUp from "./components/pages/auth/register/pet-shop";
 import VolunteerSignUp from "./components/pages/auth/register/volunteer";
-import HomePage from "./components/pages/landing/home";
+import HomePage from "./components/pages/pet-owner/home";
+import PetOwnerProfile from "./components/pages/pet-owner/profile";
 function App() {
   return (
     <AuthProvider>
@@ -33,11 +34,12 @@ function App() {
             <Route path="pet-shop" element={<PetShopSignUp />} />
             <Route path="volunteer" element={<VolunteerSignUp />} />
           </Route>
-
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/profile" element={<PetOwnerProfile />} />
         </Route>
+
         <Route path="/pets" element={<PetSearch />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
