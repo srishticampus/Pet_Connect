@@ -1,17 +1,15 @@
 import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 
-import hero from "./hero.png";
-import cardimg1 from "./cardimg-1.png";
-import cardimg2 from "./cardimg-2.png";
-import cardimg3 from "./cardimg-3.png";
-import work1 from "./work-1.png";
-import work2 from "./work-2.png";
-import work3 from "./work-3.png";
-import dog from "./dog.png";
-import { Button } from "@/components/ui/button";
+import hero from "@/assets/hero.png";
+import cardimg1 from "@/assets/cardimg-1.png";
+import cardimg2 from "@/assets/cardimg-2.png";
+import cardimg3 from "@/assets/cardimg-3.png";
+import work1 from "@/assets/work-1.png";
+import work2 from "@/assets/work-2.png";
+import work3 from "@/assets/work-3.png";
 
-export default function HomePage() {
+export default function LandingPage() {
   const stats = [
     { value: "400+", label: "Successful Adoptions" },
     { value: "200+", label: "Volunteers" },
@@ -37,30 +35,6 @@ export default function HomePage() {
       content:
         "Get high-quality pet food and accessories while supporting rescue efforts. Every purchase helps rescued animals.",
       image: cardimg3,
-    },
-  ];
-
-  const puppies = [
-    {
-      name: "Max",
-      breed: "Golden Retriever",
-      age: "8 months",
-      description: "Friendly and energetic puppy, great with kids and other pets.",
-      image: dog,
-    },
-    {
-      name: "Buddy",
-      breed: "Labrador",
-      age: "6 months",
-      description: "Loves to play fetch and is very affectionate.",
-      image: dog,
-    },
-    {
-      name: "Charlie",
-      breed: "Poodle",
-      age: "1 year",
-      description: "Intelligent and loves to learn new tricks.",
-      image: dog,
     },
   ];
 
@@ -106,56 +80,33 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="px-3 lg:px-0 container mx-auto py-4 my-16">
-        <h2 className="text-4xl my-8 font-semibold text-center">
-          Find Your Perfect <span className="text-[#e54c00]">Companion</span>
-        </h2>
-        <p className="text-center mb-8 text-lg font-light text-gray-600">
-          Give a rescued pet a loving home. Browse available pets and start your
-          adoption journey today!
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {puppies.map((puppy, index) => (
-            <div key={index} className="w-full">
-              <div className="card bg-white rounded-2xl">
-                <div className="img">
-                  <img
-                    src={puppy.image}
-                    alt="products"
-                    className="w-full aspect-[137/115] object-cover rounded-t-2xl"
-                  />
-                </div>
-                <div className="content p-4">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-semibold">{puppy.name}</h3>
-                    {/*badge*/}
-                    <div className="bg-[#4CAF50] text-white rounded-2xl text-[0.6rem] px-1.5 py-0.5">
-                      Available
-                    </div>
-                  </div>
-                  <p className="text-xs font-medium text-[#4c4c4c] py-1">
-                    {puppy.breed} •{" "}
-                    <span className="text-[#7f7f7f]">{puppy.age}</span>
-                  </p>
-                  <p className="text-xs font-light text-[#4c4c4c] py-1">
-                    {puppy.description}
-                  </p>
-                  <Button
-                    className="w-full mt-3"
-                  >
-                    View Details
-                  </Button>
-                </div>
+      {/* Cards Grid */}
+      <section className="container mx-auto px-4 py-8">
+        <div className="grid md:grid-cols-2 md:grid-rows-2 gap-4">
+          {cards.map((card, index) => (
+            <div
+              key={index}
+              className="relative rounded-2xl overflow-hidden aspect-video"
+            >
+              <img
+                src={card.image}
+                alt={card.title}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 p-6 flex flex-col justify-end">
+                <h3 className="text-white text-xl md:text-2xl font-semibold">
+                  {card.title}
+                </h3>
+                <p className="text-white/90 text-sm mt-2">{card.content}</p>
+                <ArrowUpRight
+                  className="text-white absolute top-4 right-4"
+                  size={24}
+                />
               </div>
             </div>
           ))}
         </div>
-        <a
-          href="/pets"
-          className="text-center text-sm font-light text-[#e54c00] underline float-end mt-8"
-        >
-          View More
-        </a>
       </section>
 
       <section className="container mx-auto px-3 lg:px-0 py-8">
