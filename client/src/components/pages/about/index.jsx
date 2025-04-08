@@ -1,8 +1,6 @@
-import { Link } from "react-router";
-import { Dog, MoveRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import about1 from "./about-1.png";
-import about2 from "./about-2.png";
+
+import about1 from "@/assets/about-1.png";
+import about2 from "@/assets/about-2.png";
 
 const Hero = () => {
   return (
