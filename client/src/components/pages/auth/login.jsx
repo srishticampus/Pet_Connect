@@ -1,8 +1,10 @@
-import { Button } from "../ui/button";
+
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/auth";
+import { Link } from "react-router";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
@@ -40,8 +42,19 @@ export default function Login() {
               {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
+          <div className="mt-2 text-right">
+            <Link to="/forgot-password" className="text-sm text-gray-600 hover:text-gray-800">
+              Forgot password?
+            </Link>
+          </div>
           <div className="mt-6 text-center">
             <Button type="submit">Login</Button>
+            <p className="mt-4 text-sm text-gray-600 text-center">
+              Don't have an account?{" "}
+              <Link to="/register" className="hover:text-gray-800">
+                Register
+              </Link>
+            </p>
           </div>
         </form>
       </div>
