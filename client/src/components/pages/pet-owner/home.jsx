@@ -1,9 +1,6 @@
 import { Link } from "react-router";
-import { ArrowUpRight } from "lucide-react";
 
 import hero from "@/assets/hero.png";
-import cardimg1 from "@/assets/cardimg-1.png";
-import cardimg2 from "@/assets/cardimg-2.png";
 import cardimg3 from "@/assets/cardimg-3.png";
 import work1 from "@/assets/work-1.png";
 import work2 from "@/assets/work-2.png";
