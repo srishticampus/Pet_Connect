@@ -20,6 +20,7 @@ import VolunteerSignUp from "./components/pages/auth/register/volunteer";
 import HomePage from "./components/pages/pet-owner/home";
 import PetOwnerProfile from "./components/pages/pet-owner/profile";
 import PetDetails from "./components/pages/pet-owner/pet-details";
+import PetOwnersTable from "./components/pages/admin/pet-owners";
 function App() {
   return (
     <AuthProvider>
@@ -46,6 +47,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="fosters" element={<Fosters />} />
+          <Route path="pet-owners" element={<PetOwnersTable />} />
         </Route>
       </Routes>
     </AuthProvider>

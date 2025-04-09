@@ -55,8 +55,8 @@ const items = [
     icon: Search,
   },
   {
-    title: "Pet Owner",
-    url: "/admin/pet-owner",
+    title: "Pet Owners",
+    url: "/admin/pet-owners",
     icon: User,
   },
   {

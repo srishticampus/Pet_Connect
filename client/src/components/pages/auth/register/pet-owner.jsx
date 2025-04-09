@@ -19,7 +19,7 @@ export default function PetOwnerSignUp() {
 
   const [errors, setErrors] = useState({});
   const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
-  const [aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
+  const [_aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
 
 
   const handleChange = (e) => {
