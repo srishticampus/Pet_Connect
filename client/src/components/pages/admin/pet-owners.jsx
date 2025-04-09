@@ -4,9 +4,10 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  getPaginationRowModel
+  getPaginationRowModel,
+  getFilteredRowModel
 } from "@tanstack/react-table"
-
+import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -28,38 +29,53 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { DataTablePagination } from "@/components/ui/table-pagination"
+import { useState } from "react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export const columns = [
   {
     accessorKey:"id",
-    header:"S.No."
+    header:"S.No.",
+    name:"S.No.",
   },
   {
     accessorKey: "profile",
     header: "Profile",
+    name:"Profile"
   },
   {
     accessorKey:"phone",
-    header:"Phone Number"
+    header:"Phone Number",
+    name:"Phone Number"
   },
   {
     accessorKey: "email",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Email ID" />
     ),
+    name:"Email ID"
   },
   {
     accessorKey:"place",
-    header:"Place"
+    header:"Place",
+    name:"Place"
   },
   {
     accessorKey:"aadhaar",
     header:"Aadhaar Image",
+    name:"Aadhaar Image",
     cell: ({row})=>(<Button asChild variant="link"><a href={row.getValue("aadhaar")} target="_blank">Preview <ExternalLink className="h-4 w-4" /></a></Button>)
   },
   {
     accessorKey:"aadhaarNumber",
-    header:"Aadhaar Number"
+    header:"Aadhaar Number",
+    name:"Aadhaar Number"
   },
   {
       id: "actions",
@@ -96,16 +112,51 @@ export function DataTable({
   columns,
   data,
 }) {
+  const [columnFilters, setColumnFilters] = useState([])
+  const [currentFilter,setCurrentFilter] = useState("email")
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state:{
+      columnFilters
+    }
   })
 
   return (
     <div className="rounded-md border w-full">
+      <div className="flex items-center p-4 gap-2">
+        <Select value={currentFilter} onValueChange={setCurrentFilter} >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by..." />
+          </SelectTrigger>
+          <SelectContent>
+            {table.getAllLeafColumns().map(column => {
+              return  column.columnDef.name&&(
+                <SelectItem
+                  key={column.id}
+                  value={column.id}
+                >
+                  {column.columnDef.name}
+                </SelectItem>
+              )
+            })}
+          </SelectContent>
+        </Select>
+
+        <Input
+        placeholder={`Filter ${currentFilter}`}
+        value={(table.getColumn(currentFilter)?.getFilterValue()) ?? ""}
+        onChange={(event) =>
+          table.getColumn(currentFilter)?.setFilterValue(event.target.value)
+        }
+          className="max-w-sm"
+        />
+      </div>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
