@@ -19,6 +19,7 @@ import PetShopSignUp from "./components/pages/auth/register/pet-shop";
 import VolunteerSignUp from "./components/pages/auth/register/volunteer";
 import HomePage from "./components/pages/pet-owner/home";
 import PetOwnerProfile from "./components/pages/pet-owner/profile";
+import PetDetails from "./components/pages/pet-owner/pet-details";
 function App() {
   return (
     <AuthProvider>
@@ -38,6 +39,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<PetOwnerProfile />} />
+          <Route path="/pet-details" element={<PetDetails />} />
         </Route>
 
         <Route path="/pets" element={<PetSearch />} />

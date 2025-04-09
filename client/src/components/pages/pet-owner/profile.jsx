@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import {
   Card,
@@ -10,6 +9,17 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import pfp from "@/assets/pfp.jpeg";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { LucideLogOut } from "lucide-react"
+import { Separator } from '@/components/ui/separator';
 
 const PetOwnerProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -21,6 +31,7 @@ const PetOwnerProfile = () => {
     aadhaar: '1234-5678-9012',
     aadhaarImage: 'link ', // Replace with actual image link
   });
+  const [open, setOpen] = useState(false)
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -36,10 +47,53 @@ const PetOwnerProfile = () => {
     setProfile({ ...profile, [name]: value });
   };
 
+  const handleAadhaarImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Assuming you have a way to store/handle the file, e.g., upload to a server and get a link.
+      // For now, just store the file name as a placeholder.
+      setProfile({ ...profile, aadhaarImage: file.name });
+    }
+  };
+
+  const handleLogout = () => {
+    // Implement logout logic here
+    console.log('Logging out...');
+    setOpen(false); // Close the dialog after logout attempt
+  };
+
+
   return (
     <div className="w-full">
       {/* Orange Banner */}
       <div className="bg-primary h-44 relative">
+        <div className="absolute top-2 right-2">
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="">
+                <LucideLogOut className="h-4 w-4" />
+                <span>Logout</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Logout</DialogTitle>
+                <Separator/>
+                <DialogDescription>
+                  Are you sure you want to log out ?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button type="button" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleLogout} className="ml-2" variant="destructive">
+                  Log out
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* White Body */}
@@ -100,9 +154,9 @@ const PetOwnerProfile = () => {
                 <div className="space-y-2">
                   <p className="text-sm font-medium leading-none">Aadhaar Image</p>
                   {isEditing ? (
-                    <Input type="text" name="aadhaarImage" value={profile.aadhaarImage} onChange={handleInputChange} />
+                    <Input type="file" accept=".pdf" onChange={handleAadhaarImageChange} />
                   ) : (
-                     <a href={profile.aadhaarImage} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{profile.aadhaarImage}</a>
+                    <a href={profile.aadhaarImage} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{profile.aadhaarImage}</a>
                   )}
                 </div>
                 </div>
