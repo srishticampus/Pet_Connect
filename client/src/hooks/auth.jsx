@@ -1,68 +1,174 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import api from "../utils/api"; // Import the configured Axios instance
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
-const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => {
-    // Initialize token from localStorage on component mount
-    const storedToken = localStorage.getItem("token");
-    return storedToken || null;
-  });
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(() => localStorage.getItem("accessToken"));
+  const [isLoading, setIsLoading] = useState(true); // Start loading initially to check auth status
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    // Update localStorage whenever the token changes
+  // Function to set auth state (token and user)
+  const setAuthState = useCallback((token, userData) => {
     if (token) {
-      localStorage.setItem("token", token);
+      localStorage.setItem("accessToken", token);
+      setAccessToken(token);
+      setUser(userData);
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Update default header
     } else {
-      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
+      setAccessToken(null);
+      setUser(null);
+      delete api.defaults.headers.common['Authorization']; // Remove default header
     }
-  }, [token]);
+    setError(null); // Clear any previous errors on successful state change
+  }, []);
 
-  const login = (e) => {
-    e.preventDefault();
-    const user = {
-      email: e.target.email.value,
-      password: e.target.password.value,
+  // Check authentication status on initial load
+  useEffect(() => {
+    const checkAuth = async () => {
+      setIsLoading(true);
+      const currentToken = localStorage.getItem("accessToken");
+      if (!currentToken) {
+        setAuthState(null, null); // Ensure clean state if no token
+        setIsLoading(false);
+        return;
+      }
+
+      // If token exists, try to refresh it to validate the session
+      // The refresh endpoint returns a new access token but not user data
+      try {
+        const { data } = await api.post("/auth/refresh");
+        // Refresh successful, but we need user data.
+        // Option 1: Assume user data is still valid from last login (simpler for now)
+        // Option 2: Make another request to a '/auth/me' endpoint (more robust)
+        // For now, we'll keep the user state if refresh works, assuming it was set during login.
+        // If user is null here but refresh worked, it implies a page reload after login.
+        // We need a way to get user data again. Let's add a placeholder for a /me endpoint call.
+
+        // Placeholder: Fetch user data after successful refresh
+        // const userDataResponse = await api.get('/auth/me'); // Assuming a /me endpoint exists
+        // setAuthState(data.accessToken, userDataResponse.data);
+
+        // Simplified approach: Just set the new token, assume user state is handled by login/logout
+        // If user is null, it means they need to log in again to get user data.
+        localStorage.setItem("accessToken", data.accessToken);
+        setAccessToken(data.accessToken);
+        api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
+        // Keep existing user state if available, otherwise it remains null until login
+
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        setAuthState(null, null); // Clear state if refresh fails
+      } finally {
+        setIsLoading(false);
+      }
     };
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    axios
-      .post("http://localhost:3000/api/auth", user, config)
-      .then((res) => {
-        setToken(res.data.token);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+
+    checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
+
+  // Login function
+  const login = async (email, password) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.post("/auth/login", { email, password });
+      setAuthState(data.accessToken, data.user); // Set token and user data
+      return data.user; // Return user data on success
+    } catch (err) {
+      const errorMsg = err.response?.data?.msg || err.response?.data?.errors?.[0]?.msg || "Login failed";
+      console.error("Login error:", err.response?.data || err.message);
+      setAuthState(null, null); // Clear state on login failure
+      setError(errorMsg);
+      throw new Error(errorMsg); // Re-throw for component handling
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const logout = () => {
-    setToken(null);
+  // Logout function
+  const logout = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await api.post("/auth/logout");
+    } catch (err) {
+      // Log error but proceed with cleanup regardless
+      console.error("Logout error:", err.response?.data || err.message);
+    } finally {
+      setAuthState(null, null); // Clear token and user data
+      setIsLoading(false);
+    }
   };
+
+  // Register function
+  const register = async (userData) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.post("/auth/register", userData);
+      // Registration successful, user needs to login separately
+      return data; // Return the created user data (without token)
+    } catch (err) {
+      const errorMsg = err.response?.data?.errors?.[0]?.msg || "Registration failed";
+      console.error("Registration error:", err.response?.data || err.message);
+      setError(errorMsg);
+      throw new Error(errorMsg); // Re-throw for component handling
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const value = {
-    token,
-    setToken,
+    user,
+    accessToken,
+    isAuthenticated: !!accessToken && !!user, // Consider user presence for full auth
+    isLoading,
+    error,
     login,
     logout,
+    register,
+    clearError: () => setError(null) // Utility to clear errors manually if needed
   };
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 /**
- *
+ * Custom hook to use the AuthContext.
  * @returns {{
- *  token: (string | null),
- *  setToken: (token: string) => void,
- *  login: (e: React.FormEvent<HTMLFormElement>) => void,
- *  logout: () => void
- }} AuthContext
+ *  user: object | null,
+ *  accessToken: string | null,
+ *  isAuthenticated: boolean,
+ *  isLoading: boolean,
+ *  error: string | null,
+ *  login: (email, password) => Promise<object>,
+ *  logout: () => Promise<void>,
+ *  register: (userData) => Promise<object>,
+ *  clearError: () => void
+ * }} AuthContext values
  */
-const useAuth = () => {
-  return useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  // If context is null during initial load, provide default loading state
+  if (context === null) {
+      return {
+          user: null,
+          accessToken: null,
+          isAuthenticated: false,
+          isLoading: true,
+          error: null,
+          login: async () => { throw new Error("AuthProvider not ready"); },
+          logout: async () => { throw new Error("AuthProvider not ready"); },
+          register: async () => { throw new Error("AuthProvider not ready"); },
+          clearError: () => {}
+      };
+  }
+  return context;
 };
-
-export { AuthProvider, useAuth };

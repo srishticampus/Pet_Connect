@@ -1,7 +1,5 @@
 import { Route, Routes } from "react-router";
 
-import { AuthProvider } from "./hooks/auth";
-
 import { Layout } from "./components/pages/layout";
 import Landing from "./components/pages";
 import PetSearch from "./components/pages/pet-search";
@@ -21,36 +19,43 @@ import HomePage from "./components/pages/pet-owner/home";
 import PetOwnerProfile from "./components/pages/pet-owner/profile";
 import PetDetails from "./components/pages/pet-owner/pet-details";
 import PetOwnersTable from "./components/pages/admin/pet-owners";
+import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+
 function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Landing />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" >
-            <Route index element={<ChooseRegister />} />
-            <Route path="pet-owner" element={<PetOwnerSignUp />} />
-            <Route path="pet-shop" element={<PetShopSignUp />} />
-            <Route path="volunteer" element={<VolunteerSignUp />} />
-          </Route>
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/profile" element={<PetOwnerProfile />} />
-          <Route path="/pet-details" element={<PetDetails />} />
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Landing />} />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/about" element={<About />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register">
+          <Route index element={<ChooseRegister />} />
+          <Route path="pet-owner" element={<PetOwnerSignUp />} />
+          <Route path="pet-shop" element={<PetShopSignUp />} />
+          <Route path="volunteer" element={<VolunteerSignUp />} />
         </Route>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/profile" element={<PetOwnerProfile />} />
+        <Route path="/pet-details" element={<PetDetails />} />
+      </Route>
 
-        <Route path="/pets" element={<PetSearch />} />
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="fosters" element={<Fosters />} />
-          <Route path="pet-owners" element={<PetOwnersTable />} />
-        </Route>
-      </Routes>
-    </AuthProvider>
+      <Route path="/pets" element={<PetSearch />} />
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="fosters" element={<Fosters />} />
+        <Route path="pet-owners" element={<PetOwnersTable />} />
+      </Route>
+    </Routes>
   );
 }
 

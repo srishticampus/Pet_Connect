@@ -1,13 +1,30 @@
-
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/auth";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router"; // Import useNavigate
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const { login } = useAuth();
+  const { login, error, clearError, isLoading } = useAuth(); // Get login function, error, clearError, and isLoading from context
+  const navigate = useNavigate(); // Hook for navigation
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    clearError(); // Clear any previous errors
+    try {
+      await login(email, password); // Call the login function from the context
+      // If login is successful, redirect to the home page
+      navigate("/home");
+    } catch (err) {
+      // Error is already handled by the AuthProvider and available in the context
+      // No need to set error state here
+      console.error("Login failed", err);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-[80vh]">
@@ -15,12 +32,20 @@ export default function Login() {
         <div className="flex justify-center">
           <h1 className="text-3xl font-bold">Login!</h1>
         </div>
-        <form className="mt-4" onSubmit={login}>
+        {error && <div className="text-red-500 text-sm">{error}</div>} {/* Display error message */}
+        <form className="mt-4" onSubmit={handleSubmit}>
           <div className="mt-4">
             <label className="block text-gray-700 text-sm mb-2" htmlFor="email">
               Email
             </label>
-            <Input id="email" type="email" placeholder="Enter email" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
+            />
           </div>
           <div className="mt-4 relative">
             <label
@@ -33,6 +58,9 @@ export default function Login() {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
             <button
               type="button"
@@ -48,7 +76,9 @@ export default function Login() {
             </Link>
           </div>
           <div className="mt-6 text-center">
-            <Button type="submit">Login</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Logging in..." : "Login"}
+            </Button>
             <p className="mt-4 text-sm text-gray-600 text-center">
               Don't have an account?{" "}
               <Link to="/register" className="hover:text-gray-800">
