@@ -43,10 +43,10 @@ router.post(
     if (req.files && req.files.aadhaarImage) {
       aadhaarImage = req.files.aadhaarImage;
       const fileName = `${Date.now()}_${aadhaarImage.name}`;
-      const uploadPath = path.join(__dirname, '../../../client/public/uploads', fileName); // Store in client/public/uploads
+      const uploadPath = path.join(__dirname, '../../uploads/aadhaar_images', fileName); // Store in client/public/uploads
       try {
         await aadhaarImage.mv(uploadPath);
-        aadhaarImage = `/uploads/${fileName}`; // Store the relative path in the database
+        aadhaarImage = `/uploads/aadhaar_images/${fileName}`; // Store the relative path in the database
       } catch (err) {
         console.error(err);
         return res.status(500).send("File upload failed");

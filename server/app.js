@@ -8,6 +8,7 @@ import csrf from "csurf";
 
 import "./db_driver";
 import apiRouter from "./controllers";
+import adminRouter from "./controllers/admin"; // Import admin routes
 
 export const app = express();
 
@@ -56,6 +57,7 @@ app.use("/api", (req, res, next) => {
 
 // API routes
 app.use("/api", apiRouter);
+app.use("/api/admin", adminRouter); // Use admin routes
 
 // Error handling
 app.use((err, req, res, next) => {
