@@ -45,6 +45,7 @@ const AuthProvider = ({ children }) => {
   };
   const value = {
     token,
+    setToken,
     login,
     logout,
   };
@@ -55,6 +56,7 @@ const AuthProvider = ({ children }) => {
  *
  * @returns {{
  *  token: (string | null),
+ *  setToken: (token: string) => void,
  *  login: (e: React.FormEvent<HTMLFormElement>) => void,
  *  logout: () => void
  }} AuthContext

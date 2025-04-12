@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import profilepic from "@/assets/profile-pic.png";
 import { Input } from "@/components/ui/input";
+import axios from 'axios';
 
 export default function PetOwnerSignUp() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ export default function PetOwnerSignUp() {
     aadhaarNumber: '',
     newPassword: '',
     confirmPassword: '',
+    role:"pet-owner"
   });
 
   const [errors, setErrors] = useState({});
@@ -59,6 +61,8 @@ export default function PetOwnerSignUp() {
 
     if (Object.keys(validationErrors).length === 0) {
       // Form is valid, submit data
+
+      axios.post("http://localhost:3000/api/auth/register", formData).then(data=>{console.log(data)});
       console.log('Form data submitted:', formData);
       // Add your submission logic here (e.g., API call)
     }
@@ -81,6 +85,10 @@ export default function PetOwnerSignUp() {
     if (!data.place) {
         errors.place = 'Place is required';
     }
+    if (!data.aadhaarImage) {
+      errors.aadhaarImage = "Aadhaar image should be uploaded."
+    }
+
     if (!data.aadhaarNumber) {
         errors.aadhaarNumber = 'Aadhaar Number is required';
     }
@@ -131,6 +139,7 @@ export default function PetOwnerSignUp() {
                 {/* {aadhaarImagePreview && (
                     <img src={aadhaarImagePreview} alt="Aadhaar Preview" style={{ maxWidth: '100px', marginTop: '5px' }} />
                 )} */}
+                {errors.aadhaarImage && <span className="text-red-500">{errors.aadhaarImage}</span>}
             </label>
             <label htmlFor="aadhaarNumber" className="flex flex-col">
                 <span>Aadhaar Number</span>

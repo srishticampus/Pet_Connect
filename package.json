@@ -20,5 +20,12 @@
   "workspaces": [
     "client",
     "server"
-  ]
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "csurf": "^1.10.0"
+  }
 }

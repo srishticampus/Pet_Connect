@@ -13,15 +13,28 @@ const petSchema = new mongoose.Schema({
   },
   Size: {
     type: String,
+    enum: ["small", "medium", "large"],
   },
   Age: {
     type: Number,
   },
-  Temperament: {
-    type: String,
+  Gender: {
+    type:String,
+    enum: ["male", "female", "other"],
+    default: "other",
   },
   HealthStatus: {
-    type: String,
+    vaccinated: {
+      type: String,
+      enum: ["fully vaccinated", "partially vaccinated", "unvaccinated", "unknown"],
+      default: "unknown",
+    },
+    spayed: {
+      type: Boolean,
+    },
+    microchipped: {
+      type: Boolean,
+    },
   },
   Location: {
     type: String,
