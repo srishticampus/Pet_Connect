@@ -11,7 +11,7 @@ export default function PetShopSignUp() {
     name: '',
     registrationId: '',
     shopName: '',
-    location: '',
+    address: '',
     email: '',
     phone: '',
     newPassword: '',
@@ -50,8 +50,20 @@ export default function PetShopSignUp() {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        await register(formData); // Call the register function from the context
-        console.log('Registration successful');
+        // await register(formData); // Call the register function from the context
+         let profilePicUrl = null;
+
+        if (formData.profilePic) {
+          const profilePicData = new FormData();
+          profilePicData.append('image', formData.profilePic);
+          const profilePicResponse = await api.post('/upload', profilePicData);
+          profilePicUrl = profilePicResponse.data.url;
+        }
+        const response = await api.post('/auth/register/pet-shop', {
+          ...formData,
+          profilePic: profilePicUrl,
+        });
+        console.log('Registration successful', response.data);
         navigate("/login"); // Redirect to login after successful registration
       } catch (err) {
         // Error is already handled by the AuthProvider and available in the context
@@ -73,8 +85,8 @@ export default function PetShopSignUp() {
     if (!data.shopName) {
       errors.shopName = 'Shop Name is required';
     }
-    if (!data.location) {
-      errors.location = 'Location is required';
+    if (!data.address) {
+      errors.address = 'Address is required';
     }
     if (!data.email) {
       errors.email = 'Email is required';

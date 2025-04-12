@@ -14,6 +14,7 @@ export default function VolunteerSignUp() {
     email: '',
     newPassword: '',
     phone: '',
+    address: '',
     confirmPassword: '',
     role: "volunteer" // Corrected role value
   });
@@ -48,8 +49,19 @@ export default function VolunteerSignUp() {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        await register(formData); // Call the register function from the context
-        console.log('Registration successful');
+         let profilePicUrl = null;
+
+        if (formData.profilePic) {
+          const profilePicData = new FormData();
+          profilePicData.append('image', formData.profilePic);
+          const profilePicResponse = await api.post('/upload', profilePicData);
+          profilePicUrl = profilePicResponse.data.url;
+        }
+        const response = await api.post('/auth/register/volunteer', {
+          ...formData,
+          profilePic: profilePicUrl,
+        });
+        console.log('Registration successful', response.data);
         navigate("/login"); // Redirect to login after successful registration
       } catch (err) {
         // Error is already handled by the AuthProvider and available in the context
@@ -75,6 +87,9 @@ export default function VolunteerSignUp() {
     }
     if (!data.phone) {
       errors.phone = 'Phone number is required';
+    }
+     if (!data.address) {
+      errors.address = 'Address is required';
     }
     if (!data.newPassword) {
       errors.newPassword = 'Password is required';
@@ -116,6 +131,11 @@ export default function VolunteerSignUp() {
           <span>Phone Number</span>
           <Input type="tel" name="phone" id="phone" value={formData.phone} onChange={handleChange} disabled={isLoading} />
           {errors.phone && <span className="text-red-500">{errors.phone}</span>}
+        </label>
+         <label htmlFor="address" className="flex flex-col">
+          <span>Address</span>
+          <Input type="text" name="address" id="address" value={formData.address} onChange={handleChange} disabled={isLoading} />
+          {errors.address && <span className="text-red-500">{errors.address}</span>}
         </label>
         <label htmlFor="newPassword" className="flex flex-col">
           <span>New Password</span>

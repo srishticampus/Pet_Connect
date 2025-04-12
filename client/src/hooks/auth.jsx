@@ -109,9 +109,10 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const { data } = await api.post("/auth/register", userData);
+      // const { data } = await api.post("/auth/register", userData);
       // Registration successful, user needs to login separately
-      return data; // Return the created user data (without token)
+      // return data; // Return the created user data (without token)
+      // The registration is now handled in each of the components
     } catch (err) {
       const errorMsg = err.response?.data?.errors?.[0]?.msg || "Registration failed";
       console.error("Registration error:", err.response?.data || err.message);

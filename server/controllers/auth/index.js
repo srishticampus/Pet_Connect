@@ -6,6 +6,9 @@ import auth from "../../middleware/auth.js"; // Assuming this middleware verifie
 import User from "../../models/user.js";
 import crypto from "crypto";
 import { sendEmail } from "../../services/email.js"; // Assuming this service is configured
+import petOwnerRouter from "./pet-owner.js";
+import petShopRouter from "./pet-shop.js";
+import volunteerRouter from "./volunteer.js";
 
 export const router = express.Router();
 const refreshTokens = new Map();
@@ -13,71 +16,10 @@ const refreshTokens = new Map();
 // Generate CSRF token
 const generateCSRFToken = () => crypto.randomBytes(32).toString('hex');
 
-// --- Registration ---
-// @route   POST api/auth/register
-// @desc    Register user
-// @access  Public
-router.post(
-  "/register",
-  [
-    check("name", "Name is required").not().isEmpty(),
-    check("email", "Please include a valid email").isEmail(),
-    check(
-      "password",
-      "Please enter a password with 6 or more characters"
-    ).isLength({ min: 6 }),
-    check("role", "Role is required").isIn([
-      "adopter",
-      "foster",
-      "rescue",
-      "admin",
-      "pet_owner",
-    ]),
-    // Add more validation based on role if needed, e.g., certificate for rescue
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { name, email, password, role, ...otherFields } = req.body;
-
-    try {
-      // See if user exists
-      let user = await User.findOne({ email });
-
-      if (user) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: "User already exists" }] });
-      }
-
-      user = new User({
-        name,
-        email,
-        password,
-        role,
-        ...otherFields, // Include any other fields passed for specific roles
-      });
-
-      // Encrypt password
-      user.password = await argon2.hash(password);
-
-      await user.save();
-
-      // Return user data (excluding password) - no token on register, user must login
-      const userResponse = user.toJSON(); // Use the transform to remove password
-
-      res.status(201).json(userResponse);
-
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Server error");
-    }
-  }
-);
-
+// --- Mount Routers ---
+router.use("/register/pet-owner", petOwnerRouter);
+router.use("/register/pet-shop", petShopRouter);
+router.use("/register/volunteer", volunteerRouter);
 
 // --- Login ---
 // @route   POST api/auth/login
@@ -95,7 +37,7 @@ router.post(
 
     try {
       const user = await User.findOne({ email: req.body.email });
-      if (!user || !await argon2.verify(user.password, req.body.password)) {
+      if (!user || !await argon2.verify(req.body.password, user.password)) {
         return res.status(401).json({ msg: "Invalid credentials" });
       }
 
@@ -158,7 +100,6 @@ router.post("/refresh", async (req, res) => {
   if (!refreshToken) return res.status(401).json({ msg: "Unauthorized: No refresh token" });
   if (!clientCsrfToken) return res.status(401).json({ msg: "Unauthorized: No CSRF token header" });
 
-
   try {
     const tokenData = refreshTokens.get(refreshToken);
 
@@ -170,7 +111,6 @@ router.post("/refresh", async (req, res) => {
     if (tokenData.csrfToken !== clientCsrfToken) {
         return res.status(403).json({ msg: "Forbidden: Invalid CSRF token" });
     }
-
 
     const user = await User.findById(tokenData.userId);
     if (!user) {
@@ -223,7 +163,6 @@ router.post("/logout", (req, res) => {
 
   res.json({ msg: "Logged out successfully" });
 });
-
 
 // --- Forgot Password ---
 // @route   POST api/auth/forgot-password
@@ -313,11 +252,11 @@ router.post(
     }
 
     try {
-        // Hash the token from the URL parameter to match the stored hashed token
-        const hashedToken = crypto
-            .createHash("sha256")
-            .update(req.params.token)
-            .digest("hex");
+      // Hash the token from the URL parameter to match the stored hashed token
+      const hashedToken = crypto
+        .createHash("sha256")
+        .update(req.params.token)
+        .digest("hex");
 
       // Find user by hashed token and check expiry
       const user = await User.findOne({

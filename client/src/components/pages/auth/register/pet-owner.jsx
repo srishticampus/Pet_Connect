@@ -12,7 +12,7 @@ export default function PetOwnerSignUp() {
     name: '',
     email: '',
     phone: '',
-    place: '',
+    address: '',
     aadhaarImage: null,
     aadhaarNumber: '',
     newPassword: '',
@@ -63,8 +63,32 @@ export default function PetOwnerSignUp() {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        await register(formData); // Call the register function from the context
-        console.log('Registration successful');
+        // await register(formData); // Call the register function from the context
+        // Upload profile pic and aadhaar image first
+        let profilePicUrl = null;
+        let aadhaarImageUrl = null;
+
+        if (formData.profilePic) {
+          const profilePicData = new FormData();
+          profilePicData.append('image', formData.profilePic);
+          const profilePicResponse = await api.post('/upload', profilePicData);
+          profilePicUrl = profilePicResponse.data.url;
+        }
+
+        if (formData.aadhaarImage) {
+          const aadhaarImageData = new FormData();
+          aadhaarImageData.append('image', formData.aadhaarImage);
+          const aadhaarImageResponse = await api.post('/upload', aadhaarImageData);
+          aadhaarImageUrl = aadhaarImageResponse.data.url;
+        }
+
+        const response = await api.post('/auth/register/pet-owner', {
+          ...formData,
+          profilePic: profilePicUrl,
+          aadhaarImage: aadhaarImageUrl,
+          address: formData.place, // Use place as address
+        });
+        console.log('Registration successful', response.data);
         navigate("/login"); // Redirect to login after successful registration
       } catch (err) {
         // Error is already handled by the AuthProvider and available in the context
@@ -88,8 +112,8 @@ export default function PetOwnerSignUp() {
     if (!data.phone) {
       errors.phone = 'Phone number is required';
     }
-    if (!data.place) {
-      errors.place = 'Place is required';
+    if (!data.address) {
+      errors.address = 'Address is required';
     }
     if (!data.aadhaarImage) {
       errors.aadhaarImage = "Aadhaar image should be uploaded."
@@ -134,10 +158,10 @@ export default function PetOwnerSignUp() {
           <Input type="tel" name="phone" id="phone" value={formData.phone} onChange={handleChange} disabled={isLoading} />
           {errors.phone && <span className="text-red-500">{errors.phone}</span>}
         </label>
-        <label htmlFor="place" className="flex flex-col">
-          <span>Place</span>
-          <Input type="text" name="place" id="place" value={formData.place} onChange={handleChange} disabled={isLoading} />
-          {errors.place && <span className="text-red-500">{errors.place}</span>}
+        <label htmlFor="address" className="flex flex-col">
+          <span>Address</span>
+          <Input type="text" name="address" id="address" value={formData.address} onChange={handleChange} disabled={isLoading} />
+          {errors.address && <span className="text-red-500">{errors.address}</span>}
         </label>
         <label htmlFor="aadhaarImage" className="flex flex-col">
           <span>Aadhaar Image</span>

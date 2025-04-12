@@ -5,6 +5,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  username: {
+    type: String,
+  },
   email: {
     type: String,
     required: true,
@@ -20,10 +23,7 @@ const UserSchema = new mongoose.Schema({
   gender: {
     type: String,
   },
-  city: {
-    type: String,
-  },
-  country: {
+  address: {
     type: String,
   },
   profile_picture: {
@@ -31,13 +31,22 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["adopter", "foster", "rescue", "admin", "pet_owner"],
+    enum: ["adopter", "foster", "rescue", "admin", "pet_owner", "pet_shop", "volunteer"],
     default: "adopter",
   },
   aadhaarNumber: {
     type: String,
   },
+  aadhaarImage: {
+    type: String,
+  },
   certificate: {
+    type: String,
+  },
+  shopName: {
+    type: String,
+  },
+  registrationId: {
     type: String,
   },
   date: {
