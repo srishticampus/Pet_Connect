@@ -15,32 +15,32 @@ PetConnect aims to provide a centralized platform for pet adoption, fostering, a
     - [x] Define the schema for users (adopters, fosters, rescues, pet owners, and admins).
     - [x] Define the schema for pets (including fields for species, breed, age, size, location, and images).
     - [x] Define the schema for organizations (rescues and shelters).
-    - [ ] Define the schema for adoption and foster applications.
-    - [ ] Define the schema for lost and found pet reports.
+    - [x] Define the schema for adoption and foster applications.
+    - [x] Define the schema for lost and found pet reports.
 
 ### Step 2: Backend Development
 
-#### Authentication APIs (Partial Implementation)
+#### Authentication APIs (Completed)
 - [x] **/auth/register** (Basic)
   - [x] Implement endpoint with role-based registration
-  - [ ] Add input validation for required fields
+  - [x] Add input validation for required fields
   - [x] Implement password hashing (argon2)
   - [x] Add conflict checking for existing emails
 
 - [x] **/auth/login** (Basic)
   - [x] Implement JWT token generation
   - [x] Add credential validation
-  - [ ] Set secure HTTP-only cookies
+  - [x] Set secure HTTP-only cookies (Refresh Token) & CSRF Token Cookie
 
-- [ ] **/auth/forgot-password**
-  - [ ] Implement email verification
-  - [ ] Generate secure reset tokens
-  - [ ] Integrate email service provider
+- [x] **/auth/forgot-password**
+  - [x] Implement email verification (User lookup)
+  - [x] Generate secure reset tokens (Hashed, with expiry)
+  - [x] Integrate email service provider (via `sendEmail` service)
 
-- [ ] **/auth/reset-password**
-  - [ ] Add token validation middleware
-  - [ ] Implement password update logic
-  - [ ] Handle token expiration
+- [x] **/auth/reset-password**
+  - [x] Add token validation middleware (Logic within route handler)
+  - [x] Implement password update logic
+  - [x] Handle token expiration (Checked during lookup)
 
 #### User Profile APIs (Not Started)
 - [ ] **GET /profile**
@@ -62,11 +62,13 @@ PetConnect aims to provide a centralized platform for pet adoption, fostering, a
 - Request logging system
 - Basic error handling middleware
 - Environment configuration
+- CSRF Protection (via csurf or custom middleware - implemented custom logic)
+- Refresh Token Strategy
 
 ### Next Priority Tasks
 1. Implement application schema for adoption/foster system
-2. Add input validation middleware
-3. Complete auth cookie security implementation
-4. Build geospatial search functionality
+2. Build geospatial search functionality
+3. Implement User Profile APIs (`/profile`)
+4. Add pagination support to `/pets` API
 
 (Rest of the file maintains original structure with remaining unchecked items)

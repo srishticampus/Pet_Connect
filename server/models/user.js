@@ -47,6 +47,13 @@ const UserSchema = new mongoose.Schema({
   lastLogin: {
     type: Date,
   },
+  // Fields for password reset
+  resetPasswordToken: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  },
 });
 
 UserSchema.set("toJSON", {
