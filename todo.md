@@ -42,9 +42,9 @@ PetConnect aims to provide a centralized platform for pet adoption, fostering, a
   - [x] Implement password update logic
   - [x] Handle token expiration (Checked during lookup)
 
-#### User Profile APIs (Not Started)
-- [ ] **GET /profile**
-- [ ] **PUT /profile**
+#### User Profile APIs (Completed)
+- [x] **GET /profile**
+- [x] **PUT /profile**
 
 #### Pet APIs (Foundation Laid)
 - [x] **GET /pets** (Basic)
@@ -68,7 +68,6 @@ PetConnect aims to provide a centralized platform for pet adoption, fostering, a
 ### Next Priority Tasks
 1. Implement application schema for adoption/foster system
 2. Build geospatial search functionality
-3. Implement User Profile APIs (`/profile`)
-4. Add pagination support to `/pets` API
+3. Add pagination support to `/pets` API
 
 (Rest of the file maintains original structure with remaining unchecked items)
