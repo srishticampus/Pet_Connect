@@ -46,4 +46,4 @@ router.put("/", auth, async (req, res) => {
   }
 });
 
-export default router;
+export { router };

@@ -11,82 +11,84 @@ const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-// Enable file upload
-router.use(fileUpload());
-
-// @route   POST api/auth/register/pet-owner
-// @desc    Register pet owner
-// @access  Public
+// User registration endpoint
 router.post(
   "/",
   [
     check("name", "Name is required").not().isEmpty(),
-    check("email", "Please include a valid email").isEmail(),
-    check(
-      "password",
-      "Please enter a password with 6 or more characters"
-    ).isLength({ min: 6 }),
-    check("phoneNumber", "Phone number is required").not().isEmpty(),
-    check("address", "Address is required").not().isEmpty(),
-    check("aadhaarNumber", "Aadhaar number is required").not().isEmpty(),
+    check("email", "Valid email required").isEmail(),
+    check("newPassword", "Password must be 6+ characters").isLength({ min: 6 }),
+    check("phoneNumber", "Phone number required").not().isEmpty(),
+    check("address", "Address required").not().isEmpty(),
+    check("aadhaarNumber", "Aadhaar number required").not().isEmpty()
   ],
   async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { name, email, password, phoneNumber, address, aadhaarNumber, profilePic } = req.body;
-
-    // Handle aadhaarImage upload
-    let aadhaarImage;
-    if (req.files && req.files.aadhaarImage) {
-      aadhaarImage = req.files.aadhaarImage;
-      const fileName = `${Date.now()}_${aadhaarImage.name}`;
-      const uploadPath = path.join(__dirname, '../../uploads/aadhaar_images', fileName); // Store in client/public/uploads
-      try {
-        await aadhaarImage.mv(uploadPath);
-        aadhaarImage = `/uploads/aadhaar_images/${fileName}`; // Store the relative path in the database
-      } catch (err) {
-        console.error(err);
-        return res.status(500).send("File upload failed");
-      }
-    }
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     try {
-      // See if user exists
-      let user = await User.findOne({ email });
+      const existingUser = await User.findOne({ email: req.body.email });
+      if (existingUser) return res.status(400).json({ error: "User already exists" });
 
-      if (user) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: "User already exists" }] });
-      }
-
-      user = new User({
-        name,
-        email,
-        password,
-        phoneNumber,
-        address,
-        aadhaarNumber,
-        profile_picture: profilePic,
-        aadhaarImage: aadhaarImage,
+      const newUser = new User({
+        name: req.body.name,
+        email: req.body.email,
+        phoneNumber: req.body.phoneNumber,
+        address: req.body.address,
+        aadhaarNumber: req.body.aadhaarNumber,
         role: "pet_owner",
+        password: await argon2.hash(req.body.newPassword)
       });
 
-      // Encrypt password
-      user.password = await argon2.hash(password);
+      const savedUser = await newUser.save();
+      res.status(201).json({
+        message: "User created successfully",
+        userId: savedUser._id
+      });
+
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Server error during registration" });
+    }
+  }
+);
+
+// Image upload endpoint
+router.post(
+  "/:userId/images",
+  fileUpload({ createParentPath: true }),
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.params.userId);
+      if (!user) return res.status(404).json({ error: "User not found" });
+
+      // Handle profile picture
+      if (req.files?.profilePic) {
+        const file = req.files.profilePic;
+        const filename = `${Date.now()}_${file.name}`;
+        const filePath = path.join(__dirname, '../../uploads/profile_pics', filename);
+        await file.mv(filePath);
+        user.profile_picture = `/uploads/profile_pics/${filename}`;
+      }
+
+      // Handle Aadhaar image
+      if (req.files?.aadhaarImage) {
+        const file = req.files.aadhaarImage;
+        const filename = `${Date.now()}_${file.name}`;
+        const filePath = path.join(__dirname, '../../uploads/aadhaar', filename);
+        await file.mv(filePath);
+        user.aadhaar_image = `/uploads/aadhaar/${filename}`;
+      }
 
       await user.save();
+      res.json({
+        message: "Images uploaded successfully",
+        user: user.toJSON()
+      });
 
-      // Return user data (excluding password) - no token on register, user must login
-      const userResponse = user.toJSON(); // Use the transform to remove password
-
-      res.status(201).json(userResponse);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Server error");
+    } catch (error) {
+      console.error("Image upload error:", error);
+      res.status(500).json({ error: "Image upload failed" });
     }
   }
 );

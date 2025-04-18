@@ -1,5 +1,5 @@
 // server/controllers/admin/pet-owners.js
-const User = require('../../models/user');
+import User from "../../models/user";
 
 const getAllPetOwners = async (req, res) => {
   try {
@@ -11,6 +11,4 @@ const getAllPetOwners = async (req, res) => {
   }
 };
 
-module.exports = {
-  getAllPetOwners,
-};
+export {getAllPetOwners};

@@ -13,9 +13,6 @@ import volunteerRouter from "./volunteer.js";
 export const router = express.Router();
 const refreshTokens = new Map();
 
-// Generate CSRF token
-const generateCSRFToken = () => crypto.randomBytes(32).toString('hex');
-
 // --- Mount Routers ---
 router.use("/register/pet-owner", petOwnerRouter);
 router.use("/register/pet-shop", petShopRouter);
@@ -37,7 +34,9 @@ router.post(
 
     try {
       const user = await User.findOne({ email: req.body.email });
-      if (!user || !await argon2.verify(req.body.password, user.password)) {
+      console.log(user)
+      console.log(req.body)
+      if (!user || !await argon2.verify(user.password,req.body.password)) {
         return res.status(401).json({ msg: "Invalid credentials" });
       }
 
@@ -53,29 +52,24 @@ router.post(
       );
 
       const refreshToken = crypto.randomBytes(64).toString('hex');
-      const csrfToken = generateCSRFToken();
 
       // Store refresh token securely (in-memory map used here, consider a persistent store like Redis for production)
       refreshTokens.set(refreshToken, {
         userId: user.id,
-        expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days validity for refresh token
-        csrfToken // Associate CSRF token with refresh token
+        expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days validity for refresh token
       });
 
-      // Set cookies
-      res.cookie('refreshToken', refreshToken, {
+      // Cookie options
+      const cookieOptions = {
         httpOnly: true, // Prevent client-side JS access
         secure: process.env.NODE_ENV === 'production', // Send only over HTTPS in production
-        sameSite: 'strict', // Prevent CSRF attacks
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Lax in development
+        domain: 'localhost', // Explicitly set domain for localhost development
         maxAge: 7 * 24 * 60 * 60 * 1000 // Match refresh token validity
-      });
+      };
 
-      // Set CSRF token cookie (accessible by client-side JS)
-      res.cookie('XSRF-TOKEN', csrfToken, {
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-        // No httpOnly, as it needs to be read by the client to be sent in headers
-      });
+      // Set cookies
+      res.cookie('refreshToken', refreshToken, cookieOptions);
 
       res.json({
         accessToken,
@@ -95,21 +89,16 @@ router.post(
 // @access  Public (requires refresh token cookie)
 router.post("/refresh", async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
-  const clientCsrfToken = req.headers['x-xsrf-token']; // Standard header for CSRF token
 
   if (!refreshToken) return res.status(401).json({ msg: "Unauthorized: No refresh token" });
-  if (!clientCsrfToken) return res.status(401).json({ msg: "Unauthorized: No CSRF token header" });
 
   try {
     const tokenData = refreshTokens.get(refreshToken);
 
-    // Validate refresh token existence, expiry, and CSRF token match
+    // Validate refresh token existence, expiry
     if (!tokenData || tokenData.expiresAt < Date.now()) {
       refreshTokens.delete(refreshToken); // Clean up expired/invalid token
       return res.status(401).json({ msg: "Invalid or expired refresh token" });
-    }
-    if (tokenData.csrfToken !== clientCsrfToken) {
-        return res.status(403).json({ msg: "Forbidden: Invalid CSRF token" });
     }
 
     const user = await User.findById(tokenData.userId);
@@ -124,20 +113,6 @@ router.post("/refresh", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '15m' }
     );
-
-    // Optionally rotate refresh token and CSRF token for enhanced security
-    // For simplicity, we are reusing the refresh token but generating a new CSRF token
-    const newCsrfToken = generateCSRFToken();
-    refreshTokens.set(refreshToken, {
-      ...tokenData,
-      csrfToken: newCsrfToken // Update the stored CSRF token
-    });
-
-    // Send back the new CSRF token via cookie
-    res.cookie('XSRF-TOKEN', newCsrfToken, {
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
-    });
 
     res.json({ accessToken: newAccessToken });
 
@@ -159,7 +134,6 @@ router.post("/logout", (req, res) => {
 
   // Clear cookies
   res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
-  res.clearCookie('XSRF-TOKEN', { secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
 
   res.json({ msg: "Logged out successfully" });
 });
@@ -211,11 +185,11 @@ router.post(
       `;
 
       try {
-        await sendEmail({
-          to: user.email,
-          subject: "PetConnect Password Reset Request",
-          text: message,
-        });
+        await sendEmail(
+          user.email,
+          "PetConnect Password Reset Request",
+          message,
+        );
 
         res.status(200).json({ msg: "Password reset email sent." });
       } catch (emailErr) {
@@ -286,3 +260,20 @@ router.post(
     }
   }
 );
+
+// --- Get User Data ---
+// @route   GET api/auth/me
+// @desc    Get user data from token
+// @access  Private
+router.get("/me", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select("-password"); // Exclude password
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});

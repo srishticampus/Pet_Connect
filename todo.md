@@ -66,8 +66,8 @@ PetConnect aims to provide a centralized platform for pet adoption, fostering, a
 - Refresh Token Strategy
 
 ### Next Priority Tasks
-1. Implement application schema for adoption/foster system
-2. Build geospatial search functionality
-3. Add pagination support to `/pets` API
+- [x] Implement application schema for adoption/foster system
+- [x] Build geospatial search functionality
+- [ ] Add pagination support to `/pets` API
 
 (Rest of the file maintains original structure with remaining unchecked items)

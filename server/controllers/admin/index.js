@@ -1,8 +1,8 @@
 // server/controllers/admin/index.js
-const express = require('express');
+import express from 'express';
+import { getAllPetOwners } from './pet-owners';
 const router = express.Router();
-const { getAllPetOwners } = require('./pet-owners');
 
 router.get('/pet-owners', getAllPetOwners);
 
-module.exports = router;
+export default router;

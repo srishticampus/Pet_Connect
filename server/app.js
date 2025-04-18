@@ -4,7 +4,6 @@ import morgan from "morgan";
 import logger from "pino-http";
 import { createStream } from "rotating-file-stream";
 import cookieParser from "cookie-parser";
-import csrf from "csurf";
 
 import "./db_driver";
 import apiRouter from "./controllers";
@@ -31,28 +30,9 @@ const accessLogStream = createStream("access.log", {
 // setup the logger
 app.use(morgan("combined", { stream: accessLogStream }));
 
-// CSRF protection setup (but don't apply globally)
-const csrfProtection = csrf({
-  cookie: {
-    key: 'XSRF-TOKEN',
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    httpOnly: true,
-  }
-});
-
 // Root route (public, no CSRF here)
 app.get("/", (req, res) => {
   res.send("Expresssss");
-});
-
-// Apply CSRF protection only to API routes
-app.use("/api", (req, res, next) => {
-  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
-    csrfProtection(req, res, next);
-  } else {
-    next();
-  }
 });
 
 // API routes
@@ -61,9 +41,6 @@ app.use("/api/admin", adminRouter); // Use admin routes
 
 // Error handling
 app.use((err, req, res, next) => {
-  if (err.code === 'EBADCSRFTOKEN') {
-    return res.status(403).json({ error: 'Invalid CSRF token' });
-  }
   console.error(err.stack);
   res.status(500).send('Server Error');
 });
