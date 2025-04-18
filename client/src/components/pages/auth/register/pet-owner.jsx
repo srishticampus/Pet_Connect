@@ -2,28 +2,28 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import profilepic from "@/assets/profile-pic.png";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/hooks/auth"; // Import useAuth
-import { useNavigate } from 'react-router'; // Import useNavigate
-import api from "@/utils/api"; // Import api
+import { useAuth } from "@/hooks/auth";
+import { useNavigate } from 'react-router';
+import api from "@/utils/api";
 
 export default function PetOwnerSignUp() {
   const [formData, setFormData] = useState({
     profilePic: null,
     name: '',
     email: '',
-    phone: '',
+    phoneNumber: '',
     address: '',
     aadhaarImage: null,
     aadhaarNumber: '',
     newPassword: '',
     confirmPassword: '',
-    role: "pet_owner" // Corrected role value
+    role: "pet_owner"
   });
 
   const [errors, setErrors] = useState({});
   const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
-  const [_aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
-  const { register, error: authError, clearError, isLoading } = useAuth(); // Get register function, error, clearError, and isLoading from context
+  const [aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
+  const { error: authError, clearError, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -36,9 +36,7 @@ export default function PetOwnerSignUp() {
     if (file) {
       setFormData({ ...formData, profilePic: file });
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePicPreview(reader.result);
-      };
+      reader.onloadend = () => setProfilePicPreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
@@ -48,9 +46,7 @@ export default function PetOwnerSignUp() {
     if (file) {
       setFormData({ ...formData, aadhaarImage: file });
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setAadhaarImagePreview(reader.result);
-      };
+      reader.onloadend = () => setAadhaarImagePreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
@@ -63,36 +59,29 @@ export default function PetOwnerSignUp() {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        // await register(formData); // Call the register function from the context
-        // Upload profile pic and aadhaar image first
-        let profilePicUrl = null;
-        let aadhaarImageUrl = null;
+        // Create user first
+        const userData = { ...formData };
+        delete userData.profilePic;
+        delete userData.aadhaarImage;
+        delete userData.confirmPassword;
 
-        if (formData.profilePic) {
-          const profilePicData = new FormData();
-          profilePicData.append('image', formData.profilePic);
-          const profilePicResponse = await api.post('/upload', profilePicData);
-          profilePicUrl = profilePicResponse.data.url;
+        const userResponse = await api.post('/auth/register/pet-owner', userData);
+        
+        // Then upload images
+        if (formData.profilePic || formData.aadhaarImage) {
+          const imageData = new FormData();
+          if (formData.profilePic) imageData.append('profilePic', formData.profilePic);
+          if (formData.aadhaarImage) imageData.append('aadhaarImage', formData.aadhaarImage);
+
+          await api.post(
+            `/auth/register/pet-owner/${userResponse.data.userId}/images`,
+            imageData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+          );
         }
 
-        if (formData.aadhaarImage) {
-          const aadhaarImageData = new FormData();
-          aadhaarImageData.append('image', formData.aadhaarImage);
-          const aadhaarImageResponse = await api.post('/upload', aadhaarImageData);
-          aadhaarImageUrl = aadhaarImageResponse.data.url;
-        }
-
-        const response = await api.post('/auth/register/pet-owner', {
-          ...formData,
-          profilePic: profilePicUrl,
-          aadhaarImage: aadhaarImageUrl,
-          address: formData.place, // Use place as address
-        });
-        console.log('Registration successful', response.data);
-        navigate("/login"); // Redirect to login after successful registration
+        navigate("/login");
       } catch (err) {
-        // Error is already handled by the AuthProvider and available in the context
-        // No need to set error state here
         console.error("Registration failed", err);
       }
     }
@@ -100,37 +89,24 @@ export default function PetOwnerSignUp() {
 
   const validateForm = (data) => {
     const errors = {};
-
-    if (!data.name) {
-      errors.name = 'Name is required';
-    }
+    if (!data.name) errors.name = 'Name is required';
     if (!data.email) {
       errors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       errors.email = 'Invalid email format';
     }
-    if (!data.phone) {
-      errors.phone = 'Phone number is required';
-    }
-    if (!data.address) {
-      errors.address = 'Address is required';
-    }
-    if (!data.aadhaarImage) {
-      errors.aadhaarImage = "Aadhaar image should be uploaded."
-    }
-
-    if (!data.aadhaarNumber) {
-      errors.aadhaarNumber = 'Aadhaar Number is required';
-    }
+    if (!data.phoneNumber) errors.phoneNumber = 'Phone number is required';
+    if (!data.address) errors.address = 'Address is required';
+    if (!data.aadhaarImage) errors.aadhaarImage = "Aadhaar image is required";
+    if (!data.aadhaarNumber) errors.aadhaarNumber = 'Aadhaar number is required';
     if (!data.newPassword) {
       errors.newPassword = 'Password is required';
     } else if (data.newPassword.length < 6) {
-      errors.newPassword = "Password must be at least 6 characters long";
+      errors.newPassword = "Password must be at least 6 characters";
     }
     if (data.newPassword !== data.confirmPassword) {
       errors.confirmPassword = 'Passwords do not match';
     }
-
     return errors;
   };
 
@@ -139,54 +115,83 @@ export default function PetOwnerSignUp() {
       <h1 className="text-center text-primary text-3xl">Sign Up!</h1>
       <label className="flex flex-col items-center justify-center">
         <img src={profilePicPreview} alt="upload profile pic" className="w-48 h-56 object-contain rounded-full" />
-        <input type="file" accept="image/*" onChange={handleProfilePicChange} className='hidden' />
+        <input type="file" accept="image/*" onChange={handleProfilePicChange} className="hidden" />
       </label>
-      {authError && <div className="text-red-500 text-sm">{authError}</div>} {/* Display registration error */}
+      
+      {authError && <div className="text-red-500 text-sm">{authError}</div>}
+
       <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-[80%] max-w-[600px]">
-        <label htmlFor="name" className="flex flex-col">
+        <label className="flex flex-col">
           <span>Name</span>
-          <Input type="text" name="name" id="name" value={formData.name} onChange={handleChange} disabled={isLoading} />
+          <Input name="name" value={formData.name} onChange={handleChange} disabled={isLoading} />
           {errors.name && <span className="text-red-500">{errors.name}</span>}
         </label>
-        <label htmlFor="email" className="flex flex-col">
+
+        <label className="flex flex-col">
           <span>Email</span>
-          <Input type="email" name="email" id="email" value={formData.email} onChange={handleChange} disabled={isLoading} />
+          <Input name="email" value={formData.email} onChange={handleChange} disabled={isLoading} />
           {errors.email && <span className="text-red-500">{errors.email}</span>}
         </label>
-        <label htmlFor="phone" className="flex flex-col">
+
+        <label className="flex flex-col">
           <span>Phone Number</span>
-          <Input type="tel" name="phone" id="phone" value={formData.phone} onChange={handleChange} disabled={isLoading} />
-          {errors.phone && <span className="text-red-500">{errors.phone}</span>}
+          <Input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} disabled={isLoading} />
+          {errors.phoneNumber && <span className="text-red-500">{errors.phoneNumber}</span>}
         </label>
-        <label htmlFor="address" className="flex flex-col">
+
+        <label className="flex flex-col">
           <span>Address</span>
-          <Input type="text" name="address" id="address" value={formData.address} onChange={handleChange} disabled={isLoading} />
+          <Input name="address" value={formData.address} onChange={handleChange} disabled={isLoading} />
           {errors.address && <span className="text-red-500">{errors.address}</span>}
         </label>
-        <label htmlFor="aadhaarImage" className="flex flex-col">
+
+        <label className="flex flex-col">
           <span>Aadhaar Image</span>
-          <Input type="file" accept="image/*, application/pdf" name="aadhaarImage" id="aadhaarImage" onChange={handleAadhaarImageChange} disabled={isLoading} />
-          {/* Optional: Display a preview of the Aadhaar image */}
-          {/* {aadhaarImagePreview && (
-            <img src={aadhaarImagePreview} alt="Aadhaar Preview" style={{ maxWidth: '100px', marginTop: '5px' }} />
-          )} */}
+          <Input 
+            type="file" 
+            accept="image/*, application/pdf" 
+            name="aadhaarImage" 
+            onChange={handleAadhaarImageChange} 
+            disabled={isLoading} 
+          />
           {errors.aadhaarImage && <span className="text-red-500">{errors.aadhaarImage}</span>}
         </label>
-        <label htmlFor="aadhaarNumber" className="flex flex-col">
+
+        <label className="flex flex-col">
           <span>Aadhaar Number</span>
-          <Input type="text" name="aadhaarNumber" id="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleChange} disabled={isLoading} />
+          <Input 
+            name="aadhaarNumber" 
+            value={formData.aadhaarNumber} 
+            onChange={handleChange} 
+            disabled={isLoading} 
+          />
           {errors.aadhaarNumber && <span className="text-red-500">{errors.aadhaarNumber}</span>}
         </label>
-        <label htmlFor="newPassword" className="flex flex-col">
+
+        <label className="flex flex-col">
           <span>New Password</span>
-          <Input type="password" name="newPassword" id="newPassword" value={formData.newPassword} onChange={handleChange} disabled={isLoading} />
+          <Input 
+            type="password" 
+            name="newPassword" 
+            value={formData.newPassword} 
+            onChange={handleChange} 
+            disabled={isLoading} 
+          />
           {errors.newPassword && <span className="text-red-500">{errors.newPassword}</span>}
         </label>
-        <label htmlFor="confirmPassword" className="flex flex-col">
+
+        <label className="flex flex-col">
           <span>Confirm Password</span>
-          <Input type="password" name="confirmPassword" id="confirmPassword" value={formData.confirmPassword} onChange={handleChange} disabled={isLoading} />
+          <Input 
+            type="password" 
+            name="confirmPassword" 
+            value={formData.confirmPassword} 
+            onChange={handleChange} 
+            disabled={isLoading} 
+          />
           {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword}</span>}
         </label>
+
         <Button type="submit" className="sm:col-span-2" disabled={isLoading}>
           {isLoading ? "Signing up..." : "Sign Up"}
         </Button>

@@ -50,21 +50,42 @@ export default function PetShopSignUp() {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        // await register(formData); // Call the register function from the context
-         let profilePicUrl = null;
+        const data = { ...formData };
+        delete data.profilePic;
+        delete data.confirmPassword;
 
-        if (formData.profilePic) {
-          const profilePicData = new FormData();
-          profilePicData.append('image', formData.profilePic);
-          const profilePicResponse = await api.post('/upload', profilePicData);
-          profilePicUrl = profilePicResponse.data.url;
-        }
-        const response = await api.post('/auth/register/pet-shop', {
-          ...formData,
-          profilePic: profilePicUrl,
-        });
-        console.log('Registration successful', response.data);
-        navigate("/login"); // Redirect to login after successful registration
+        api.post('/auth/register/pet-shop', data, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+          .then(async (response) => {
+            if (response.data && response.data.userId) {
+              const userId = response.data.userId;
+              const imageData = new FormData();
+              if (formData.profilePic) {
+                imageData.append('profilePic', formData.profilePic);
+              }
+
+              if (imageData.has('profilePic')) {
+                await api.post('/auth/register/pet-shop/images', imageData, {
+                  headers: {
+                    'Content-Type': 'multipart/form-data',
+                  },
+                });
+              }
+
+              console.log('Registration successful', response.data);
+              navigate("/login"); // Redirect to login after successful registration
+            } else {
+              console.error("User ID not received after registration");
+            }
+          })
+          .catch((err) => {
+            // Error is already handled by the AuthProvider and available in the context
+            // No need to set error state here
+            console.error("Registration failed", err);
+          });
       } catch (err) {
         // Error is already handled by the AuthProvider and available in the context
         // No need to set error state here

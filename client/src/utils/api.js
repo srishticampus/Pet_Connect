@@ -1,9 +1,8 @@
 import axios from 'axios';
-import Cookies from 'js-cookie'; // Using js-cookie for easier cookie handling
 
 const api = axios.create({
   // Use Vite's env variable, default to /api if not set
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: 'http://localhost:3000/api',
   withCredentials: true, // Important for sending/receiving cookies
 });
 
@@ -21,21 +20,13 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
-// Request Interceptor: Add Access Token and CSRF Token
+// Request Interceptor: Add Access Token
 api.interceptors.request.use(
   config => {
     const accessToken = localStorage.getItem('accessToken'); // Get token from storage
-    const csrfToken = Cookies.get('XSRF-TOKEN'); // Read CSRF token from cookie
 
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-
-    // Add CSRF token header for relevant methods (POST, PUT, DELETE, PATCH)
-    // The server checks this header (see server/controllers/auth/index.js line 156)
-    const method = config.method?.toUpperCase();
-    if (csrfToken && method && !['GET', 'HEAD', 'OPTIONS'].includes(method)) {
-      config.headers['X-XSRF-TOKEN'] = csrfToken; // Correct header name
     }
 
     return config;
@@ -70,7 +61,6 @@ api.interceptors.response.use(
 
       try {
         // Attempt to refresh the token using the /auth/refresh endpoint
-        // The refresh request itself needs the XSRF-TOKEN header, which the request interceptor should add
         const { data } = await api.post('/auth/refresh');
 
         // Store the new access token

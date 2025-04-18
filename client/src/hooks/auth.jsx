@@ -37,26 +37,11 @@ export const AuthProvider = ({ children }) => {
       }
 
       // If token exists, try to refresh it to validate the session
-      // The refresh endpoint returns a new access token but not user data
       try {
         const { data } = await api.post("/auth/refresh");
-        // Refresh successful, but we need user data.
-        // Option 1: Assume user data is still valid from last login (simpler for now)
-        // Option 2: Make another request to a '/auth/me' endpoint (more robust)
-        // For now, we'll keep the user state if refresh works, assuming it was set during login.
-        // If user is null here but refresh worked, it implies a page reload after login.
-        // We need a way to get user data again. Let's add a placeholder for a /me endpoint call.
-
-        // Placeholder: Fetch user data after successful refresh
-        // const userDataResponse = await api.get('/auth/me'); // Assuming a /me endpoint exists
-        // setAuthState(data.accessToken, userDataResponse.data);
-
-        // Simplified approach: Just set the new token, assume user state is handled by login/logout
-        // If user is null, it means they need to log in again to get user data.
-        localStorage.setItem("accessToken", data.accessToken);
-        setAccessToken(data.accessToken);
-        api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
-        // Keep existing user state if available, otherwise it remains null until login
+        // Refresh successful, fetch user data
+        const userDataResponse = await api.get('/auth/me'); // Assuming a /me endpoint exists
+        setAuthState(data.accessToken, userDataResponse.data);
 
       } catch (err) {
         console.error("Auth check failed:", err);
