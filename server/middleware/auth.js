@@ -10,7 +10,7 @@ const auth = async (req, res, next) => {
 
   // Verify token
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, import.meta.env.VITE_JWT_SECRET);
     req.user = decoded.user;
     next();
   } catch (err) {

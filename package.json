@@ -1,6 +1,7 @@
 {
   "name": "petconnect",
   "version": "0.0.1",
+  "private": true,
   "description": "PetConnect aims to create a centralized platform that facilitates pet adoption, fostering, lost & found pet recovery, and community interaction among pet lovers.",
   "scripts": {
     "client": "cd client && npm run dev",

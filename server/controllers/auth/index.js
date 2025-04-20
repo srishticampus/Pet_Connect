@@ -47,7 +47,7 @@ router.post(
       // Generate tokens
       const accessToken = jwt.sign(
         { userId: user.id, role: user.role },
-        process.env.JWT_SECRET,
+        import.meta.env.VITE_JWT_SECRET,
         { expiresIn: '15m' } // Short-lived access token
       );
 
@@ -62,8 +62,8 @@ router.post(
       // Cookie options
       const cookieOptions = {
         httpOnly: true, // Prevent client-side JS access
-        secure: process.env.NODE_ENV === 'production', // Send only over HTTPS in production
-        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Lax in development
+        secure: import.meta.env.NODE_ENV === 'production', // Send only over HTTPS in production
+        sameSite: import.meta.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Lax in development
         domain: 'localhost', // Explicitly set domain for localhost development
         maxAge: 7 * 24 * 60 * 60 * 1000 // Match refresh token validity
       };
@@ -110,7 +110,7 @@ router.post("/refresh", async (req, res) => {
     // Issue new access token
     const newAccessToken = jwt.sign(
       { userId: user.id, role: user.role },
-      process.env.JWT_SECRET,
+      import.meta.env.VITE_JWT_SECRET,
       { expiresIn: '15m' }
     );
 
@@ -133,7 +133,7 @@ router.post("/logout", (req, res) => {
   }
 
   // Clear cookies
-  res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
+  res.clearCookie('refreshToken', { httpOnly: true, secure: import.meta.env.NODE_ENV === 'production', sameSite: 'strict' });
 
   res.json({ msg: "Logged out successfully" });
 });
@@ -174,7 +174,7 @@ router.post(
       await user.save();
 
       // Create reset URL (adjust CLIENT_URL as needed, maybe from env vars)
-      const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password/${resetToken}`; // Use the raw token in the URL
+      const resetUrl = `${import.meta.env.VITE_CLIENT_URL || 'http://localhost:5173'}/reset-password/${resetToken}`; // Use the raw token in the URL
 
       const message = `
         You are receiving this email because you (or someone else) have requested the reset of the password for your account.

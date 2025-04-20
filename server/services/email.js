@@ -1,8 +1,8 @@
 // server/services/email.js
 import nodemailer from 'nodemailer';
 
-const email = process.env.EMAIL || 'test@test.com';
-const password = process.env.EMAIL_PASSWORD || '1234';
+const email = import.meta.env.EMAIL || 'test@test.com';
+const password = import.meta.env.EMAIL_PASSWORD || '1234';
 
 // Create a transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
