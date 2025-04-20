@@ -68,6 +68,14 @@ const Navbar = () => {
 
         {isAuthenticated && (
           <div className="hidden md:flex gap-6">
+            {user?.role === 'pet_owner' && (
+              <Link
+                to="/pet-owner/manage-pets"
+                className="hover:text-[#E54C00] transition"
+              >
+                Manage Pets
+              </Link>
+            )}
             <Link
               // to={`/${user?.role}/profile`} // Using user.role as confirmed
               to={`/profile`}

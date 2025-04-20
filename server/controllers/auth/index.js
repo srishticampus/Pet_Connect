@@ -202,7 +202,7 @@ router.post(
 // @access  Private
 router.get("/me", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select("-password"); // Exclude password
+    const user = await User.findById(req.userId).select("-password"); // Exclude password
     if (!user) {
       return res.status(404).json({ msg: "User not found" });
     }

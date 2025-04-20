@@ -20,12 +20,14 @@ import PetOwnerProfile from "./components/pages/pet-owner/profile";
 import PetDetails from "./components/pages/pet-owner/pet-details";
 import PetOwnersTable from "./components/pages/admin/pet-owners";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+import ManagePets from "./components/pages/pet-owner/manage-pets";
+import AddPet from "./components/pages/pet-owner/add-pet";
 
 function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
         <Route
           path="/home"
           element={
@@ -47,6 +49,8 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/profile" element={<PetOwnerProfile />} />
         <Route path="/pet-details" element={<PetDetails />} />
+        <Route path="/pet-owner/manage-pets" element={<ProtectedRoute><ManagePets /></ProtectedRoute>} />
+        <Route path="/pet-owner/add-pet" element={<ProtectedRoute><AddPet /></ProtectedRoute>} />
       </Route>
 
       <Route path="/pets" element={<PetSearch />} />
@@ -60,3 +64,4 @@ function App() {
 }
 
 export default App;
+
