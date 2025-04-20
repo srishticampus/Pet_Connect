@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -20,18 +20,38 @@ import {
 } from "@/components/ui/dialog"
 import { LucideLogOut } from "lucide-react"
 import { Separator } from '@/components/ui/separator';
+import api from '@/utils/api'; // Import the api instance
 
 const PetOwnerProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
-    name: 'John Doe',
-    phone: '123-456-7890',
-    email: 'john.doe@example.com',
-    place: 'New York',
-    aadhaar: '1234-5678-9012',
-    aadhaarImage: 'link ', // Replace with actual image link
+    name: '',
+    phoneNumber: '',
+    email: '',
+    address: '',
+    aadhaarNumber: '',
+    role: '',
+    lastLogin: '',
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get('/profile');
+        setProfile(res.data);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch profile data.');
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []); // Empty dependency array means this effect runs once on mount
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -47,20 +67,20 @@ const PetOwnerProfile = () => {
     setProfile({ ...profile, [name]: value });
   };
 
-  const handleAadhaarImageChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Assuming you have a way to store/handle the file, e.g., upload to a server and get a link.
-      // For now, just store the file name as a placeholder.
-      setProfile({ ...profile, aadhaarImage: file.name });
-    }
-  };
 
   const handleLogout = () => {
     // Implement logout logic here
     console.log('Logging out...');
     setOpen(false); // Close the dialog after logout attempt
   };
+
+  if (loading) {
+    return <div>Loading profile...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
 
   return (
@@ -78,7 +98,7 @@ const PetOwnerProfile = () => {
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Logout</DialogTitle>
-                <Separator/>
+                <Separator />
                 <DialogDescription>
                   Are you sure you want to log out ?
                 </DialogDescription>
@@ -119,48 +139,50 @@ const PetOwnerProfile = () => {
             <CardContent>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium leading-none">Phone Number</p>
-                  {isEditing ? (
-                    <Input type="text" name="phone" value={profile.phone} onChange={handleInputChange} />
-                  ) : (
-                    <p className="text-gray-700">{profile.phone}</p>
-                  )}
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium leading-none">Phone Number</p>
+                    {isEditing ? (
+                      <Input type="text" name="phoneNumber" value={profile.phoneNumber} onChange={handleInputChange} />
+                    ) : (
+                      <p className="text-gray-700">{profile.phoneNumber}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium leading-none">Email ID</p>
+                    {isEditing ? (
+                      <Input type="email" name="email" value={profile.email} onChange={handleInputChange} />
+                    ) : (
+                      <p className="text-gray-700">{profile.email}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium leading-none">Address</p>
+                    {isEditing ? (
+                      <Input type="text" name="address" value={profile.address} onChange={handleInputChange} />
+                    ) : (
+                      <p className="text-gray-700">{profile.address}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium leading-none">Aadhaar Number</p>
+                    {isEditing ? (
+                      <Input type="text" name="aadhaarNumber" value={profile.aadhaarNumber} onChange={handleInputChange} />
+                    ) : (
+                      <p className="text-gray-700">{profile.aadhaarNumber}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium leading-none">Email ID</p>
-                  {isEditing ? (
-                    <Input type="email" name="email" value={profile.email} onChange={handleInputChange} />
-                  ) : (
-                    <p className="text-gray-700">{profile.email}</p>
-                  )}
+                <div className="grid grid-cols-2 gap-4 mt-4"> {/* Added a new grid for additional fields */}
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium leading-none">Role</p>
+                    <p className="text-gray-700">{profile.role}</p> {/* Role is not editable */}
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium leading-none">Last Login</p>
+                    <p className="text-gray-700">{profile.lastLogin ? new Date(profile.lastLogin).toLocaleString() : 'N/A'}</p> {/* Format date */}
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium leading-none">Place</p>
-                  {isEditing ? (
-                    <Input type="text" name="place" value={profile.place} onChange={handleInputChange} />
-                  ) : (
-                    <p className="text-gray-700">{profile.place}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium leading-none">Aadhaar Number</p>
-                  {isEditing ? (
-                    <Input type="text" name="aadhaar" value={profile.aadhaar} onChange={handleInputChange} />
-                  ) : (
-                    <p className="text-gray-700">{profile.aadhaar}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium leading-none">Aadhaar Image</p>
-                  {isEditing ? (
-                    <Input type="file" accept=".pdf" onChange={handleAadhaarImageChange} />
-                  ) : (
-                    <a href={profile.aadhaarImage} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{profile.aadhaarImage}</a>
-                  )}
-                </div>
-                </div>
-                <div className="mt-4  flex justify-center">
+                <div className="mt-4 flex justify-center">
                   {isEditing ? (
                     <Button className="px-8" onClick={handleSaveClick}>Save</Button>
                   ) : (

@@ -11,7 +11,6 @@ import petShopRouter from "./pet-shop.js";
 import volunteerRouter from "./volunteer.js";
 
 export const router = express.Router();
-const refreshTokens = new Map();
 
 // --- Mount Routers ---
 router.use("/register/pet-owner", petOwnerRouter);
@@ -48,28 +47,8 @@ router.post(
       const accessToken = jwt.sign(
         { userId: user.id, role: user.role },
         import.meta.env.VITE_JWT_SECRET,
-        { expiresIn: '15m' } // Short-lived access token
+        { expiresIn: '7d' } // Increased access token life to 7 days
       );
-
-      const refreshToken = crypto.randomBytes(64).toString('hex');
-
-      // Store refresh token securely (in-memory map used here, consider a persistent store like Redis for production)
-      refreshTokens.set(refreshToken, {
-        userId: user.id,
-        expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days validity for refresh token
-      });
-
-      // Cookie options
-      const cookieOptions = {
-        httpOnly: true, // Prevent client-side JS access
-        secure: import.meta.env.NODE_ENV === 'production', // Send only over HTTPS in production
-        sameSite: import.meta.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Lax in development
-        domain: 'localhost', // Explicitly set domain for localhost development
-        maxAge: 7 * 24 * 60 * 60 * 1000 // Match refresh token validity
-      };
-
-      // Set cookies
-      res.cookie('refreshToken', refreshToken, cookieOptions);
 
       res.json({
         accessToken,
@@ -83,55 +62,11 @@ router.post(
   }
 );
 
-// --- Refresh Token ---
-// @route   POST api/auth/refresh
-// @desc    Refresh access token using refresh token
-// @access  Public (requires refresh token cookie)
-router.post("/refresh", async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-
-  if (!refreshToken) return res.status(401).json({ msg: "Unauthorized: No refresh token" });
-
-  try {
-    const tokenData = refreshTokens.get(refreshToken);
-
-    // Validate refresh token existence, expiry
-    if (!tokenData || tokenData.expiresAt < Date.now()) {
-      refreshTokens.delete(refreshToken); // Clean up expired/invalid token
-      return res.status(401).json({ msg: "Invalid or expired refresh token" });
-    }
-
-    const user = await User.findById(tokenData.userId);
-    if (!user) {
-        refreshTokens.delete(refreshToken); // Clean up if user doesn't exist anymore
-        return res.status(401).json({ msg: "User not found" });
-    }
-
-    // Issue new access token
-    const newAccessToken = jwt.sign(
-      { userId: user.id, role: user.role },
-      import.meta.env.VITE_JWT_SECRET,
-      { expiresIn: '15m' }
-    );
-
-    res.json({ accessToken: newAccessToken });
-
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-});
-
 // --- Logout ---
 // @route   POST api/auth/logout
-// @desc    Logout user (invalidate refresh token)
-// @access  Public (requires refresh token cookie)
+// @desc    Logout user (clear cookie)
+// @access  Public
 router.post("/logout", (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  if (refreshToken) {
-    refreshTokens.delete(refreshToken); // Remove token from store
-  }
-
   // Clear cookies
   res.clearCookie('refreshToken', { httpOnly: true, secure: import.meta.env.NODE_ENV === 'production', sameSite: 'strict' });
 

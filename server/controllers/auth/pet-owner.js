@@ -77,7 +77,7 @@ router.post(
         const filename = `${Date.now()}_${file.name}`;
         const filePath = path.join(__dirname, '../../uploads/aadhaar', filename);
         await file.mv(filePath);
-        user.aadhaar_image = `/uploads/aadhaar/${filename}`;
+        user.aadhaarImage = `/uploads/aadhaar/${filename}`;
       }
 
       await user.save();

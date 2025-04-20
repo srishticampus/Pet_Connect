@@ -1,8 +1,10 @@
 import { Link, Outlet, useLocation } from "react-router";
 import { Dog, MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "../../hooks/auth";
 
-const Navbar = ({ user }) => {
+const Navbar = () => {
+  const { user, isAuthenticated } = useAuth();
   const { pathname } = useLocation();
   return (
     <nav className="py-6 ">
@@ -64,7 +66,19 @@ const Navbar = ({ user }) => {
           </div>
         )}
 
-        {!user && (
+        {isAuthenticated && (
+          <div className="hidden md:flex gap-6">
+            <Link
+              // to={`/${user?.role}/profile`} // Using user.role as confirmed
+              to={`/profile`}
+              className="hover:text-[#E54C00] transition"
+            >
+              Profile
+            </Link>
+          </div>
+        )}
+
+        {!isAuthenticated && (
           <div className="flex gap-8 items-center">
             <Link to="/register" className="hover:text-[#E54C00] transition">
               Register

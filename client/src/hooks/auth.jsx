@@ -36,16 +36,14 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
-      // If token exists, try to refresh it to validate the session
+      // If token exists, fetch user data
       try {
-        const { data } = await api.post("/auth/refresh");
-        // Refresh successful, fetch user data
         const userDataResponse = await api.get('/auth/me'); // Assuming a /me endpoint exists
-        setAuthState(data.accessToken, userDataResponse.data);
+        setAuthState(currentToken, userDataResponse.data); // Use existing token
 
       } catch (err) {
         console.error("Auth check failed:", err);
-        setAuthState(null, null); // Clear state if refresh fails
+        setAuthState(null, null); // Clear state if fetching user fails
       } finally {
         setIsLoading(false);
       }
@@ -144,17 +142,17 @@ export const useAuth = () => {
   }
   // If context is null during initial load, provide default loading state
   if (context === null) {
-      return {
-          user: null,
-          accessToken: null,
-          isAuthenticated: false,
-          isLoading: true,
-          error: null,
-          login: async () => { throw new Error("AuthProvider not ready"); },
-          logout: async () => { throw new Error("AuthProvider not ready"); },
-          register: async () => { throw new Error("AuthProvider not ready"); },
-          clearError: () => {}
-      };
+    return {
+      user: null,
+      accessToken: null,
+      isAuthenticated: false,
+      isLoading: true,
+      error: null,
+      login: async () => { throw new Error("AuthProvider not ready"); },
+      logout: async () => { throw new Error("AuthProvider not ready"); },
+      register: async () => { throw new Error("AuthProvider not ready"); },
+      clearError: () => { }
+    };
   }
   return context;
 };
