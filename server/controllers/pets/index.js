@@ -1,20 +1,44 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
-import Pets from "./models/pet.js";
-
-const router = express.Router();
+import Pets from "../../models/pets.js";
+import auth from "../../middleware/auth.js"; // Import the auth middleware
+export const router = express.Router();
 
 // Create a new pet
 router.post(
-  "/pets",
-  [body("Species").notEmpty().withMessage("Species is required")],
+  "/",
+  auth, // Add auth middleware
+  [
+    body("name").notEmpty().withMessage("Name is required"),
+    body("species").notEmpty().withMessage("Species is required"),
+    body("shortDescription").notEmpty().withMessage("Short description is required"),
+    body("age").isInt({ gt: 0 }).withMessage("Age must be a positive integer"),
+    body("gender").isIn(["male", "female", "other"]).withMessage("Invalid gender"),
+    body("breed").notEmpty().withMessage("Breed is required"),
+    body("size").isIn(["small", "medium", "large"]).withMessage("Invalid size"),
+    body("description").notEmpty().withMessage("Description is required"),
+    body("healthVaccinations").isArray().withMessage("Health and vaccinations must be an array"),
+  ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
     try {
-      const newPet = new Pets(req.body);
+      const { name, species, shortDescription, age, gender, breed, size, description, healthVaccinations, image } = req.body;
+      const newPet = new Pets({
+        name,
+        Species: species, // Note the capitalization difference
+        shortDescription,
+        Age: age, // Note the capitalization difference
+        Gender: gender, // Note the capitalization difference
+        Breed: breed, // Note the capitalization difference
+        Size: size, // Note the capitalization difference
+        description,
+        healthVaccinations,
+        Photo: image, // Note the capitalization difference
+        petOwner: req.userId, // Assuming req.userId is set by auth middleware
+      });
       const savedPet = await newPet.save();
       res.status(201).json(savedPet);
     } catch (err) {
@@ -24,7 +48,7 @@ router.post(
 );
 
 // Get all pets
-router.get("/pets", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const pets = await Pets.find();
     res.json(pets);
@@ -34,7 +58,7 @@ router.get("/pets", async (req, res) => {
 });
 
 // Get a specific pet by ID
-router.get("/pets/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const pet = await Pets.findById(req.params.id);
     if (!pet) {
@@ -47,7 +71,7 @@ router.get("/pets/:id", async (req, res) => {
 });
 
 // Update a pet
-router.patch("/pets/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   try {
     const pet = await Pets.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -62,7 +86,7 @@ router.patch("/pets/:id", async (req, res) => {
 });
 
 // Delete a pet
-router.delete("/pets/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const pet = await Pets.findByIdAndDelete(req.params.id);
     if (!pet) {
@@ -74,4 +98,3 @@ router.delete("/pets/:id", async (req, res) => {
   }
 });
 
-export default router;

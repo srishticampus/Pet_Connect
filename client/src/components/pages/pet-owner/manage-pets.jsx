@@ -1,19 +1,36 @@
-import React from 'react';
-import { Link } from 'react-router'; // Assuming react-router based on layout.jsx
+import React, { useEffect, useState } from 'react'; // Import useEffect and useState
+import { Link } from 'react-router'; // Import Link from react-router-dom
 import Pet from '@/components/pet';
+import api from '@/utils/api'; // Import the api service
 
 const ManagePets = () => {
-  const userPets = [{
-    id: 1,
-    image: '/client/src/assets/cardimg-1.png', // Using a sample image from the project
-    name: 'Buddy',
-    age: '3 years',
-    gender: 'Male',
-    breed: 'Golden Retriever',
-    size: 'Large',
-    description: 'Buddy is a friendly and energetic dog looking for a loving home.',
-    healthVaccinations: ['Rabies', 'Distemper']
-  }]; // Placeholder for fetched pets
+  const [userPets, setUserPets] = useState([]); // State for fetched pets
+  const [loading, setLoading] = useState(true); // State for loading
+  const [error, setError] = useState(null); // State for error
+
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      try {
+        const response = await api.get('/pets/'); // Use api.get to fetch pets
+        setUserPets(response.data); // Axios puts the response data in .data
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching pets:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserPets();
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  if (loading) {
+    return <section className="container mx-auto px-4 lg:px-0 py-8">Loading pets...</section>;
+  }
+
+  if (error) {
+    return <section className="container mx-auto px-4 lg:px-0 py-8 text-red-500">Error: {error}</section>;
+  }
 
   return (
     <section className="container mx-auto px-4 lg:px-0 py-8">
@@ -29,7 +46,7 @@ const ManagePets = () => {
         {userPets.length > 0 ? (
           userPets.map(pet => (
             // Pet component will need to be adapted to accept pet data as props
-            <Pet key={pet.id} pet={pet} />
+            <Pet key={pet._id} pet={pet} /> // Use pet._id for the key
           ))
         ) : (
           <p>You don't have any pets listed yet.</p>

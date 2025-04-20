@@ -4,8 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from 'react-router'; // Import useNavigate from react-router-dom
+import api from '@/utils/api'; // Import the api service
 
 const AddPet = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [formData, setFormData] = useState({
     image: null,
     name: '',
@@ -18,6 +21,8 @@ const AddPet = () => {
     description: '',
     health: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -34,23 +39,49 @@ const AddPet = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => { // Made function async
     e.preventDefault();
+    setLoading(true);
+    setError(null);
 
+    // const petData = new FormData(); // Use FormData for file upload
+    // petData.append('image', formData.image);
+    // petData.append('name', formData.name);
+    // petData.append('species', formData.species);
+    // petData.append('shortDescription', formData.shortDescription);
+    // petData.append('age', formData.age);
+    // petData.append('gender', formData.gender);
+    // petData.append('breed', formData.breed);
+    // petData.append('size', formData.size);
+    // petData.append('description', formData.description);
+    // petData.append('healthVaccinations', JSON.stringify(formData.health ? formData.health.split(',').map(item => item.trim()).filter(item => item) : [])); // Send as JSON string
+
+    // convert to json
     const petData = {
-      id: 1, // Static for now
-      image: '/client/src/assets/cardimg-1.png', // Using a sample image from the project as requested
       name: formData.name,
-      age: formData.age ? `${formData.age} years` : '', // Format age
-      gender: formData.gender ? formData.gender.charAt(0).toUpperCase() + formData.gender.slice(1) : '', // Capitalize gender
+      species: formData.species,
+      shortDescription: formData.shortDescription,
+      age: formData.age,
+      gender: formData.gender,
       breed: formData.breed,
-      size: formData.size ? formData.size.charAt(0).toUpperCase() + formData.size.slice(1) : '', // Capitalize size
+      size: formData.size,
       description: formData.description,
-      healthVaccinations: formData.health ? formData.health.split(',').map(item => item.trim()).filter(item => item) : [] // Split health by comma into array
+      healthVaccinations: formData.health.split(',').map(item => item.trim()).filter(item => item) // Convert to array
     };
 
-    console.log('Formatted pet data:', petData);
-    // Here you would typically send petData to an API
+    try {
+      await api.post('/pets', petData); // Use api.post with correct endpoint
+
+      // Pet added successfully
+      alert('Pet added successfully!');
+      navigate('/pet-owner/manage-pets'); // Redirect to manage pets page
+
+    } catch (err) {
+      setError(err.message);
+      console.error('Error adding pet:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -143,10 +174,11 @@ const AddPet = () => {
 
         {/* Submit Button */}
         <div className="md:col-span-2 flex justify-end">
-          <Button type="submit" className="bg-[#e54c00] hover:bg-[#ED824D]">
-            Add Pet
+          <Button type="submit" className="bg-[#e54c00] hover:bg-[#ED824D]" disabled={loading}>
+            {loading ? 'Adding Pet...' : 'Add Pet'}
           </Button>
         </div>
+        {error && <div className="md:col-span-2 text-red-500">{error}</div>}
       </form>
     </section>
   );

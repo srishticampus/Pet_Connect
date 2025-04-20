@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const petSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
   Photo: {
     type: String,
   },
@@ -23,18 +27,14 @@ const petSchema = new mongoose.Schema({
     enum: ["male", "female", "other"],
     default: "other",
   },
-  HealthStatus: {
-    vaccinated: {
-      type: String,
-      enum: ["fully vaccinated", "partially vaccinated", "unvaccinated", "unknown"],
-      default: "unknown",
-    },
-    spayed: {
-      type: Boolean,
-    },
-    microchipped: {
-      type: Boolean,
-    },
+  shortDescription: {
+    type: String,
+  },
+  description: {
+    type: String,
+  },
+  healthVaccinations: {
+    type: [String], // Array of strings
   },
   Location: { // Consider making this more structured (e.g., GeoJSON) later
     type: String,
@@ -47,6 +47,11 @@ const petSchema = new mongoose.Schema({
   organization: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Organization", // Reference to the Organization model
+  },
+  petOwner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User", // Reference to the User model (Pet Owner)
+    required: true,
   },
   // Added timestamps
   createdAt: {
