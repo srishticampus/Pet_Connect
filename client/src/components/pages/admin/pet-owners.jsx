@@ -107,6 +107,7 @@ export const columns = [
         const petOwner = row.original
         const [isDeleting, setIsDeleting] = useState(false);
         const fetchPetOwners = table.options.meta?.fetchPetOwners;
+        const [open, setOpen] = useState(false);
 
         const handleDelete = async () => {
           setIsDeleting(true);
@@ -120,33 +121,59 @@ export const columns = [
             // Handle error appropriately, maybe show an error message to the user
           } finally {
             setIsDeleting(false);
+            setOpen(false);
           }
         };
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              {/* <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(petOwner.id)}
-              >
-                Copy payment ID
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem> */}
-              {/* <DropdownMenuSeparator /> */}
-              <DropdownMenuItem variant="danger" onClick={handleDelete} disabled={isDeleting}>
-                  {isDeleting ? "Deleting..." : "Delete Pet Owner"}
+          <>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                {/* <DropdownMenuItem
+                  onClick={() => navigator.clipboard.writeText(petOwner.id)}
+                  >
+                  Copy payment ID
                 </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>View customer</DropdownMenuItem>
+                <DropdownMenuItem>View payment details</DropdownMenuItem> */}
+                {/* <DropdownMenuSeparator /> */}
+                <DropdownMenuItem variant="danger" onClick={()=>setOpen(true)} disabled={isDeleting}>
+                    {isDeleting ? "Deleting..." : "Delete Pet Owner"}
+                  </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Delete Pet Owner</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete this pet owner? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? "Deleting..." : "Delete"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          </>
         )
       },
     },
