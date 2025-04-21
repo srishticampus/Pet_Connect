@@ -72,6 +72,11 @@ const Pet = ({ pet }) => {
           </div>
         </div>
 
+        <div className="flex gap-4 items-center">
+          <p className="text-sm font-light text-[#7f7f7f]">Origin</p>
+          <p>{pet.origin === "owner" ? "Owner" : "Foster"}</p>
+        </div>
+
         <p className="pb-2">Description</p>
         <p className="text-sm font-light ">
           {pet.description}

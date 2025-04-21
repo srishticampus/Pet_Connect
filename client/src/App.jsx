@@ -22,6 +22,7 @@ import PetOwnersTable from "./components/pages/admin/pet-owners";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 import ManagePets from "./components/pages/pet-owner/manage-pets";
 import AddPet from "./components/pages/pet-owner/add-pet";
+import PetManagement from "./components/pages/admin/pet-management";
 import { useAuth } from "./hooks/auth";
 
 function App() {
@@ -78,6 +79,7 @@ function App() {
         <Route index element={<Dashboard />} />
         <Route path="fosters" element={<Fosters />} />
         <Route path="pet-owners" element={<PetOwnersTable />} />
+        <Route path="pet-management" element={<PetManagement />} />
       </Route>
     </Routes>
   );

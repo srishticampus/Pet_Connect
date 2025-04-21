@@ -18,6 +18,7 @@ router.post(
     body("size").isIn(["small", "medium", "large"]).withMessage("Invalid size"),
     body("description").notEmpty().withMessage("Description is required"),
     body("healthVaccinations").isArray().withMessage("Health and vaccinations must be an array"),
+    body("origin").isIn(["owner", "foster"]).withMessage("Invalid origin"),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -25,7 +26,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
     try {
-      const { name, species, shortDescription, age, gender, breed, size, description, healthVaccinations, image } = req.body;
+      const { name, species, shortDescription, age, gender, breed, size, description, healthVaccinations, image, origin } = req.body;
       const newPet = new Pets({
         name,
         Species: species, // Note the capitalization difference
@@ -38,6 +39,7 @@ router.post(
         healthVaccinations,
         Photo: image, // Note the capitalization difference
         petOwner: req.userId, // Assuming req.userId is set by auth middleware
+        origin,
       });
       const savedPet = await newPet.save();
       res.status(201).json(savedPet);
@@ -97,4 +99,3 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-

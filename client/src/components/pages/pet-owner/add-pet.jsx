@@ -19,7 +19,8 @@ const AddPet = () => {
     breed: '',
     size: '',
     description: '',
-    health: ''
+    health: '',
+    origin: 'owner', // Add origin field with default value
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -44,19 +45,6 @@ const AddPet = () => {
     setLoading(true);
     setError(null);
 
-    // const petData = new FormData(); // Use FormData for file upload
-    // petData.append('image', formData.image);
-    // petData.append('name', formData.name);
-    // petData.append('species', formData.species);
-    // petData.append('shortDescription', formData.shortDescription);
-    // petData.append('age', formData.age);
-    // petData.append('gender', formData.gender);
-    // petData.append('breed', formData.breed);
-    // petData.append('size', formData.size);
-    // petData.append('description', formData.description);
-    // petData.append('healthVaccinations', JSON.stringify(formData.health ? formData.health.split(',').map(item => item.trim()).filter(item => item) : [])); // Send as JSON string
-
-    // convert to json
     const petData = {
       name: formData.name,
       species: formData.species,
@@ -66,7 +54,8 @@ const AddPet = () => {
       breed: formData.breed,
       size: formData.size,
       description: formData.description,
-      healthVaccinations: formData.health.split(',').map(item => item.trim()).filter(item => item) // Convert to array
+      healthVaccinations: formData.health.split(',').map(item => item.trim()).filter(item => item), // Convert to array
+      origin: formData.origin, // Add origin to petData
     };
 
     try {
@@ -171,6 +160,9 @@ const AddPet = () => {
           <Label htmlFor="health">Health & Vaccinations (Comma seperated)</Label>
           <Textarea id="health" name="health" rows="3" value={formData.health} onChange={handleInputChange} />
         </div>
+
+        {/* Hidden origin input */}
+        <input type="hidden" name="origin" value="owner" />
 
         {/* Submit Button */}
         <div className="md:col-span-2 flex justify-end">

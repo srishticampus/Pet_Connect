@@ -48,6 +48,11 @@ const petSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User", // Reference to the User model (Pet Owner)
   },
+  origin: {
+    type: String,
+    enum: ["owner", "foster"],
+    required: true,
+  },
   // Added timestamps
   createdAt: {
     type: Date,

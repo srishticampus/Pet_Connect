@@ -16,7 +16,7 @@ export default function PetShopSignUp() {
     newPassword: '',
     confirmPassword: '',
     profilePic: null,
-    role: "pet_shop" // Corrected role value
+    role: "pet_shop"
   });
 
   const [errors, setErrors] = useState({});
@@ -127,11 +127,6 @@ export default function PetShopSignUp() {
           <span>Shop Name</span>
           <Input type="text" name="shopName" id="shopName" value={formData.shopName} onChange={handleChange} disabled={isLoading} />
           {errors.shopName && <span className="text-red-500">{errors.shopName}</span>}
-        </label>
-        <label htmlFor="location" className="flex flex-col">
-          <span>Location</span>
-          <Input type="text" name="location" id="location" value={formData.location} onChange={handleChange} disabled={isLoading} />
-          {errors.location && <span className="text-red-500">{errors.location}</span>}
         </label>
         <label htmlFor="email" className="flex flex-col">
           <span>Email</span>
