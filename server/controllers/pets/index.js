@@ -14,7 +14,7 @@ export const router = express.Router();
 // Set up multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../../uploads')); // Destination folder
+    cb(null, path.join(__dirname, '../../uploads/pet-images')); // Destination folder
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
