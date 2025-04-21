@@ -39,6 +39,35 @@ api.interceptors.response.use(
   }
 );
 
+// Custom post function to handle FormData
+api.post = async (url, data, config = {}) => {
+  try {
+    const accessToken = localStorage.getItem('accessToken');
+    const headers = {
+      ...config.headers,
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    };
+
+    if (data instanceof FormData) {
+      // If data is FormData, do not set Content-Type, let axios handle it
+      delete headers['Content-Type'];
+    } else {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    const response = await axios.post(url, data, {
+      ...config,
+      baseURL: api.defaults.baseURL,
+      withCredentials: true,
+      headers,
+    });
+    return response;
+  } catch (error) {
+    console.error('API POST error:', error);
+    throw error;
+  }
+};
+
 // New function to fetch all pet owners from the admin endpoint
 export const getAllPetOwners = async () => {
   try {

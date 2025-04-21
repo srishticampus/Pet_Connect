@@ -45,21 +45,28 @@ const AddPet = () => {
     setLoading(true);
     setError(null);
 
-    const petData = {
-      name: formData.name,
-      species: formData.species,
-      shortDescription: formData.shortDescription,
-      age: formData.age,
-      gender: formData.gender,
-      breed: formData.breed,
-      size: formData.size,
-      description: formData.description,
-      healthVaccinations: formData.health.split(',').map(item => item.trim()).filter(item => item), // Convert to array
-      origin: formData.origin, // Add origin to petData
-    };
+    const petData = new FormData();
+    petData.append('name', formData.name);
+    petData.append('species', formData.species);
+    petData.append('shortDescription', formData.shortDescription);
+    petData.append('age', formData.age);
+    petData.append('gender', formData.gender);
+    petData.append('breed', formData.breed);
+    petData.append('size', formData.size);
+    petData.append('description', formData.description);
+    const healthVaccinations = formData.health.split(',').map(item => item.trim()).filter(item => item);
+    petData.append('healthVaccinations', JSON.stringify(healthVaccinations));
+    petData.append('origin', formData.origin);
+    if (formData.image) {
+      petData.append('image', formData.image);
+    }
 
     try {
-      await api.post('/pets', petData); // Use api.post with correct endpoint
+      await api.post('/pets/upload', petData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }); // Use api.post with correct endpoint
 
       // Pet added successfully
       alert('Pet added successfully!');
