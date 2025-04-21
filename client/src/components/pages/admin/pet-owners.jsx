@@ -91,10 +91,10 @@ export const columns = [
     name:"Place"
   },
   {
-    accessorKey:"aadhaar",
+    accessorKey:"aadhaarImage",
     header:"Aadhaar Image",
     name:"Aadhaar Image",
-    cell: ({row})=>(<Button asChild variant="link"><a href={row.getValue("aadhaar")} target="_blank">Preview <ExternalLink className="h-4 w-4" /></a></Button>)
+    cell: ({row})=>(row.getValue("aadhaarImage")?(<Button asChild variant="link"><a href={`http://localhost:3000${row.getValue("aadhaarImage")}`} target="_blank">Preview <ExternalLink className="h-4 w-4" /></a></Button>):(<p>No Aadhaar Image</p>))
   },
   {
     accessorKey:"aadhaarNumber",

@@ -96,8 +96,8 @@ export const AuthProvider = ({ children }) => {
       const { data } = await api.post(`/auth/register/${role}`, userData);
       const userId = data.userId;
 
-      if (imageData && imageData.has('profilePic')) {
-        await api.post(`/auth/register/${role}/images`, imageData, {
+      if (imageData && (imageData.has('profilePic') || imageData.has('aadhaarImage'))) {
+        await api.post(`/auth/register/${role}/${userId}/images`, imageData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

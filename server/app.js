@@ -8,8 +8,12 @@ import cookieParser from "cookie-parser";
 import "./db_driver";
 import apiRouter from "./controllers";
 import adminRouter from "./controllers/admin"; // Import admin routes
-
+import path from "path";
+import { fileURLToPath } from "url";
 export const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cors({
@@ -39,6 +43,11 @@ app.get("/", (req, res) => {
 // API routes
 app.use("/api", apiRouter);
 app.use("/api/admin", adminRouter); // Use admin routes
+
+
+//static files for uploads servedin /uploads url
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 // Error handling
 app.use((err, req, res, next) => {

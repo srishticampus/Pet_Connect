@@ -32,6 +32,7 @@ const PetOwnerProfile = () => {
     email: '',
     address: '',
     aadhaarNumber: '',
+    aadhaarImage: '',
     role: '',
     lastLogin: '',
   });
@@ -184,10 +185,11 @@ const PetOwnerProfile = () => {
                     )}
                   </div>
                 </div>
+               
                 <div className="grid grid-cols-2 gap-4 mt-4"> {/* Added a new grid for additional fields */}
                   <div className="space-y-2">
-                    <p className="text-sm font-medium leading-none">Role</p>
-                    <p className="text-gray-700">{profile.role}</p> {/* Role is not editable */}
+                    <p className="text-sm font-medium leading-none">Aadhaar Image</p>
+                    <Button variant="link" asChild className="text-primary mx-0"><a href={`http://localhost:3000${profile.aadhaarImage}`}>Link</a></Button> {/* Role is not editable */}
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm font-medium leading-none">Last Login</p>
