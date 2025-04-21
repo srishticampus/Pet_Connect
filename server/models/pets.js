@@ -39,10 +39,6 @@ const petSchema = new mongoose.Schema({
   Location: { // Consider making this more structured (e.g., GeoJSON) later
     type: String,
   },
-  Origin: {
-    type: String, // "lost/found", "rescue/shelter", "foster"
-    enum: ["lost/found", "rescue/shelter", "foster"],
-  },
   // Renamed from Rescue and updated ref
   organization: {
     type: mongoose.Schema.Types.ObjectId,
@@ -51,7 +47,6 @@ const petSchema = new mongoose.Schema({
   petOwner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User", // Reference to the User model (Pet Owner)
-    required: true,
   },
   // Added timestamps
   createdAt: {

@@ -21,6 +21,7 @@ import {
 import { LucideLogOut } from "lucide-react"
 import { Separator } from '@/components/ui/separator';
 import api from '@/utils/api'; // Import the api instance
+import { useNavigate } from 'react-router'; // Import useNavigate
 
 const PetOwnerProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -36,6 +37,7 @@ const PetOwnerProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false)
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -68,10 +70,17 @@ const PetOwnerProfile = () => {
   };
 
 
-  const handleLogout = () => {
-    // Implement logout logic here
-    console.log('Logging out...');
-    setOpen(false); // Close the dialog after logout attempt
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/logout'); // Call the logout API endpoint
+      localStorage.removeItem('token'); // Remove the token from local storage
+      navigate('/login'); // Redirect to the login page
+    } catch (err) {
+      console.error('Logout failed:', err);
+      setError('Failed to logout.');
+    } finally {
+      setOpen(false); // Close the dialog after logout attempt
+    }
   };
 
   if (loading) {

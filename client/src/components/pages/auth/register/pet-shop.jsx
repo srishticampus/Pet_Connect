@@ -4,7 +4,6 @@ import profilepic from "@/assets/profile-pic.png";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/auth"; // Import useAuth
 import { useNavigate } from 'react-router'; // Import useNavigate
-import api from "@/utils/api"; // Import api
 
 export default function PetShopSignUp() {
   const [formData, setFormData] = useState({
@@ -54,38 +53,14 @@ export default function PetShopSignUp() {
         delete data.profilePic;
         delete data.confirmPassword;
 
-        api.post('/auth/register/pet-shop', data, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-          .then(async (response) => {
-            if (response.data && response.data.userId) {
-              const userId = response.data.userId;
-              const imageData = new FormData();
-              if (formData.profilePic) {
-                imageData.append('profilePic', formData.profilePic);
-              }
+        const imageData = new FormData();
+        if (formData.profilePic) {
+          imageData.append('profilePic', formData.profilePic);
+        }
 
-              if (imageData.has('profilePic')) {
-                await api.post('/auth/register/pet-shop/images', imageData, {
-                  headers: {
-                    'Content-Type': 'multipart/form-data',
-                  },
-                });
-              }
+        await register('pet-shop', data, imageData);
+        navigate("/login"); // Redirect to login after successful registration
 
-              console.log('Registration successful', response.data);
-              navigate("/login"); // Redirect to login after successful registration
-            } else {
-              console.error("User ID not received after registration");
-            }
-          })
-          .catch((err) => {
-            // Error is already handled by the AuthProvider and available in the context
-            // No need to set error state here
-            console.error("Registration failed", err);
-          });
       } catch (err) {
         // Error is already handled by the AuthProvider and available in the context
         // No need to set error state here

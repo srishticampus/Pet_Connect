@@ -1,7 +1,7 @@
-import { Route, Routes } from "react-router";
+import { Route, Routes, Navigate } from "react-router";
 
 import { Layout } from "./components/pages/layout";
-import Landing from "./components/pages";
+import LandingPage from "./components/pages";
 import PetSearch from "./components/pages/pet-search";
 import AdminLayout from "./components/pages/admin/layout";
 import Dashboard from "./components/pages/admin/dashboard";
@@ -22,18 +22,38 @@ import PetOwnersTable from "./components/pages/admin/pet-owners";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 import ManagePets from "./components/pages/pet-owner/manage-pets";
 import AddPet from "./components/pages/pet-owner/add-pet";
+import { useAuth } from "./hooks/auth";
 
 function App() {
+  const { isAuthenticated, user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Or a loading spinner
+  }
+
+  const isPetOwner = user?.role === "pet_owner";
+
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+        <Route
+          path="/"
+          element={
+            isAuthenticated && isPetOwner ? (
+              <HomePage />
+            ) : (
+              <LandingPage />
+            )
+          }
+        />
         <Route
           path="/home"
           element={
-            <ProtectedRoute>
+            isAuthenticated && isPetOwner ? (
               <HomePage />
-            </ProtectedRoute>
+            ) : (
+              <Navigate to="/" replace />
+            )
           }
         />
         <Route path="/about" element={<About />} />
@@ -64,4 +84,3 @@ function App() {
 }
 
 export default App;
-

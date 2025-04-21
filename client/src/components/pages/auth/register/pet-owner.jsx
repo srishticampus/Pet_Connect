@@ -4,7 +4,6 @@ import profilepic from "@/assets/profile-pic.png";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/auth";
 import { useNavigate } from 'react-router';
-import api from "@/utils/api";
 
 export default function PetOwnerSignUp() {
   const [formData, setFormData] = useState({
@@ -23,7 +22,7 @@ export default function PetOwnerSignUp() {
   const [errors, setErrors] = useState({});
   const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
   const [aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
-  const { error: authError, clearError, isLoading } = useAuth();
+  const { register, error: authError, clearError, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -59,27 +58,16 @@ export default function PetOwnerSignUp() {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        // Create user first
         const userData = { ...formData };
         delete userData.profilePic;
         delete userData.aadhaarImage;
         delete userData.confirmPassword;
 
-        const userResponse = await api.post('/auth/register/pet-owner', userData);
-        
-        // Then upload images
-        if (formData.profilePic || formData.aadhaarImage) {
-          const imageData = new FormData();
-          if (formData.profilePic) imageData.append('profilePic', formData.profilePic);
-          if (formData.aadhaarImage) imageData.append('aadhaarImage', formData.aadhaarImage);
+        const imageData = new FormData();
+        if (formData.profilePic) imageData.append('profilePic', formData.profilePic);
+        if (formData.aadhaarImage) imageData.append('aadhaarImage', formData.aadhaarImage);
 
-          await api.post(
-            `/auth/register/pet-owner/${userResponse.data.userId}/images`,
-            imageData,
-            { headers: { 'Content-Type': 'multipart/form-data' } }
-          );
-        }
-
+        await register('pet-owner', userData, imageData);
         navigate("/login");
       } catch (err) {
         console.error("Registration failed", err);
@@ -111,7 +99,7 @@ export default function PetOwnerSignUp() {
   };
 
   return (
-    <main className="container mx-3 flex flex-col items-center gap-4 my-16">
+    <main className="container mx-3 md:mx-auto flex flex-col items-center gap-4 my-16">
       <h1 className="text-center text-primary text-3xl">Sign Up!</h1>
       <label className="flex flex-col items-center justify-center">
         <img src={profilePicPreview} alt="upload profile pic" className="w-48 h-56 object-contain rounded-full" />

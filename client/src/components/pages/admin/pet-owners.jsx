@@ -38,7 +38,29 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { getAllPetOwners } from "@/utils/api" // Import the new API function
+import { getAllPetOwners, addPetOwner, updatePetOwner } from "./petOwnerService" // Import the new API function
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+
+const formSchema = z.object({
+  firstName: z.string().min(2, {
+    message: "First Name must be at least 2 characters.",
+  }),
+  lastName: z.string().min(2, {
+    message: "Last Name must be at least 2 characters.",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+})
 
 export const columns = [
   {
@@ -212,17 +234,37 @@ export function DataTable({
 
 export default function PetOwnersTable() {
   const [data, setData] = useState([]);
+  const [open, setOpen] = useState(false)
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    },
+  })
+
+  function onSubmit(values) {
+    addPetOwner(values).then(()=>{
+      fetchPetOwners()
+      setOpen(false)
+    }).catch((e)=>{
+      console.log(e)
+    })
+  }
+
+  const fetchPetOwners = async () => {
+    try {
+      const petOwnersData = await getAllPetOwners();
+      setData(petOwnersData);
+    } catch (error) {
+      console.error("Failed to fetch pet owners:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchPetOwners = async () => {
-      try {
-        const petOwnersData = await getAllPetOwners();
-        setData(petOwnersData);
-      } catch (error) {
-        console.error("Failed to fetch pet owners:", error);
-      }
-    };
-
     fetchPetOwners();
   }, []);
 
@@ -230,6 +272,78 @@ export default function PetOwnersTable() {
     <div className="container mx-auto w-full">
       <main className="flex-1 px-6 pb-6 w-full">
         <div className="bg-white rounded-lg h-full p-6 w-full">
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">Add Pet Owner</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add Pet Owner</DialogTitle>
+                <DialogDescription>
+                  Make changes to the pet owner here. Click save when you're done.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="First Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Last Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="mail@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Password" type="password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <DialogFooter>
+                    <Button type="submit">Save</Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
           <DataTable columns={columns} data={data} />
         </div>
       </main>

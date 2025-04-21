@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
       // If token exists, fetch user data
       try {
         const userDataResponse = await api.get('/auth/me'); // Assuming a /me endpoint exists
+        console.log("User data response:", userDataResponse);
         setAuthState(currentToken, userDataResponse.data); // Use existing token
 
       } catch (err) {
@@ -88,16 +89,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Register function
-  const register = async (userData) => {
+  const register = async (role, userData, imageData) => {
     setIsLoading(true);
     setError(null);
     try {
-      // const { data } = await api.post("/auth/register", userData);
-      // Registration successful, user needs to login separately
-      // return data; // Return the created user data (without token)
-      // The registration is now handled in each of the components
+      const { data } = await api.post(`/auth/register/${role}`, userData);
+      const userId = data.userId;
+
+      if (imageData && imageData.has('profilePic')) {
+        await api.post(`/auth/register/${role}/images`, imageData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
+      return data;
     } catch (err) {
-      const errorMsg = err.response?.data?.errors?.[0]?.msg || "Registration failed";
+      const errorMsg = err.response?.data?.msg || err.response?.data?.errors?.[0]?.msg || "Registration failed";
       console.error("Registration error:", err.response?.data || err.message);
       setError(errorMsg);
       throw new Error(errorMsg); // Re-throw for component handling
