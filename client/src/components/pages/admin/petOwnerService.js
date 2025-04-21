@@ -34,3 +34,13 @@ export const updatePetOwner = async (id, petOwnerData) => {
     throw error;
   }
 };
+
+export const deletePetOwner = async (id) => {
+  try {
+    const response = await api.delete(`/admin/pet-owners/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting pet owner:", error);
+    throw error;
+  }
+};

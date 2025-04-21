@@ -38,7 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { getAllPetOwners, addPetOwner, updatePetOwner } from "./petOwnerService" // Import the new API function
+import { getAllPetOwners, addPetOwner, updatePetOwner,deletePetOwner } from "./petOwnerService" // Import the new API function
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -103,8 +103,25 @@ export const columns = [
   },
   {
       id: "actions",
-      cell: ({ row }) => {
-        const payment = row.original
+      cell: ({ row, table }) => {
+        const petOwner = row.original
+        const [isDeleting, setIsDeleting] = useState(false);
+        const fetchPetOwners = table.options.meta?.fetchPetOwners;
+
+        const handleDelete = async () => {
+          setIsDeleting(true);
+          try {
+            
+            await deletePetOwner(petOwner._id);
+            // Refresh the pet owners data after successful deletion
+            fetchPetOwners();
+          } catch (error) {
+            console.error("Failed to delete pet owner:", error);
+            // Handle error appropriately, maybe show an error message to the user
+          } finally {
+            setIsDeleting(false);
+          }
+        };
 
         return (
           <DropdownMenu>
@@ -116,14 +133,18 @@ export const columns = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(payment.id)}
+              {/* <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(petOwner.id)}
               >
                 Copy payment ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
+              <DropdownMenuItem>View payment details</DropdownMenuItem> */}
+              {/* <DropdownMenuSeparator /> */}
+              <DropdownMenuItem variant="danger" onClick={handleDelete} disabled={isDeleting}>
+                  {isDeleting ? "Deleting..." : "Delete Pet Owner"}
+                </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -135,6 +156,7 @@ export const columns = [
 export function DataTable({
   columns,
   data,
+  fetchPetOwners
 }) {
   const [columnFilters, setColumnFilters] = useState([])
   const [currentFilter,setCurrentFilter] = useState("email")
@@ -148,7 +170,10 @@ export function DataTable({
     getFilteredRowModel: getFilteredRowModel(),
     state:{
       columnFilters
-    }
+    },
+    meta: {
+      fetchPetOwners,
+    },
   })
 
   return (
@@ -279,9 +304,6 @@ export default function PetOwnersTable() {
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Add Pet Owner</DialogTitle>
-                <DialogDescription>
-                  Make changes to the pet owner here. Click save when you're done.
-                </DialogDescription>
               </DialogHeader>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -344,7 +366,7 @@ export default function PetOwnersTable() {
               </Form>
             </DialogContent>
           </Dialog>
-          <DataTable columns={columns} data={data} />
+          <DataTable columns={columns} data={data} fetchPetOwners={fetchPetOwners} />
         </div>
       </main>
     </div>
