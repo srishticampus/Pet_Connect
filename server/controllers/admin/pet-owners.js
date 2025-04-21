@@ -3,7 +3,7 @@ import { body, validationResult } from 'express-validator';
 
 const getAllPetOwners = async (req, res) => {
   try {
-    const petOwners = await User.find({ role: 'pet-owner' });
+    const petOwners = await User.find({ role: 'pet_owner' });
     res.status(200).json(petOwners);
   } catch (error) {
     console.error(error);

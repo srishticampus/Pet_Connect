@@ -15,8 +15,7 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 async function createUserAdmin() {
   const rl = readline.createInterface({ input, output });
 
-  const firstName = await rl.question("First Name: ");
-  const lastName = await rl.question("Last Name: ");
+  const name = await rl.question("Name: ");
   const email = await rl.question("Email: ");
   const password = await rl.question("Password: ");
 
@@ -24,7 +23,7 @@ async function createUserAdmin() {
 
   try {
     await mongoose.connect(
-      import.meta.env.VITE_MONGO_URI || "mongodb://localhost:27017/petconnect",
+      process?.env?.VITE_MONGO_URI || "mongodb://localhost:27017/petconnect",
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -37,8 +36,7 @@ async function createUserAdmin() {
     const hashedPassword = await hash(password);
 
     const newUser = new UserModel({
-      firstName,
-      lastName,
+      name,
       email,
       password: hashedPassword,
       role: "admin",

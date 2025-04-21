@@ -2,8 +2,13 @@ import api from '../../../utils/api';
 
 export const getAllPetOwners = async () => {
   try {
-    const response = await api.get('/api/admin/pet-owners');
-    return response.data;
+    const response = await api.get('/admin/pet-owners');
+    let petOwners = response.data;
+    petOwners = petOwners.map((petOwner,idx) => {
+      petOwner.id = idx+1;
+      return petOwner;
+    });
+    return petOwners;
   } catch (error) {
     console.error('Error fetching pet owners:', error);
     throw error;
@@ -12,7 +17,7 @@ export const getAllPetOwners = async () => {
 
 export const addPetOwner = async (petOwnerData) => {
   try {
-    const response = await api.post('/api/admin/pet-owners', petOwnerData);
+    const response = await api.post('/admin/pet-owners', petOwnerData);
     return response.data;
   } catch (error) {
     console.error('Error adding pet owner:', error);
@@ -22,7 +27,7 @@ export const addPetOwner = async (petOwnerData) => {
 
 export const updatePetOwner = async (id, petOwnerData) => {
   try {
-    const response = await api.put(`/api/admin/pet-owners/${id}`, petOwnerData);
+    const response = await api.put(`/admin/pet-owners/${id}`, petOwnerData);
     return response.data;
   } catch (error) {
     console.error('Error updating pet owner:', error);

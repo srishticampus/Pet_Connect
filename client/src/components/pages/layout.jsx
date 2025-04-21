@@ -49,10 +49,10 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {user?.isSuperuser && (
+        {user?.role === 'admin' && (
           <div className="hidden md:flex gap-6">
             <Link
-              to="/admin/dashboard"
+              to="/admin"
               className="hover:text-[#E54C00] transition"
             >
               Dashboard

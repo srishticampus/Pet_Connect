@@ -64,17 +64,17 @@ const formSchema = z.object({
 
 export const columns = [
   {
-    accessorKey:"id",
+    accessorKey:"id", // Accessor key is used to identify the data in the table
     header:"S.No.",
     name:"S.No.",
   },
   {
-    accessorKey: "profile",
+    accessorKey: "name",
     header: "Profile",
     name:"Profile"
   },
   {
-    accessorKey:"phone",
+    accessorKey:"phoneNumber",
     header:"Phone Number",
     name:"Phone Number"
   },
@@ -86,7 +86,7 @@ export const columns = [
     name:"Email ID"
   },
   {
-    accessorKey:"place",
+    accessorKey:"address",
     header:"Place",
     name:"Place"
   },
