@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from "react-router";
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import {
   LayoutDashboard,
   User,
@@ -32,6 +32,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/auth";
 
 const items = [
   {
@@ -132,6 +133,19 @@ function AppSidebar() {
 }
 
 export default function Layout() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+      // Optionally display an error message to the user
+    }
+  };
+
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full bg-[#F6F7F9]">
@@ -166,7 +180,7 @@ export default function Layout() {
                     type="submit"
                     variant="outline"
                     className="w-28"
-                    onClick={() => {}}
+                    onClick={handleLogout}
                   >
                     Yes
                   </Button>

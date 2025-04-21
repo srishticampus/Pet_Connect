@@ -57,12 +57,12 @@ const Navbar = () => {
             >
               Dashboard
             </Link>
-            <Link to="/admin/users" className="hover:text-[#E54C00] transition">
+            {/* <Link to="/admin/users" className="hover:text-[#E54C00] transition">
               Manage Users
             </Link>
             <Link to="/admin/pets" className="hover:text-[#E54C00] transition">
               Pet List
-            </Link>
+            </Link> */}
           </div>
         )}
 

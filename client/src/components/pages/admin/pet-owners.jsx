@@ -324,7 +324,7 @@ export default function PetOwnersTable() {
     <div className="container mx-auto w-full">
       <main className="flex-1 px-6 pb-6 w-full">
         <div className="bg-white rounded-lg h-full p-6 w-full">
-          <Dialog open={open} onOpenChange={setOpen}>
+          {/* <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">Add Pet Owner</Button>
             </DialogTrigger>
@@ -392,7 +392,7 @@ export default function PetOwnersTable() {
                 </form>
               </Form>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
           <DataTable columns={columns} data={data} fetchPetOwners={fetchPetOwners} />
         </div>
       </main>
