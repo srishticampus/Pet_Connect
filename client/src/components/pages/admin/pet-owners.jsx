@@ -80,9 +80,10 @@ export const columns = [
   },
   {
     accessorKey: "email",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email ID" />
-    ),
+    // header: ({ column }) => (
+    //   <DataTableColumnHeader column={column} title="Email ID" />
+    // ),
+    header: "Email ID",
     name:"Email ID"
   },
   {

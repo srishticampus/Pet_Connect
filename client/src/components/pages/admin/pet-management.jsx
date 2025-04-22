@@ -89,35 +89,35 @@ export const columns = [
     name: "Name"
   },
   {
-    accessorKey: "species",
+    accessorKey: "Species",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Species" />
     ),
     name: "Species"
   },
   {
-    accessorKey: "breed",
+    accessorKey: "Breed",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Breed" />
     ),
     name: "Breed"
   },
   {
-    accessorKey: "age",
+    accessorKey: "Age",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Age" />
     ),
     name: "Age"
   },
   {
-    accessorKey: "gender",
+    accessorKey: "Gender",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Gender" />
     ),
     name: "Gender"
   },
   {
-    accessorKey: "size",
+    accessorKey: "Size",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Size" />
     ),
