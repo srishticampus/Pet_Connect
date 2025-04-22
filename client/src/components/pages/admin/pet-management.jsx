@@ -331,7 +331,7 @@ export default function PetManagement() {
 
   const fetchPets = async () => {
     try {
-      const petsData = await getAllPets();
+      let petsData = await getAllPets();
       setData(petsData);
       console.log(petsData)
       petsData = petsData.map((pet, idx) => {
