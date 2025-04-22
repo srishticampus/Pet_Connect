@@ -170,7 +170,7 @@ export default function LandingPage() {
               </h3>
             </div>
             <Link
-              to="/"
+              to="/register"
               className="bg-white w-fit mt-3 text-[#e54c00] px-6 py-2 rounded-full flex text-sm gap-2 items-center"
             >
               Register Now{" "}

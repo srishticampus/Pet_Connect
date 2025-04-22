@@ -123,9 +123,9 @@ const Footer = () => {
               <Link to="/" className="hover:text-[#E54C00] transition">
                 Home
               </Link>
-              <Link to="/shop" className="hover:text-[#E54C00] transition">
+              {/* <Link to="/shop" className="hover:text-[#E54C00] transition">
                 Shop
-              </Link>
+              </Link> */}
               <Link to="/about" className="hover:text-[#E54C00] transition">
                 About
               </Link>
