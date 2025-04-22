@@ -66,7 +66,7 @@ function App() {
           <Route path="volunteer" element={<VolunteerSignUp />} />
         </Route>
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} /> {/* Added :token */}
         <Route path="/contact" element={<Contact />} />
         <Route path="/profile" element={<PetOwnerProfile />} />
         <Route path="/pet-details" element={<PetDetails />} />

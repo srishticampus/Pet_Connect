@@ -1,17 +1,21 @@
-
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-// import { useAuth } from "@/hooks/auth";
+import api from "@/utils/api"; // Import the api object
 
 export default function ForgotPassword() {
-  // const { forgotPassword } = useAuth();
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState(""); // Add a state variable for message
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // await forgotPassword(email);
-    // Optionally, provide feedback to the user (e.g., show a success message)
+    try {
+      const response = await api.post("/auth/forgot-password", { email });
+      setMessage(response.data.msg); // Set the message from the response
+    } catch (error) {
+      setMessage("An error occurred. Please try again."); // Set an error message
+      console.error("Forgot password error:", error);
+    }
   };
 
   return (
@@ -23,6 +27,7 @@ export default function ForgotPassword() {
         <p className="mt-2 text-center text-gray-600">
           Enter your E-mail below to receive your password reset instruction
         </p>
+        {message && <p className="mt-2 text-center text-green-600">{message}</p>} {/* Display the message */}
         <form className="mt-4" onSubmit={handleSubmit}>
           <div className="mt-4">
             <label className="block text-gray-700 text-sm mb-2" htmlFor="email">

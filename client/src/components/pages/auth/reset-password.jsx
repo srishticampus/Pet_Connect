@@ -1,22 +1,47 @@
-
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Import useEffect
 import { Input } from "@/components/ui/input";
-// import { useAuth } from "@/hooks/auth";
+import { useParams, useNavigate } from "react-router"; // Import useNavigate
+import api from "@/utils/api"; // Import the api object
 
 export default function ResetPassword() {
-  // const { resetPassword } = useAuth(); // Assuming a resetPassword function
+  const { token } = useParams(); // Get the token from the URL
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState(""); // Add a state variable for message
+  const [countdown, setCountdown] = useState(3); // Initialize countdown
+  const navigate = useNavigate(); // Initialize navigate
+
+  useEffect(() => {
+    if (message === "Password has been reset successfully.") {
+      // Start countdown when the success message is set
+      const intervalId = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+
+      // Redirect after 3 seconds
+      setTimeout(() => {
+        clearInterval(intervalId); // Clear the interval
+        navigate("/login"); // Redirect to login page
+      }, 3000);
+
+      return () => clearInterval(intervalId); // Cleanup on unmount
+    }
+  }, [message, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      // Optionally, provide feedback to the user about the password mismatch
+      setMessage("Passwords do not match"); // Set the message for password mismatch
       return;
     }
-    // await resetPassword(password);
-    // Optionally, provide feedback to the user (e.g., show a success message)
+    try {
+      const response = await api.post(`/auth/reset-password/${token}`, { password });
+      setMessage(response.data.msg); // Set the message from the response
+    } catch (error) {
+      setMessage("An error occurred. Please try again."); // Set an error message
+      console.error("Reset password error:", error);
+    }
   };
 
   return (
@@ -28,6 +53,13 @@ export default function ResetPassword() {
         <p className="mt-2 text-center text-gray-600">
           Enter your new password below
         </p>
+        {message === "Password has been reset successfully." ? (
+          <p className="mt-2 text-center text-green-600">
+            {message} Redirecting to login in {countdown}...
+          </p>
+        ) : (
+          message && <p className="mt-2 text-center text-red-600">{message}</p>
+        )}
         <form className="mt-4" onSubmit={handleSubmit}>
           <div className="mt-4">
             <label className="block text-gray-700 text-sm mb-2" htmlFor="password">
