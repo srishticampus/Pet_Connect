@@ -1,10 +1,37 @@
 import { MapPin, Mail, Phone } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import axios from 'axios';
+import api from "@/utils/api";
 
 const ContactPage = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [comments, setComments] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await api.post('/contact', {
+        name,
+        email,
+        comments,
+      });
+      console.log(response.data); // Log success message
+      // Reset form fields
+      setName('');
+      setEmail('');
+      setComments('');
+      alert('Form submitted successfully!'); // Show success message
+    } catch (error) {
+      console.error(error.response.data); // Log error message
+      alert('Form submission failed!'); // Show error message
+    }
+  };
+
   return (
     <>
       <section className="container mx-auto px-3 lg:px-0 py-12 text-center">
@@ -23,8 +50,7 @@ const ContactPage = () => {
         <section className="container mx-auto px-3 lg:px-0 py-12">
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <form
-              action=""
-              method="post"
+              onSubmit={handleSubmit}
               className="flex flex-1 w-full flex-col mx-auto border border-[#ccc] p-6 rounded-2xl"
             >
               <h2 className="text-2xl font-semibold mb-4">Get in Touch</h2>
@@ -35,6 +61,8 @@ const ContactPage = () => {
                 id="name"
                 className="mt-1 mb-3"
                 required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
               <label htmlFor="email">Email</label>
               <Input
@@ -43,6 +71,8 @@ const ContactPage = () => {
                 id="email"
                 className="mt-1 mb-3"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <label htmlFor="comments">Comments</label>
               <Textarea
@@ -52,6 +82,8 @@ const ContactPage = () => {
                 rows="10"
                 className="mt-1 mb-3 h-48"
                 required
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
               ></Textarea>
               <Button type="submit">Submit</Button>
             </form>

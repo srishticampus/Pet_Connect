@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/auth";
+import ContactSubmissions from "./contact-submissions";
 
 const items = [
   {
@@ -40,21 +41,6 @@ const items = [
     url: "/admin",
     icon: LayoutDashboard,
   },
-  // {
-  //   title: "Adopter Management",
-  //   url: "/admin/adopters",
-  //   icon: User,
-  // },
-  // {
-  //   title: "Foster Management",
-  //   url: "/admin/fosters",
-  //   icon: Users,
-  // },
-  // {
-  //   title: "Rescue Management",
-  //   url: "/admin/rescues",
-  //   icon: Search,
-  // },
   {
     title: "Pet Owners",
     url: "/admin/pet-owners",
@@ -65,31 +51,11 @@ const items = [
     url: "/admin/pet-management",
     icon: Dog,
   },
-  // {
-  //   title: "Lost & Found Pets",
-  //   url: "/admin/lost-found-pets",
-  //   icon: Search,
-  // },
-  // {
-  //   title: "Manage Applications",
-  //   url: "/admin/manage-applications",
-  //   icon: FileText,
-  // },
-  // {
-  //   title: "Adopted Pets",
-  //   url: "/admin/adopted-pets",
-  //   icon: PawPrint,
-  // },
-  // {
-  //   title: "Fostered Pets",
-  //   url: "/admin/fostered-pets",
-  //   icon: PawPrint,
-  // },
-  // {
-  //   title: "Manage Documents",
-  //   url: "/admin/manage-documents",
-  //   icon: FileText,
-  // },
+  {
+    title: "Contact Submissions",
+    url: "/admin/contact-submissions",
+    icon: FileText,
+  },
 ];
 
 function AppSidebar() {

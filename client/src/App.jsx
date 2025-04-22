@@ -23,6 +23,7 @@ import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRou
 import ManagePets from "./components/pages/pet-owner/manage-pets";
 import AddPet from "./components/pages/pet-owner/add-pet";
 import PetManagement from "./components/pages/admin/pet-management";
+import ContactSubmissions from "./components/pages/admin/contact-submissions";
 import { useAuth } from "./hooks/auth";
 
 function App() {
@@ -80,6 +81,7 @@ function App() {
         <Route path="fosters" element={<Fosters />} />
         <Route path="pet-owners" element={<PetOwnersTable />} />
         <Route path="pet-management" element={<PetManagement />} />
+        <Route path="contact-submissions" element={<ContactSubmissions />} />
       </Route>
     </Routes>
   );
