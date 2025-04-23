@@ -31,7 +31,7 @@ const accessLogStream = createStream("access.log", {
   path: "./logs",
 });
 
-console.log(import.meta.env.PROD,import.meta.env.VITE_JWT_SECRET,import.meta.env.VITE_MONGO_URI,import.meta.env.VITE_CLIENT_URL);
+// console.log(import.meta.env.PROD,import.meta.env.VITE_JWT_SECRET,import.meta.env.VITE_MONGO_URI,import.meta.env.VITE_CLIENT_URL);
 // setup the logger
 app.use(morgan("combined", { stream: accessLogStream }));
 

@@ -52,9 +52,5 @@ export default ({ mode }) => {
         swcOptions: {},
       }),
     ],
-    build: {
-      // vite build configs, for details see [vite doc](https://vitejs.dev/config/#build-commonjs-options)
-      outDir: "../dist",
-    },
   });
 };

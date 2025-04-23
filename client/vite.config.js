@@ -13,9 +13,6 @@ export default ({ mode }) => {
         // eslint-disable-next-line no-undef
         "@": path.resolve(__dirname, "./src"),
       },
-    },
-    build:{
-      outDir:"../dist"
     }
   })
 };
