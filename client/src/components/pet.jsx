@@ -4,7 +4,7 @@ const Pet = ({ pet }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Pet image */}
-      <img src={`http://localhost:3000${pet.Photo}`} alt={pet.name} className="w-full aspect-[611/567] object-cover rounded-2xl" />
+      <img src={`${import.meta.env.VITE_API_URL}${pet.Photo}`} alt={pet.name} className="w-full aspect-[611/567] object-cover rounded-2xl" />
 
       {/* Pet details */}
       <div className="flex flex-col justify-between">

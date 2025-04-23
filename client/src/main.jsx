@@ -7,7 +7,7 @@ import { AuthProvider } from "./hooks/auth"; // Import AuthProvider
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider> {/* Wrap BrowserRouter with AuthProvider */}
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.VITE_BASE_URL}>
         <App />
       </BrowserRouter>
     </AuthProvider>

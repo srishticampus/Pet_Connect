@@ -95,7 +95,7 @@ export const columns = [
     accessorKey:"aadhaarImage",
     header:"Aadhaar Image",
     name:"Aadhaar Image",
-    cell: ({row})=>(row.getValue("aadhaarImage")?(<Button asChild variant="link"><a href={`http://localhost:3000${row.getValue("aadhaarImage")}`} target="_blank">Preview <ExternalLink className="h-4 w-4" /></a></Button>):(<p>No Aadhaar Image</p>))
+    cell: ({row})=>(row.getValue("aadhaarImage")?(<Button asChild variant="link"><a href={`${import.meta.env.VITE_API_URL}${row.getValue("aadhaarImage")}`} target="_blank">Preview <ExternalLink className="h-4 w-4" /></a></Button>):(<p>No Aadhaar Image</p>))
   },
   {
     accessorKey:"aadhaarNumber",

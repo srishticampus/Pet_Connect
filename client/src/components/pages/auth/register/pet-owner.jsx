@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import profilepic from "@/assets/profile-pic.png";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/auth";
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 export default function PetOwnerSignUp() {
   const [formData, setFormData] = useState({
@@ -184,7 +184,7 @@ export default function PetOwnerSignUp() {
           {isLoading ? "Signing up..." : "Sign Up"}
         </Button>
       </form>
-      <p>Already have an account? <a href="/login" className="underline">Login</a></p>
+      <p>Already have an account? <Link to="/login" className="underline">Login</Link></p>
     </main>
   );
 }

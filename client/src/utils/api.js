@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   // Use Vite's env variable, default to /api if not set
-  baseURL: 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_URL + "/api",
   withCredentials: true, // Important for sending/receiving cookies
 });
 

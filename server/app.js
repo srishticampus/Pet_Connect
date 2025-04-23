@@ -57,7 +57,7 @@ app.use((err, req, res, next) => {
 
 // Server listen (only if run directly, not during tests)
 if (import.meta.env.PROD) {
-  const PORT = import.meta.env.PORT || 5000;
+  const PORT = import.meta.env.VITE_PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });

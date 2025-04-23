@@ -153,7 +153,7 @@ export default function PetShopSignUp() {
           {isLoading ? "Signing up..." : "Sign Up"}
         </Button>
       </form>
-      <p>Already have an account? <a href="/login" className="underline">Login</a></p>
+      <p>Already have an account? <Link to="/login" className="underline">Login</Link></p>
     </main>
   );
 }

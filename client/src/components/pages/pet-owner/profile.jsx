@@ -189,7 +189,7 @@ const PetOwnerProfile = () => {
                 <div className="grid grid-cols-2 gap-4 mt-4"> {/* Added a new grid for additional fields */}
                   <div className="space-y-2">
                     <p className="text-sm font-medium leading-none">Aadhaar Image</p>
-                    <Button variant="link" asChild className="text-primary mx-0"><a href={`http://localhost:3000${profile.aadhaarImage}`}>Link</a></Button> {/* Role is not editable */}
+                    <Button variant="link" asChild className="text-primary mx-0"><a href={`${import.meta.env.VITE_API_URL}${profile.aadhaarImage}`}>Link</a></Button> {/* Role is not editable */}
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm font-medium leading-none">Last Login</p>
