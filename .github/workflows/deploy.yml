@@ -8,7 +8,7 @@ env:
   VPS_IP: ${{ secrets.VPS_IP }}
   VPS_USER: ${{ secrets.VPS_USER }}
   VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-  DEPLOY_DIR: /home/ubuntu/pet_connect
+  DEPLOY_DIR: /home/ubuntu/new_hybrid_projects/pet_connect
   PM2_APP_NAME: pet_connect
 
 jobs:
