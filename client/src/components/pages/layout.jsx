@@ -76,6 +76,13 @@ const Navbar = () => {
                 Manage Pets
               </Link>
             )}
+            <Link
+              // to={`/${user?.role}/profile`} // Using user.role as confirmed
+              to={`/profile`}
+              className="hover:text-primary transition"
+            >
+              Profile
+            </Link>
           </div>
         )}
 
