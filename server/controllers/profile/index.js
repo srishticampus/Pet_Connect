@@ -13,6 +13,12 @@ router.get("/", auth, async (req, res) => {
     if (!user) {
       return res.status(404).json({ msg: "User not found" });
     }
+
+    // Check if the user is an admin
+    if (user.role === 'admin') {
+      return res.status(403).json({ msg: "Admins do not have a profile page" });
+    }
+
     res.json(user);
   } catch (err) {
     console.error(err.message);
@@ -29,6 +35,11 @@ router.put("/", auth, async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ msg: "User not found" });
+    }
+
+    // Check if the user is an admin
+    if (user.role === 'admin') {
+      return res.status(403).json({ msg: "Admins do not have a profile page" });
     }
 
     // Update user fields

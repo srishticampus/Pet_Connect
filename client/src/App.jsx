@@ -16,7 +16,6 @@ import PetOwnerSignUp from "./components/pages/auth/register/pet-owner";
 import PetShopSignUp from "./components/pages/auth/register/pet-shop";
 import VolunteerSignUp from "./components/pages/auth/register/volunteer";
 import HomePage from "./components/pages/pet-owner/home";
-import PetOwnerProfile from "./components/pages/pet-owner/profile";
 import PetDetails from "./components/pages/pet-owner/pet-details";
 import PetOwnersTable from "./components/pages/admin/pet-owners";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
@@ -72,7 +71,6 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} /> {/* Added :token */}
         <Route path="/contact" element={<Contact />} />
-        <Route path="/profile" element={<PetOwnerProfile />} />
         <Route path="/pet-details" element={<PetDetails />} />
         <Route path="/pet-owner/manage-pets" element={<ProtectedRoute><ManagePets /></ProtectedRoute>} />
         <Route path="/pet-owner/add-pet" element={<ProtectedRoute><AddPet /></ProtectedRoute>} />
