@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       const errorMsg = err.response?.data?.msg || err.response?.data?.errors?.[0]?.msg || err?.response?.data?.error || err?.message?.error || "Login failed";
       console.error("Login error:", err.response?.data || err.message);
-      setAuthState(null, null); // Clear state on login failure
+      setAuthState(null, null); // Clear state on login failure 
       setError(errorMsg);
       throw new Error(errorMsg); // Re-throw for component handling
     } finally {

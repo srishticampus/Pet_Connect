@@ -25,6 +25,9 @@ import AddPet from "./components/pages/pet-owner/add-pet";
 import PetManagement from "./components/pages/admin/pet-management";
 import ContactSubmissions from "./components/pages/admin/contact-submissions";
 import { useAuth } from "./hooks/auth";
+import TermsOfService from "./components/pages/TermsOfService";
+import AboutPrivacy from "./components/pages/AboutPrivacy";
+import FAQ from "./components/pages/FAQ";
 
 function App() {
   const { isAuthenticated, user, isLoading } = useAuth();
@@ -73,6 +76,9 @@ function App() {
         <Route path="/pet-details" element={<PetDetails />} />
         <Route path="/pet-owner/manage-pets" element={<ProtectedRoute><ManagePets /></ProtectedRoute>} />
         <Route path="/pet-owner/add-pet" element={<ProtectedRoute><AddPet /></ProtectedRoute>} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/about-privacy" element={<AboutPrivacy />} />
+        <Route path="/faq" element={<FAQ />} />
       </Route>
 
       <Route path="/pets" element={<PetSearch />} />

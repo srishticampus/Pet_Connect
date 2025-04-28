@@ -21,20 +21,41 @@ export default function LandingPage() {
     {
       title: "Be a Lifesaver – Rescue Stray Animals",
       content:
-        "Report animals in need, and our volunteers will step in to rescue, treat, and find them a loving home.",
+        "Report animals in need, and our volunteers will step in to rescue, treat, and find them a loving home. Every report brings hope to a helpless pet.",
       image: cardimg1,
+    },
+    {
+      title: "Foster a Pet – Be Their Hero!",
+      content:
+      "Provide a safe and loving home for a pet in need. Help them heal, grow, and find their forever family.",
+      image: cardimg2,
     },
     {
       title: "Adopt a Pet - Your Best Friend!",
       content:
-        "Give a rescued pet a second chance at happiness. Browse loving cats and dogs waiting for a forever home.",
-      image: cardimg2,
+      "Give a rescued pet a second chance at happiness. Browse loving cats and dogs waiting for a forever home .",
+      image: cardimg3,
+    },
+  ];
+
+  const howItWorks = [
+    {
+      image: work3,
+      title: "Discover & Connect",
+      content:
+        "Browse through verified pet profiles or report a lost/found pet. Use AI-powered breed detection for easy identification.",
     },
     {
-      title: "Shop & Support Animal Welfare!",
+      image: work1,
+      title: "Apply & Communicate",
       content:
-        "Get high-quality pet food and accessories while supporting rescue efforts. Every purchase helps rescued animals.",
-      image: cardimg3,
+        "Submit an adoption or foster application in just a few clicks. Chat with shelters, rescues, or pet owners in real time.",
+    },
+    {
+      image:  work2,
+      title: "Report a Stray Pet",
+      content:
+        "Complete the adoption or fostering process and bring home a loving companion with joy!",
     },
   ];
 
@@ -114,66 +135,36 @@ export default function LandingPage() {
           How it works
         </h2>
         <div className="flex flex-col md:flex-row justify-evenly text-center my-8 gap-4">
-          <div className="flex flex-col items-center">
-            <img
-              src={work1}
-              alt="dog"
-              className="w-24 h-24 object-cover object-center mb-3"
-            />
-            <h3 className="text-xl text-[#4c4c4c] font-semibold mb-4">
-              Report a Stray Pet
-            </h3>
-            <p className="text-sm">
-              Spotted an animal in need? Upload a photo and location details to
-              alert our rescue team. Every report helps save a life.
-            </p>
-          </div>
-          <div className="flex flex-col items-center">
-            <img
-              src={work2}
-              alt="dog"
-              className="w-24 h-24 object-cover object-center mb-3"
-            />
-            <h3 className="text-xl text-[#4c4c4c] font-semibold mb-4">
-              Volunteers Take Action
-            </h3>
-            <p className="text-sm">
-              Our dedicated volunteers step in! Once verified, our team quickly
-              reaches the pet’s location, ensuring safe rescue and care.
-            </p>
-          </div>
-          <div className="flex flex-col items-center">
-            <img
-              src={work3}
-              alt="dog"
-              className="w-24 h-24 object-cover object-center mb-3"
-            />
-            <h3 className="text-xl text-[#4c4c4c] font-semibold mb-4">
-              Find a Loving Home
-            </h3>
-            <p className="text-sm">
-              After recovery, pets are ready for adoption. We connect them with
-              loving families, ensuring a happy and secure future.
-            </p>
-          </div>
+          {howItWorks.map((item, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <img
+                src={item.image}
+                alt="dog"
+                className="w-24 h-24 object-cover object-center mb-3"
+              />
+              <h3 className="text-xl text-[#4c4c4c] font-semibold mb-4">
+                {item.title}
+              </h3>
+              <p className="text-sm">{item.content}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* <!-- cta banner --> */}
+      {/* <!&ndash; cta banner &ndash;> */}
       <section className="container mx-auto px-3 lg:px-0 py-8">
         <div className="relative p-12  text-white rounded-2xl flex flex-col gap-6 items-start overflow-hidden">
           <div className="cta-gradient -m-12 p-12 w-full h-full absolute z-1">
             <div className="md:w-1/2">
               <h3 className="text-2xl font-semibold">
-                Heroes Without Capes, Join Our Volunteers & Save Innocent Lives
-                Today!
+                Be a part of a compassionate network dedicated to pet rescue, adoption, and fostering. Whether you're looking to adopt, foster, or help reunite lost pets, your support makes a difference!
               </h3>
             </div>
             <Link
               to="/register"
               className="bg-white w-fit mt-3 text-[#e54c00] px-6 py-2 rounded-full flex text-sm gap-2 items-center"
             >
-              Register Now{" "}
+              Join Us Today!{" "}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -201,8 +192,7 @@ export default function LandingPage() {
 
           <div className="md:w-1/2">
             <h3 className="text-2xl font-semibold">
-              Heroes Without Capes, Join Our Volunteers & Save Innocent Lives
-              Today!
+              Be a part of a compassionate network dedicated to pet rescue, adoption, and fostering. Whether you're looking to adopt, foster, or help reunite lost pets, your support makes a difference!
             </h3>
           </div>
           <button className="bg-white text-[#e54c00] px-6 py-2 rounded-full flex text-sm gap-2 items-center">

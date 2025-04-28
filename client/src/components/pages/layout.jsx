@@ -10,7 +10,7 @@ const Navbar = () => {
     <nav className="py-6 ">
       <div className="container mx-auto px-4 lg:px-0 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <Dog className="text-[#E54C00]" size={28} />
+          <Dog className="text-primary" size={28} />
           <p className="text-lg font-semibold">PetConnect</p>
         </div>
 
@@ -19,7 +19,7 @@ const Navbar = () => {
         <div className="hidden md:flex gap-6">
           <Link
             to="/"
-            className="hover:text-[#E54C00] transition"
+            className="hover:text-primary transition"
             style={{
               textDecoration: pathname === "/" ? "underline" : "none",
               color: pathname === "/" ? "#E54C00" : "",
@@ -29,7 +29,7 @@ const Navbar = () => {
           </Link>
           <Link
             to="/about"
-            className="hover:text-[#E54C00] transition"
+            className="hover:text-primary transition"
             style={{
               textDecoration: pathname === "/about" ? "underline" : "none",
               color: pathname === "/about" ? "#E54C00" : "",
@@ -39,7 +39,7 @@ const Navbar = () => {
           </Link>
           <Link
             to="/contact"
-            className="hover:text-[#E54C00] transition"
+            className="hover:text-primary transition"
             style={{
               textDecoration: pathname === "/contact" ? "underline" : "none",
               color: pathname === "/contact" ? "#E54C00" : "",
@@ -53,14 +53,14 @@ const Navbar = () => {
           <div className="hidden md:flex gap-6">
             <Link
               to="/admin"
-              className="hover:text-[#E54C00] transition"
+              className="hover:text-primary transition"
             >
               Dashboard
             </Link>
-            {/* <Link to="/admin/users" className="hover:text-[#E54C00] transition">
+            {/* <Link to="/admin/users" className="hover:text-primary transition">
               Manage Users
             </Link>
-            <Link to="/admin/pets" className="hover:text-[#E54C00] transition">
+            <Link to="/admin/pets" className="hover:text-primary transition">
               Pet List
             </Link> */}
           </div>
@@ -71,7 +71,7 @@ const Navbar = () => {
             {user?.role === 'pet_owner' && (
               <Link
                 to="/pet-owner/manage-pets"
-                className="hover:text-[#E54C00] transition"
+                className="hover:text-primary transition"
               >
                 Manage Pets
               </Link>
@@ -79,7 +79,7 @@ const Navbar = () => {
             <Link
               // to={`/${user?.role}/profile`} // Using user.role as confirmed
               to={`/profile`}
-              className="hover:text-[#E54C00] transition"
+              className="hover:text-primary transition"
             >
               Profile
             </Link>
@@ -88,7 +88,7 @@ const Navbar = () => {
 
         {!isAuthenticated && (
           <div className="flex gap-8 items-center">
-            <Link to="/register" className="hover:text-[#E54C00] transition">
+            <Link to="/register" className="hover:text-primary transition">
               Register
             </Link>
             <Button asChild>
@@ -110,35 +110,45 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between gap-8">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-4">
-              <Dog className="text-[#E54C00]" size={48} />
+              <Dog className="text-primary" size={48} />
               <p className="text-2xl font-semibold">PetConnect</p>
             </div>
             <p className="text-sm opacity-75">
-              A compassionate platform dedicated to rescuing, rehabilitating,
-              and rehoming pets.
+            A compassionate platform dedicated to rescuing, rehabilitating, and rehoming pets while supporting animal welfare through community efforts.
             </p>
           </div>
           <nav className="flex-1 flex justify-end gap-8">
             <div className="flex flex-col gap-2">
-              <Link to="/" className="hover:text-[#E54C00] transition">
+              <Link to="/" className="hover:text-primary transition">
                 Home
               </Link>
-              {/* <Link to="/shop" className="hover:text-[#E54C00] transition">
+              {/* <Link to="/shop" className="hover:text-primary transition">
                 Shop
               </Link> */}
-              <Link to="/about" className="hover:text-[#E54C00] transition">
+              <Link to="/about" className="hover:text-primary transition">
                 About
               </Link>
-              <Link to="/contact" className="hover:text-[#E54C00] transition">
+              <Link to="/contact" className="hover:text-primary transition">
                 Contact
               </Link>
             </div>
           </nav>
         </div>
-        <div className="border-t border-white/20 mt-8 pt-4 text-center md:text-left">
+        <div className="border-t border-white/20 mt-8 pt-4 flex justify-between items-baseline text-center md:text-left">
           <p className="text-sm opacity-75">
-            &copy; 2025 PetConnect. All rights reserved.
+            &copy; {new Date().getFullYear()} Pet Connect. All rights reserved.
           </p>
+          <div className="flex gap-2">
+            <Link to="/terms-of-service" className="hover:text-primary transition text-sm underline">
+              Terms of Service
+            </Link>
+            <Link to="/about-privacy" className="hover:text-primary transition text-sm underline">
+              Privacy Policy
+            </Link>
+            <Link to="/faq" className="hover:text-primary transition text-sm underline">
+              FAQ
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
