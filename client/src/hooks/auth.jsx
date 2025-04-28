@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
       setAuthState(data.accessToken, data.user); // Set token and user data
       return data.user; // Return user data on success
     } catch (err) {
-      const errorMsg = err.response?.data?.msg || err.response?.data?.errors?.[0]?.msg || "Login failed";
+      const errorMsg = err.response?.data?.msg || err.response?.data?.errors?.[0]?.msg || err?.response?.data?.error || err?.message?.error || "Login failed";
       console.error("Login error:", err.response?.data || err.message);
       setAuthState(null, null); // Clear state on login failure
       setError(errorMsg);
@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }) => {
       }
       return data;
     } catch (err) {
-      const errorMsg = err.response?.data?.msg || err.response?.data?.errors?.[0]?.msg || "Registration failed";
+      const errorMsg = err.response?.data?.msg || err.response?.data?.errors?.[0]?.msg || err?.response?.data?.error || err?.message?.error  || "Registration failed";
       console.error("Registration error:", err.response?.data || err.message);
       setError(errorMsg);
       throw new Error(errorMsg); // Re-throw for component handling

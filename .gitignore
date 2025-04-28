@@ -26,6 +26,7 @@ dist-ssr
 *.env
 *.env.development
 
+
 uploads
 
 .clinerules-code
