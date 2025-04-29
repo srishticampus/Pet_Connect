@@ -66,7 +66,7 @@ const Navbar = () => {
           </div>
         )}
 
-        {isAuthenticated && (
+        {isAuthenticated && user?.role !== 'admin' && (
           <div className="hidden md:flex gap-6">
             {user?.role === 'pet_owner' && (
               <Link

@@ -26,6 +26,10 @@ router.post(
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
+    if (req.body.email === "admin@admin.com") {
+      return res.status(400).json({ error: "This email is not allowed" });
+    }
+
     try {
       const existingUser = await User.findOne({ email: req.body.email });
       if (existingUser) return res.status(400).json({ error: "User already exists" });

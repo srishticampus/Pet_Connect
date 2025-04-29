@@ -44,6 +44,9 @@ router.post(
           .status(400)
           .json({ errors: [{ msg: "User already exists" }] });
       }
+      if (req.body.email === "admin@admin.com") {
+        return res.status(400).json({ error: "This email is not allowed" });
+      }
 
       // Create a new user object with the data from the JSON request
       user = new User({

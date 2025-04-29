@@ -68,15 +68,4 @@ api.post = async (url, data, config = {}) => {
   }
 };
 
-// New function to fetch all pet owners from the admin endpoint
-export const getAllPetOwners = async () => {
-  try {
-    const response = await api.get('/api/admin/pet-owners');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching pet owners:', error);
-    throw error;
-  }
-};
-
 export default api;

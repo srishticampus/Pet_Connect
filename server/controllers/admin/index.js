@@ -2,6 +2,7 @@
 import express from 'express';
 import { getAllPetOwners, addPetOwner, updatePetOwner, deletePetOwner } from './pet-owners.js';
 import { getAllPets, addPet, updatePet, deletePet } from './pets.js';
+import { getUserStats, getPetStats } from './statistics.js';
 
 const router = express.Router();
 
@@ -14,5 +15,8 @@ router.get('/pets', getAllPets);
 router.post('/pets', addPet);
 router.put('/pets/:id', updatePet);
 router.delete('/pets/:id', deletePet);
+
+router.get('/statistics/users', getUserStats);
+router.get('/statistics/pets', getPetStats);
 
 export default router;

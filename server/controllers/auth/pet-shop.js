@@ -33,6 +33,9 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+    if (req.body.email === "admin@admin.com") {
+      return res.status(400).json({ error: "This email is not allowed" });
+    }
 
     const { name, email, newPassword, phoneNumber, shopName, registrationId, address } = req.body;
 
