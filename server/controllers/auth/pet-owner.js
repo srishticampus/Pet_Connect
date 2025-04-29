@@ -64,7 +64,9 @@ router.post(
   async (req, res) => {
     try {
       const user = await User.findById(req.params.userId);
-      if (!user) return res.status(404).json({ error: "User not found" });
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
 
       // Handle profile picture
       if (req.files?.profilePic) {
@@ -85,21 +87,28 @@ router.post(
       }
 
       await user.save();
-      res.json({
+      res.json({ // Success response after successful image upload
         message: "Images uploaded successfully",
         user: user.toJSON()
       });
 
     } catch (error) {
       console.error("Image upload error:", error);
-      // Log the error but continue with registration success
-      // The user object will not have the image paths assigned
+      // Log the error and send a success response indicating image upload failed
+      // Ensure user is defined here before sending the response.
+      // If findById succeeded, user will be defined.
+      // The user object will not have the image paths assigned in case of upload failure.
+      const user = await User.findById(req.params.userId); // Re-fetch user to ensure it's defined
+      if (!user) {
+         // This case should ideally not happen if findById succeeded before the try block,
+         // but as a fallback
+         return res.status(500).json({ error: "User not found after image upload attempt" });
+      }
+      res.json({
+        message: "Registration successful (image upload failed)", // Modified message
+        user: user.toJSON() // user should be defined here
+      });
     }
-    // Always send a success response after attempting image upload
-    res.json({
-      message: "Registration successful (image upload optional)",
-      user: user.toJSON()
-    });
   }
 );
 

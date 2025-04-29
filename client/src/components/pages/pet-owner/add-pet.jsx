@@ -24,6 +24,7 @@ const AddPet = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({}); // State for validation errors
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -31,6 +32,11 @@ const AddPet = () => {
       ...formData,
       [name]: type === 'file' ? files[0] : value
     });
+    // Clear validation error for the field when it changes
+    setValidationErrors(prevErrors => ({
+      ...prevErrors,
+      [name]: ''
+    }));
   };
 
   const handleSelectChange = (name, value) => {
@@ -38,12 +44,54 @@ const AddPet = () => {
       ...formData,
       [name]: value
     });
+    // Clear validation error for the field when it changes
+    setValidationErrors(prevErrors => ({
+      ...prevErrors,
+      [name]: ''
+    }));
   };
 
   const handleSubmit = async (e) => { // Made function async
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setValidationErrors({}); // Clear previous validation errors
+
+    // Basic validation
+    const errors = {};
+    if (!formData.name.trim()) {
+      errors.name = 'Pet name is required';
+    }
+    if (!formData.species.trim()) {
+      errors.species = 'Species is required';
+    }
+    if (!formData.shortDescription.trim()) {
+      errors.shortDescription = 'Short description is required';
+    }
+    if (!formData.age || isNaN(formData.age) || parseInt(formData.age, 10) <= 0) {
+        errors.age = 'Valid age is required';
+    }
+    if (!formData.gender) {
+      errors.gender = 'Gender is required';
+    }
+    if (!formData.breed.trim()) {
+      errors.breed = 'Breed is required';
+    }
+    if (!formData.size) {
+      errors.size = 'Size is required';
+    }
+    if (!formData.description.trim()) {
+      errors.description = 'Full description is required';
+    }
+    if (!formData.health.trim()) {
+      errors.health = 'Health & Vaccinations information is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      setLoading(false);
+      return; // Stop submission if there are errors
+    }
 
     const petData = new FormData();
     petData.append('name', formData.name);
@@ -101,24 +149,28 @@ const AddPet = () => {
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="name">Pet Name</Label>
           <Input id="name" name="name" type="text" value={formData.name} onChange={handleInputChange} />
+          {validationErrors.name && <p className="text-red-500 text-sm">{validationErrors.name}</p>}
         </div>
 
         {/* Species */}
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="species">Species</Label>
           <Input id="species" name="species" type="text" value={formData.species} onChange={handleInputChange} />
+          {validationErrors.species && <p className="text-red-500 text-sm">{validationErrors.species}</p>}
         </div>
 
         {/* One-line Description */}
         <div className="md:col-span-2 space-y-2">
           <Label htmlFor="shortDescription">Short Description</Label>
           <Input id="shortDescription" name="shortDescription" type="text" value={formData.shortDescription} onChange={handleInputChange} />
+          {validationErrors.shortDescription && <p className="text-red-500 text-sm">{validationErrors.shortDescription}</p>}
         </div>
 
         {/* Age */}
         <div className="space-y-2">
           <Label htmlFor="age">Age</Label>
           <Input id="age" name="age" type="number" value={formData.age} onChange={handleInputChange} />
+          {validationErrors.age && <p className="text-red-500 text-sm">{validationErrors.age}</p>}
         </div>
 
         {/* Gender */}
@@ -133,12 +185,14 @@ const AddPet = () => {
               <SelectItem value="female">Female</SelectItem>
             </SelectContent>
           </Select>
+          {validationErrors.gender && <p className="text-red-500 text-sm">{validationErrors.gender}</p>}
         </div>
 
         {/* Breed */}
         <div className="space-y-2">
           <Label htmlFor="breed">Breed</Label>
           <Input id="breed" name="breed" type="text" value={formData.breed} onChange={handleInputChange} />
+          {validationErrors.breed && <p className="text-red-500 text-sm">{validationErrors.breed}</p>}
         </div>
 
         {/* Size */}
@@ -154,18 +208,21 @@ const AddPet = () => {
               <SelectItem value="large">Large</SelectItem>
             </SelectContent>
           </Select>
+          {validationErrors.size && <p className="text-red-500 text-sm">{validationErrors.size}</p>}
         </div>
 
         {/* Descriptions */}
         <div className="md:col-span-2 space-y-2">
           <Label htmlFor="description">Full Description</Label>
           <Textarea id="description" name="description" rows="3" value={formData.description} onChange={handleInputChange} />
+          {validationErrors.description && <p className="text-red-500 text-sm">{validationErrors.description}</p>}
         </div>
 
         {/* Health & Vaccinations */}
         <div className="md:col-span-2 space-y-2">
           <Label htmlFor="health">Health & Vaccinations (Comma seperated)</Label>
           <Textarea id="health" name="health" rows="3" value={formData.health} onChange={handleInputChange} />
+          {validationErrors.health && <p className="text-red-500 text-sm">{validationErrors.health}</p>}
         </div>
 
         {/* Hidden origin input */}
