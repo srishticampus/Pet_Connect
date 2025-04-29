@@ -13,6 +13,9 @@ import ForgotPassword from "./components/pages/auth/forgot-password";
 import ResetPassword from "./components/pages/auth/reset-password";
 import ChooseRegister from "./components/pages/auth/register/choose";
 import PetOwnerSignUp from "./components/pages/auth/register/pet-owner";
+import FosterSignUp from "./components/pages/auth/register/foster";
+import AdopterSignUp from "./components/pages/auth/register/adopter";
+import RescueShelterSignUp from "./components/pages/auth/register/rescue-shelter";
 import PetShopSignUp from "./components/pages/auth/register/pet-shop";
 import VolunteerSignUp from "./components/pages/auth/register/volunteer";
 import HomePage from "./components/pages/pet-owner/home";
@@ -66,8 +69,10 @@ function App() {
         <Route path="/register">
           <Route index element={<ChooseRegister />} />
           <Route path="pet-owner" element={<PetOwnerSignUp />} />
+          <Route path="foster" element={<FosterSignUp />} />
+          <Route path="adopter" element={<AdopterSignUp />} />
+          <Route path="rescue-shelter" element={<RescueShelterSignUp />} />
           <Route path="pet-shop" element={<PetShopSignUp />} />
-          <Route path="volunteer" element={<VolunteerSignUp />} />
         </Route>
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} /> {/* Added :token */}

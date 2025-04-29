@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from 'react-router'; // Import useNavigate from react-router-dom
+import { useNavigate } from 'react-router';
 import api from '@/utils/api'; // Import the api service
 
 const AddPet = () => {

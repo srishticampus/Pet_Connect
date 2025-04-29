@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'; // Import useEffect and useState
-import { Link } from 'react-router'; // Import Link from react-router-dom
+import { Link } from 'react-router';
 import Pet from '@/components/pet';
 import api from '@/utils/api'; // Import the api service
 

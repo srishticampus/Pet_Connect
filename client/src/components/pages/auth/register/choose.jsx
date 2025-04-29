@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button"
 import { useNavigate } from 'react-router';
 import {
@@ -17,12 +16,16 @@ const ChooseRegister = () => {
     navigate('/register/pet-owner');
   };
 
-  const handlePetShopClick = () => {
-    navigate('/register/pet-shop');
+  const handleFosterClick = () => {
+    navigate('/register/foster');
   };
 
-  const handleVolunteerClick = () => {
-    navigate('/register/volunteer');
+  const handleAdopterClick = () => {
+    navigate('/register/adopter');
+  };
+
+  const handleRescueShelterClick = () => {
+    navigate('/register/rescue-shelter');
   };
 
   return (
@@ -48,27 +51,40 @@ const ChooseRegister = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Pet Shop</CardTitle>
-            <CardDescription>List your pet shop and connect with pet owners.</CardDescription>
+            <CardTitle>Foster</CardTitle>
+            <CardDescription>Provide temporary care for pets in need.</CardDescription>
           </CardHeader>
           <CardContent>
             {/* Additional content can go here if needed */}
           </CardContent>
           <CardFooter className="mt-auto">
-            <Button onClick={handlePetShopClick}>Register as Pet Shop</Button>
+            <Button onClick={handleFosterClick}>Register as Foster</Button>
           </CardFooter>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Volunteer</CardTitle>
-            <CardDescription>Help pets in need.</CardDescription>
+            <CardTitle>Adopter</CardTitle>
+            <CardDescription>Give a loving home to a pet.</CardDescription>
           </CardHeader>
           <CardContent>
             {/* Additional content can go here if needed */}
           </CardContent>
           <CardFooter className="mt-auto">
-            <Button onClick={handleVolunteerClick}>Register as Volunteer</Button>
+            <Button onClick={handleAdopterClick}>Register as Adopter</Button>
+          </CardFooter>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Rescue/Shelter</CardTitle>
+            <CardDescription>List pets for adoption and manage applications.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Additional content can go here if needed */}
+          </CardContent>
+          <CardFooter className="mt-auto">
+            <Button onClick={handleRescueShelterClick}>Register as Rescue/Shelter</Button>
           </CardFooter>
         </Card>
       </div>

@@ -8,14 +8,18 @@ import crypto from "crypto";
 import { sendEmail } from "../../services/email.js"; // Assuming this service is configured
 import petOwnerRouter from "./pet-owner.js";
 import petShopRouter from "./pet-shop.js";
-import volunteerRouter from "./volunteer.js";
+import fosterRouter from "./foster.js";
+import adopterRouter from "./adopter.js";
+import rescueShelterRouter from "./rescue-shelter.js";
 
 export const router = express.Router();
 
 // --- Mount Routers ---
 router.use("/register/pet-owner", petOwnerRouter);
 router.use("/register/pet-shop", petShopRouter);
-router.use("/register/volunteer", volunteerRouter);
+router.use("/register/foster", fosterRouter);
+router.use("/register/adopter", adopterRouter);
+router.use("/register/rescue-shelter", rescueShelterRouter);
 
 // --- Login ---
 // @route   POST api/auth/login

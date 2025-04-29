@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["adopter", "foster", "rescue", "admin", "pet_owner", "pet_shop", "volunteer"],
+    enum: ["adopter", "foster", "rescue-shelter", "admin", "pet_owner", "pet_shop"],
     default: "adopter",
   },
   aadhaarNumber: {
