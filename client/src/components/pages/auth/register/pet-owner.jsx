@@ -22,8 +22,15 @@ export default function PetOwnerSignUp() {
   const [errors, setErrors] = useState({});
   const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
   const [aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
-  const { register, error: authError, clearError, isLoading } = useAuth();
+  const { register, error: authError, clearError, isLoading,isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+    // Redirect if already authenticated
+    useEffect(() => {
+      if (isAuthenticated) {
+        navigate("/logout-prompt");
+      }
+    }, [isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

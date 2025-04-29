@@ -21,8 +21,14 @@ export default function PetShopSignUp() {
 
   const [errors, setErrors] = useState({});
   const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
-  const { register, error: authError, clearError, isLoading } = useAuth(); // Get register function, error, clearError, and isLoading from context
+  const { register, error: authError, clearError, isLoading,isAuthenticated } = useAuth(); // Get register function, error, clearError, and isLoading from context
   const navigate = useNavigate();
+    // Redirect if already authenticated
+    useEffect(() => {
+      if (isAuthenticated) {
+        navigate("/logout-prompt");
+      }
+    }, [isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
