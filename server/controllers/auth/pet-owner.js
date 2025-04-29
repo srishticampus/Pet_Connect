@@ -92,8 +92,14 @@ router.post(
 
     } catch (error) {
       console.error("Image upload error:", error);
-      res.status(500).json({ error: "Image upload failed" });
+      // Log the error but continue with registration success
+      // The user object will not have the image paths assigned
     }
+    // Always send a success response after attempting image upload
+    res.json({
+      message: "Registration successful (image upload optional)",
+      user: user.toJSON()
+    });
   }
 );
 

@@ -45,6 +45,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
+              autocomplete="email"
             />
           </div>
           <div className="mt-4 relative">
@@ -61,6 +62,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
+              autocomplete="current-password"
             />
             <button
               type="button"

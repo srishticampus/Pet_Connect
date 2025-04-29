@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '@/hooks/auth';
@@ -13,102 +14,192 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert } from '@/components/ui/alert';
+import profilepic from "@/assets/profile-pic.png";
 
 const FosterSignUp = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [address, setAddress] = useState('');
-  const [profilePic, setProfilePic] = useState(null);
-  const [aadhaarImage, setAadhaarImage] = useState(null);
-  const [error, setError] = useState(null);
-  const { register } = useAuth();
+  const [formData, setFormData] = useState({
+    profilePic: null,
+    name: '',
+    email: '',
+    username: '',
+    newPassword: '',
+    phoneNumber: '',
+    address: '',
+    aadhaarImage: null,
+    aadhaarNumber: '',
+    confirmPassword: '',
+    role: "foster"
+  });
+
+  const [errors, setErrors] = useState({});
+  const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
+  const [aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
+  const { register, error: authError, clearError, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError(null);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-    const userData = {
-      name,
-      email,
-      username,
-      newPassword,
-      phoneNumber,
-      address,
-    };
-
-    const imageData = new FormData();
-    if (profilePic) imageData.append('profilePic', profilePic);
-    if (aadhaarImage) imageData.append('aadhaarImage', aadhaarImage);
-
-    try {
-      await register('foster', userData, imageData);
-      navigate('/login');
-    } catch (error) {
-      setError(error.message);
+  const handleProfilePicChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, profilePic: file });
+      const reader = new FileReader();
+      reader.onloadend = () => setProfilePicPreview(reader.result);
+      reader.readAsDataURL(file);
     }
   };
 
-  const handleProfilePicChange = (event) => {
-    setProfilePic(event.target.files[0]);
+  const handleAadhaarImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, aadhaarImage: file });
+      const reader = new FileReader();
+      reader.onloadend = () => setAadhaarImagePreview(reader.result);
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handleAadhaarImageChange = (event) => {
-    setAadhaarImage(event.target.files[0]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    clearError();
+    const validationErrors = validateForm(formData);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length === 0) {
+      try {
+        const userData = { ...formData };
+        delete userData.profilePic;
+        delete userData.aadhaarImage;
+        delete userData.confirmPassword;
+
+        const imageData = new FormData();
+        if (formData.profilePic) imageData.append('profilePic', formData.profilePic);
+        if (formData.aadhaarImage) imageData.append('aadhaarImage', formData.aadhaarImage);
+
+        await register('foster', userData, imageData);
+        navigate("/login");
+      } catch (err) {
+        console.error("Registration failed", err);
+      }
+    }
+  };
+
+  const validateForm = (data) => {
+    const errors = {};
+    if (!data.name) errors.name = 'Name is required';
+    if (!data.email) {
+      errors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      errors.email = 'Invalid email format';
+    }
+    if (!data.phoneNumber) errors.phoneNumber = 'Phone number is required';
+    if (!data.address) errors.address = 'Address is required';
+    if (!data.aadhaarImage) errors.aadhaarImage = "Aadhaar image is required";
+    if (!data.aadhaarNumber) errors.aadhaarNumber = 'Aadhaar number is required';
+    if (!data.newPassword) {
+      errors.newPassword = 'Password is required';
+    } else if (data.newPassword.length < 6) {
+      errors.newPassword = "Password must be at least 6 characters";
+    }
+    if (data.newPassword !== data.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+    }
+    return errors;
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Foster Sign Up</CardTitle>
-          <CardDescription>Enter your details to register as a foster.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && <Alert variant="destructive">{error}</Alert>}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="username">Username</Label>
-              <Input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="newPassword">Password</Label>
-              <Input type="password" id="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="phoneNumber">Phone Number</Label>
-              <Input type="tel" id="phoneNumber" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="address">Address</Label>
-              <Input type="text" id="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="profilePic">Profile Picture</Label>
-              <Input type="file" id="profilePic" accept="image/*" onChange={handleProfilePicChange} />
-            </div>
-            <div>
-              <Label htmlFor="aadhaarImage">Aadhaar Image</Label>
-              <Input type="file" id="aadhaarImage" accept="image/*" onChange={handleAadhaarImageChange} />
-            </div>
-            <CardFooter>
-              <Button type="submit">Register as Foster</Button>
-            </CardFooter>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+    <main className="container mx-3 md:mx-auto flex flex-col items-center gap-4 my-16">
+      <h1 className="text-center text-primary text-3xl">Sign Up!</h1>
+      <label className="flex flex-col items-center justify-center">
+        <img src={profilePicPreview} alt="upload profile pic" className="w-48 h-56 object-contain rounded-full" />
+        <input type="file" accept="image/*" onChange={handleProfilePicChange} className="hidden" />
+      </label>
+
+      {authError && <div className="text-red-500 text-sm">{authError}</div>}
+
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-[80%] max-w-[600px]">
+        <label className="flex flex-col">
+          <span>Name</span>
+          <Input name="name" value={formData.name} onChange={handleChange} disabled={isLoading} autocomplete="name" />
+          {errors.name && <span className="text-red-500">{errors.name}</span>}
+        </label>
+
+        <label className="flex flex-col">
+          <span>Email</span>
+          <Input name="email" value={formData.email} onChange={handleChange} disabled={isLoading} autocomplete="email" />
+          {errors.email && <span className="text-red-500">{errors.email}</span>}
+        </label>
+
+        <label className="flex flex-col">
+          <span>Phone Number</span>
+          <Input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} disabled={isLoading} autocomplete="tel" />
+          {errors.phoneNumber && <span className="text-red-500">{errors.phoneNumber}</span>}
+        </label>
+
+        <label className="flex flex-col">
+          <span>Address</span>
+          <Input name="address" value={formData.address} onChange={handleChange} disabled={isLoading} autocomplete="street-address" />
+          {errors.address && <span className="text-red-500">{errors.address}</span>}
+        </label>
+
+        <label className="flex flex-col">
+          <span>Aadhaar Image</span>
+          <Input
+            type="file"
+            accept="image/*, application/pdf"
+            name="aadhaarImage"
+            onChange={handleAadhaarImageChange}
+            disabled={isLoading}
+          />
+          {errors.aadhaarImage && <span className="text-red-500">{errors.aadhaarImage}</span>}
+        </label>
+
+        <label className="flex flex-col">
+          <span>Aadhaar Number</span>
+          <Input
+            name="aadhaarNumber"
+            value={formData.aadhaarNumber}
+            onChange={handleChange}
+            disabled={isLoading}
+          />
+          {errors.aadhaarNumber && <span className="text-red-500">{errors.aadhaarNumber}</span>}
+        </label>
+
+        <label className="flex flex-col">
+          <span>New Password</span>
+          <Input
+            type="password"
+            name="newPassword"
+            value={formData.newPassword}
+            onChange={handleChange}
+            disabled={isLoading}
+            autocomplete="new-password"
+          />
+          {errors.newPassword && <span className="text-red-500">{errors.newPassword}</span>}
+        </label>
+
+        <label className="flex flex-col">
+          <span>Confirm Password</span>
+          <Input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            disabled={isLoading}
+            autocomplete="new-password"
+          />
+          {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword}</span>}
+        </label>
+
+        <Button type="submit" className="sm:col-span-2" disabled={isLoading}>
+          {isLoading ? "Signing up..." : "Sign Up"}
+        </Button>
+      </form>
+      <p>Already have an account? <Link to="/login" className="underline">Login</Link></p>
+    </main>
   );
 };
 

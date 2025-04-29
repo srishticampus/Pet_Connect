@@ -24,7 +24,6 @@ router.post(
       "Please enter a password with 6 or more characters"
     ).isLength({ min: 6 }),
     check("phoneNumber", "Phone number is required").not().isEmpty(),
-    check("username", "Username is required").not().isEmpty(),
     check("address", "Address is required").not().isEmpty(),
   ],
   async (req, res) => {
@@ -33,7 +32,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, newPassword, phoneNumber, username, address } = req.body;
+    const { name, email, newPassword, phoneNumber, address } = req.body;
 
     try {
       // See if user exists
@@ -51,7 +50,6 @@ router.post(
       // Create a new user object with the data from the JSON request
       user = new User({
         name,
-        username,
         email,
         phoneNumber,
         address,
@@ -103,8 +101,9 @@ router.post(
         profilePic = `/uploads/profile_pictures/${profilePicFileName}`;
         user.profile_picture = profilePic; // Assign the profile picture path to the user object
       } catch (err) {
-        console.error(err);
-        return res.status(500).send("Profile picture upload failed");
+        console.error("Profile picture upload failed:", err);
+        // Log the error but continue with registration success
+        // The user object will not have the profile_picture path assigned
       }
     }
 
@@ -120,3 +119,5 @@ router.post(
   }
 );
 
+
+export default router;

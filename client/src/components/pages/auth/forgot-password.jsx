@@ -39,6 +39,7 @@ export default function ForgotPassword() {
               placeholder="Enter email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autocomplete="email"
             />
           </div>
           <div className="mt-6 text-center">

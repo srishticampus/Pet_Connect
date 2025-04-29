@@ -111,25 +111,25 @@ export default function PetOwnerSignUp() {
       <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-[80%] max-w-[600px]">
         <label className="flex flex-col">
           <span>Name</span>
-          <Input name="name" value={formData.name} onChange={handleChange} disabled={isLoading} />
+          <Input name="name" value={formData.name} onChange={handleChange} disabled={isLoading} autocomplete="name" />
           {errors.name && <span className="text-red-500">{errors.name}</span>}
         </label>
 
         <label className="flex flex-col">
           <span>Email</span>
-          <Input name="email" value={formData.email} onChange={handleChange} disabled={isLoading} />
+          <Input name="email" value={formData.email} onChange={handleChange} disabled={isLoading} autocomplete="email" />
           {errors.email && <span className="text-red-500">{errors.email}</span>}
         </label>
 
         <label className="flex flex-col">
           <span>Phone Number</span>
-          <Input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} disabled={isLoading} />
+          <Input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} disabled={isLoading} autocomplete="tel" />
           {errors.phoneNumber && <span className="text-red-500">{errors.phoneNumber}</span>}
         </label>
 
         <label className="flex flex-col">
           <span>Address</span>
-          <Input name="address" value={formData.address} onChange={handleChange} disabled={isLoading} />
+          <Input name="address" value={formData.address} onChange={handleChange} disabled={isLoading} autocomplete="street-address" />
           {errors.address && <span className="text-red-500">{errors.address}</span>}
         </label>
 
@@ -158,24 +158,26 @@ export default function PetOwnerSignUp() {
 
         <label className="flex flex-col">
           <span>New Password</span>
-          <Input 
-            type="password" 
-            name="newPassword" 
-            value={formData.newPassword} 
-            onChange={handleChange} 
-            disabled={isLoading} 
+          <Input
+            type="password"
+            name="newPassword"
+            value={formData.newPassword}
+            onChange={handleChange}
+            disabled={isLoading}
+            autocomplete="new-password"
           />
           {errors.newPassword && <span className="text-red-500">{errors.newPassword}</span>}
         </label>
 
         <label className="flex flex-col">
           <span>Confirm Password</span>
-          <Input 
-            type="password" 
-            name="confirmPassword" 
-            value={formData.confirmPassword} 
-            onChange={handleChange} 
-            disabled={isLoading} 
+          <Input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            disabled={isLoading}
+            autocomplete="new-password"
           />
           {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword}</span>}
         </label>

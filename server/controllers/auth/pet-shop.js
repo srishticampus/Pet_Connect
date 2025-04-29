@@ -105,8 +105,9 @@ router.post(
         profilePic = `/uploads/profile_pictures/${profilePicFileName}`;
         user.profile_picture = profilePic; // Assign the profile picture path to the user object
       } catch (err) {
-        console.error(err);
-        return res.status(500).send("Profile picture upload failed");
+        console.error("Profile picture upload failed:", err);
+        // Log the error but continue with registration success
+        // The user object will not have the profile_picture path assigned
       }
     }
 
