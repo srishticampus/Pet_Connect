@@ -53,7 +53,7 @@ const PetOwnerProfile = () => {
         try {
           const res = await api.get('/profile');
           setProfile(res.data);
-          setProfilePicPreview(res.data.profilePic || pfp); // Use profilePic from response
+          setProfilePicPreview(res.data.profilePic ? `${import.meta.env.VITE_API_URL}${res.data.profilePic}` : pfp); // Use profilePic from response with server URL, or default
           setLoading(false);
         } catch (err) {
           console.error(err);
@@ -74,7 +74,7 @@ const PetOwnerProfile = () => {
       try {
         // Assuming a PUT or PATCH endpoint for profile updates
         const res = await api.put('/profile', editFormData); // Send updated data to backend
-        setProfile(res.data); // Update profile state with saved data
+        setProfile(res.data); // Update profile state with saved data (backend returns profilePic in the response for the upload endpoint)
         setIsEditDialogOpen(false); // Close the dialog
       } catch (err) {
         console.error('Failed to save profile:', err);
@@ -112,7 +112,7 @@ const PetOwnerProfile = () => {
             'Content-Type': 'multipart/form-data',
           },
         });
-        setProfile(prevProfile => ({ ...prevProfile, profilePic: res.data.profilePic })); // Update profile state with new picture URL
+        setProfile(prevProfile => ({ ...prevProfile, profilePic: res.data.profilePic })); // Update profile state with new picture URL (backend returns profilePic in the response for the upload endpoint)
         setSelectedProfilePic(null); // Clear selected file
         // Optionally show a success message
       } catch (err) {
@@ -184,7 +184,7 @@ const PetOwnerProfile = () => {
           <div className="flex flex-col items-center">
             <div className="w-24 h-24 rounded-full overflow-hidden shadow-md relative -mt-20 group"> {/* Added group class */}
               <img
-                src={profile.profilePic || pfp} // Use profile.profilePic directly
+                src={profilePicPreview ? profilePicPreview : (profile.profilePic ? `${import.meta.env.VITE_API_URL}${profile.profilePic}` : pfp)} // Use preview if available, otherwise uploaded pic with server URL, or default
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
