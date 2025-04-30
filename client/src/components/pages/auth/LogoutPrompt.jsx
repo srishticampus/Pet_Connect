@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/auth";
-import { Link } from "react-router-dom"; // Use react-router-dom for Link
+import { Link } from "react-router";
 
 export default function LogoutPrompt() {
   const { logout, isLoading } = useAuth();

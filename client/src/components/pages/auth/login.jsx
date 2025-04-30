@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/auth";
@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router"; // Import useNavigate
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const { login, error, clearError, isLoading } = useAuth(); // Get login function, error, clearError, and isLoading from context
+  const { login, error, clearError, isLoading,isAuthenticated } = useAuth(); // Get login function, error, clearError, and isLoading from context
   const navigate = useNavigate(); // Hook for navigation
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,8 +24,10 @@ export default function Login() {
     clearError(); // Clear any previous errors
     try {
       await login(email, password); // Call the login function from the context
-      // If login is successful, redirect to the home page
-      navigate("/home");
+      // If login is successful, redirect to the home page after 1 second
+      setTimeout(() => {
+        navigate("/home");
+      }, 100);
     } catch (err) {
       // Error is already handled by the AuthProvider and available in the context
       // No need to set error state here

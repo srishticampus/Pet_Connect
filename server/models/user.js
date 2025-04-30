@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
   address: {
     type: String,
   },
-  profile_picture: {
+  profilePic: {
     type: String,
   },
   role: {

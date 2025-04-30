@@ -31,6 +31,7 @@ import { useAuth } from "./hooks/auth";
 import TermsOfService from "./components/pages/TermsOfService";
 import AboutPrivacy from "./components/pages/AboutPrivacy";
 import FAQ from "./components/pages/FAQ";
+import LogoutPrompt from "./components/pages/auth/LogoutPrompt";
 
 function App() {
   const { isAuthenticated, user, isLoading } = useAuth();
@@ -66,6 +67,7 @@ function App() {
         />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/logout-prompt" element={<LogoutPrompt />} />
         <Route path="/register">
           <Route index element={<ChooseRegister />} />
           <Route path="pet-owner" element={<PetOwnerSignUp />} />

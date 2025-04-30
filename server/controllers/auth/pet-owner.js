@@ -72,9 +72,9 @@ router.post(
       if (req.files?.profilePic) {
         const file = req.files.profilePic;
         const filename = `${Date.now()}_${file.name}`;
-        const filePath = path.join(__dirname, '../../uploads/profile_pics', filename);
+        const filePath = path.join(__dirname, '../../uploads/profile_pictures', filename);
         await file.mv(filePath);
-        user.profile_picture = `/uploads/profile_pics/${filename}`;
+        user.profilePic = `/uploads/profile_pictures/${filename}`;
       }
 
       // Handle Aadhaar image

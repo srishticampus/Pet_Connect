@@ -25,6 +25,7 @@ router.post(
     ).isLength({ min: 6 }),
     check("phoneNumber", "Phone number is required").not().isEmpty(),
     check("address", "Address is required").not().isEmpty(),
+    check("aadhaarNumber", "Aadhaar number is required").not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -99,7 +100,7 @@ router.post(
       try {
         await profilePicFile.mv(profilePicUploadPath);
         profilePic = `/uploads/profile_pictures/${profilePicFileName}`;
-        user.profile_picture = profilePic; // Assign the profile picture path to the user object
+        user.profilePic = profilePic; // Assign the profile picture path to the user object
       } catch (err) {
         console.error("Profile picture upload failed:", err);
         // Log the error but continue with registration success
@@ -107,11 +108,21 @@ router.post(
       }
     }
 
+      // Handle Aadhaar image
+      if (req.files?.aadhaarImage) {
+        const file = req.files.aadhaarImage;
+        const filename = `${Date.now()}_${file.name}`;
+        const filePath = path.join(__dirname, '../../uploads/aadhaar', filename);
+        await file.mv(filePath);
+        user.aadhaarImage = `/uploads/aadhaar/${filename}`;
+      }
+
       await user.save();
       // Return user data (excluding password) - no token on register, user must login
       const userResponse = user.toJSON(); // Use the transform to remove password
 
       res.status(201).json(userResponse);
+
     } catch (err) {
       console.error(err.message);
       res.status(500).send("Server error");

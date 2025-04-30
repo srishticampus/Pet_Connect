@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '@/hooks/auth';
 import {
@@ -25,15 +25,14 @@ const RescueShelterSignUp = () => {
     newPassword: '',
     phoneNumber: '',
     address: '',
-    aadhaarImage: null,
-    aadhaarNumber: '',
+    certificate: null,
     confirmPassword: '',
     role: "rescue-shelter"
   });
 
   const [errors, setErrors] = useState({});
   const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
-  const [aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
+  const [certificatePreview, setCertificatePreview] = useState(null);
   const { register, error: authError, clearError, isLoading,isAuthenticated } = useAuth();
   const navigate = useNavigate();
     // Redirect if already authenticated
@@ -58,12 +57,12 @@ const RescueShelterSignUp = () => {
     }
   };
 
-  const handleAadhaarImageChange = (e) => {
+  const handleCertificateChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData({ ...formData, aadhaarImage: file });
+      setFormData({ ...formData, certificate: file });
       const reader = new FileReader();
-      reader.onloadend = () => setAadhaarImagePreview(reader.result);
+      reader.onloadend = () => setCertificatePreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
@@ -78,12 +77,12 @@ const RescueShelterSignUp = () => {
       try {
         const userData = { ...formData };
         delete userData.profilePic;
-        delete userData.aadhaarImage;
+        delete userData.certificate;
         delete userData.confirmPassword;
 
         const imageData = new FormData();
         if (formData.profilePic) imageData.append('profilePic', formData.profilePic);
-        if (formData.aadhaarImage) imageData.append('aadhaarImage', formData.aadhaarImage);
+        if (formData.certificate) imageData.append('certificate', formData.certificate);
 
         await register('rescue-shelter', userData, imageData);
         navigate("/login");
@@ -102,9 +101,8 @@ const RescueShelterSignUp = () => {
       errors.email = 'Invalid email format';
     }
     if (!data.phoneNumber) errors.phoneNumber = 'Phone number is required';
-    if (!data.address) errors.address = 'Address is required';
-    if (!data.aadhaarImage) errors.aadhaarImage = "Aadhaar image is required";
-    if (!data.aadhaarNumber) errors.aadhaarNumber = 'Aadhaar number is required';
+    if (!data.address) errors.address = 'Place is required';
+    // Certificate is not required, so no validation here
     if (!data.newPassword) {
       errors.newPassword = 'Password is required';
     } else if (data.newPassword.length < 6) {
@@ -152,30 +150,19 @@ const RescueShelterSignUp = () => {
         </label>
 
         <label className="flex flex-col">
-          <span>Aadhaar Image</span>
+          <span>Certificate (Optional)</span>
           <Input
             type="file"
             accept="image/*, application/pdf"
-            name="aadhaarImage"
-            onChange={handleAadhaarImageChange}
+            name="certificate"
+            onChange={handleCertificateChange}
             disabled={isLoading}
           />
-          {errors.aadhaarImage && <span className="text-red-500">{errors.aadhaarImage}</span>}
+          {errors.certificate && <span className="text-red-500">{errors.certificate}</span>}
         </label>
 
         <label className="flex flex-col">
-          <span>Aadhaar Number</span>
-          <Input
-            name="aadhaarNumber"
-            value={formData.aadhaarNumber}
-            onChange={handleChange}
-            disabled={isLoading}
-          />
-          {errors.aadhaarNumber && <span className="text-red-500">{errors.aadhaarNumber}</span>}
-        </label>
-
-        <label className="flex flex-col">
-          <span>New Password</span>
+          <span>Password</span>
           <Input
             type="password"
             name="newPassword"

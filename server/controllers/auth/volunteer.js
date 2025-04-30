@@ -99,7 +99,7 @@ router.post(
       try {
         await profilePicFile.mv(profilePicUploadPath);
         profilePic = `/uploads/profile_pictures/${profilePicFileName}`;
-        user.profile_picture = profilePic; // Assign the profile picture path to the user object
+        user.profilePic = profilePic; // Assign the profile picture path to the user object
       } catch (err) {
         console.error("Profile picture upload failed:", err);
         // Log the error but continue with registration success
