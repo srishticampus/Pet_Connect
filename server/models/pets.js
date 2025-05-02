@@ -53,6 +53,11 @@ const petSchema = new mongoose.Schema({
     enum: ["owner", "foster"],
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["active", "lost", "found"],
+    default: "active",
+  },
   // Added timestamps
   createdAt: {
     type: Date,

@@ -152,3 +152,23 @@ export const getApprovedRescueShelters = async () => {
     throw error;
   }
 };
+
+export const getLostFoundPets = async () => {
+  try {
+    const response = await api.get('/admin/lost-found-pets');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching lost/found pets:', error);
+    throw error;
+  }
+};
+
+export const updatePetStatus = async (id, status) => {
+  try {
+    const response = await api.put(`/admin/lost-found-pets/${id}/status`, { status });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating pet status:', error);
+    throw error;
+  }
+};

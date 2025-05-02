@@ -1,3 +1,6 @@
+import AdoptionApplication from "./components/pages/foster/adoption-application";
+import AvailablePets from "./components/pages/foster/AvailablePets"; // Import AvailablePets
+import PetDetailsAndApply from "./components/pages/foster/PetDetailsAndApply"; // Import PetDetailsAndApply
 import { Route, Routes, Navigate } from "react-router";
 
 import { Layout } from "./components/pages/layout";
@@ -34,6 +37,7 @@ import TermsOfService from "./components/pages/TermsOfService";
 import AboutPrivacy from "./components/pages/AboutPrivacy";
 import FAQ from "./components/pages/FAQ";
 import LogoutPrompt from "./components/pages/auth/LogoutPrompt";
+import LostFoundPets from "./components/pages/admin/lost-found-pets";
 
 function App() {
   const { isAuthenticated, user, isLoading } = useAuth();
@@ -88,6 +92,10 @@ function App() {
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/about-privacy" element={<AboutPrivacy />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/foster/applications/:applicationId" element={<AdoptionApplication />} />
+        {/* Foster routes */}
+        <Route path="/foster/pets" element={<AvailablePets />} />
+        <Route path="/foster/apply/:petId" element={<PetDetailsAndApply />} />
       </Route>
 
       <Route path="/pets" element={<PetSearch />} />
@@ -99,6 +107,7 @@ function App() {
         <Route path="adopters" element={<AdoptersTable />} /> {/* Added Adopters route */}
         <Route path="pet-management" element={<PetManagement />} />
         <Route path="contact-submissions" element={<ContactSubmissions />} />
+        <Route path="lost-found-pets" element={<LostFoundPets />} />
       </Route>
     </Routes>
   );

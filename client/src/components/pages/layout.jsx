@@ -76,6 +76,14 @@ const Navbar = () => {
                 Manage Pets
               </Link>
             )}
+            {user?.role === 'foster' && (
+              <Link
+                to="/foster/pets"
+                className="hover:text-primary transition"
+              >
+                Foster Pets
+              </Link>
+            )}
             <Link
               // to={`/${user?.role}/profile`} // Using user.role as confirmed
               to={`/profile`}

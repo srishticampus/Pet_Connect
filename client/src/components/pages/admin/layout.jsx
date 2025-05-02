@@ -71,6 +71,11 @@ const items = [
     url: "/admin/contact-submissions",
     icon: FileText,
   },
+  {
+    title: "Lost and Found Pets",
+    url: "/admin/lost-found-pets",
+    icon: Search,
+  },
 ];
 
 function AppSidebar() {
