@@ -47,6 +47,21 @@ const items = [
     icon: User,
   },
   {
+    title: "Adopters",
+    url: "/admin/adopters",
+    icon: Users,
+  },
+  {
+    title: "Fosters",
+    url: "/admin/fosters",
+    icon: PawPrint,
+  },
+  {
+    title: "Rescue Shelters",
+    url: "/admin/rescue-shelters",
+    icon: PawPrint,
+  },
+  {
     title: "Pet Management",
     url: "/admin/pet-management",
     icon: Dog,

@@ -8,7 +8,8 @@ import Dashboard from "./components/pages/admin/dashboard";
 import About from "./components/pages/about";
 import Login from "./components/pages/auth/login";
 import Contact from "./components/pages/contact";
-import Fosters from "./components/pages/admin/fosters";
+import FostersTable from "./components/pages/admin/fosters"; // Import FostersTable
+import RescueSheltersTable from "./components/pages/admin/rescue-shelters"; // Import RescueSheltersTable
 import ForgotPassword from "./components/pages/auth/forgot-password";
 import ResetPassword from "./components/pages/auth/reset-password";
 import ChooseRegister from "./components/pages/auth/register/choose";
@@ -22,6 +23,7 @@ import HomePage from "./components/pages/pet-owner/home";
 import PetOwnerProfile from "./components/pages/pet-owner/profile";
 import PetDetails from "./components/pages/pet-owner/pet-details";
 import PetOwnersTable from "./components/pages/admin/pet-owners";
+import AdoptersTable from "./components/pages/admin/adopters"; // Import AdoptersTable
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 import ManagePets from "./components/pages/pet-owner/manage-pets";
 import AddPet from "./components/pages/pet-owner/add-pet";
@@ -91,8 +93,10 @@ function App() {
       <Route path="/pets" element={<PetSearch />} />
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
-        <Route path="fosters" element={<Fosters />} />
+        <Route path="fosters" element={<FostersTable />} /> {/* Added Fosters route */}
+        <Route path="rescue-shelters" element={<RescueSheltersTable />} /> {/* Added Rescue Shelters route */}
         <Route path="pet-owners" element={<PetOwnersTable />} />
+        <Route path="adopters" element={<AdoptersTable />} /> {/* Added Adopters route */}
         <Route path="pet-management" element={<PetManagement />} />
         <Route path="contact-submissions" element={<ContactSubmissions />} />
       </Route>

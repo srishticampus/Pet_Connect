@@ -38,7 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { getAllFosters, approveFoster, rejectFoster, getApprovedFosters } from "./adminService" // Import the new API functions
+import { getAllAdopters, approveAdopter, rejectAdopter, getApprovedAdopters } from "./adminService" // Import the new API functions
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -47,7 +47,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-// Define columns for the Fosters table
+// Define columns for the Adopters table
 export const columns = [
   {
     accessorKey:"id", // Accessor key is used to identify the data in the table
@@ -56,13 +56,8 @@ export const columns = [
   },
   {
     accessorKey: "name",
-    header: "Name",
-    name:"Name"
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-    name:"Email"
+    header: "Profile",
+    name:"Profile"
   },
   {
     accessorKey:"phoneNumber",
@@ -70,10 +65,9 @@ export const columns = [
     name:"Phone Number"
   },
   {
-    accessorKey:"profilePic",
-    header:"Photo",
-    name:"Photo",
-    cell: ({row})=>(row.getValue("profilePic")?(<Button asChild variant="link"><a href={`${import.meta.env.VITE_API_URL}${row.getValue("profilePic")}`} target="_blank">Preview <ExternalLink className="h-4 w-4" /></a></Button>):(<p>No Photo</p>))
+    accessorKey: "email",
+    header: "Email ID",
+    name:"Email ID"
   },
   {
     accessorKey:"address",
@@ -81,15 +75,15 @@ export const columns = [
     name:"Place"
   },
   {
-    accessorKey:"aadhaarNumber",
-    header:"Aadhaar Number",
-    name:"Aadhaar Number"
-  },
-  {
     accessorKey:"aadhaarImage",
     header:"Aadhaar Image",
     name:"Aadhaar Image",
     cell: ({row})=>(row.getValue("aadhaarImage")?(<Button asChild variant="link"><a href={`${import.meta.env.VITE_API_URL}${row.getValue("aadhaarImage")}`} target="_blank">Preview <ExternalLink className="h-4 w-4" /></a></Button>):(<p>No Aadhaar Image</p>))
+  },
+  {
+    accessorKey:"aadhaarNumber",
+    header:"Aadhaar Number",
+    name:"Aadhaar Number"
   },
   {
     accessorKey:"isApproved",
@@ -100,20 +94,20 @@ export const columns = [
   {
       id: "actions",
       cell: ({ row, table }) => {
-        const foster = row.original
+        const adopter = row.original
         const [isApproving, setIsApproving] = useState(false);
         const [isRejecting, setIsRejecting] = useState(false);
-        const fetchFosters = table.options.meta?.fetchFosters;
+        const fetchAdopters = table.options.meta?.fetchAdopters;
         const [openRejectDialog, setOpenRejectDialog] = useState(false);
 
 
         const handleApprove = async () => {
           setIsApproving(true);
           try {
-            await approveFoster(foster._id);
-            fetchFosters();
+            await approveAdopter(adopter._id);
+            fetchAdopters();
           } catch (error) {
-            console.error("Failed to approve foster:", error);
+            console.error("Failed to approve adopter:", error);
           } finally {
             setIsApproving(false);
           }
@@ -122,10 +116,10 @@ export const columns = [
         const handleReject = async () => {
           setIsRejecting(true);
           try {
-            await rejectFoster(foster._id);
-            fetchFosters();
+            await rejectAdopter(adopter._id);
+            fetchAdopters();
           } catch (error) {
-            console.error("Failed to reject foster:", error);
+            console.error("Failed to reject adopter:", error);
           } finally {
             setIsRejecting(false);
             setOpenRejectDialog(false);
@@ -144,21 +138,21 @@ export const columns = [
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                {!foster.isApproved && (
+                {!adopter.isApproved && (
                   <DropdownMenuItem onClick={handleApprove} disabled={isApproving}>
-                    {isApproving ? "Approving..." : "Approve Foster"}
+                    {isApproving ? "Approving..." : "Approve Adopter"}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem variant="danger" onClick={()=>setOpenRejectDialog(true)} disabled={isRejecting}>
-                    {isRejecting ? "Rejecting..." : "Reject Foster"}
+                    {isRejecting ? "Rejecting..." : "Reject Adopter"}
                   </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Reject Foster</DialogTitle>
+                <DialogTitle>Reject Adopter</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to reject this foster? This action cannot be undone.
+                  Are you sure you want to reject this adopter? This action cannot be undone.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -186,7 +180,7 @@ export const columns = [
 export function DataTable({
   columns,
   data,
-  fetchFosters
+  fetchAdopters
 }) {
   const [columnFilters, setColumnFilters] = useState([])
   const [currentFilter,setCurrentFilter] = useState("email")
@@ -202,7 +196,7 @@ export function DataTable({
       columnFilters
     },
     meta: {
-      fetchFosters,
+      fetchAdopters,
     },
   })
 
@@ -288,43 +282,43 @@ export function DataTable({
 }
 
 
-export default function FostersTable() {
+export default function AdoptersTable() {
   const [data, setData] = useState([]);
   const [approvedData, setApprovedData] = useState([]);
   const [viewApproved, setViewApproved] = useState(false);
 
-  const fetchFosters = async () => {
+  const fetchAdopters = async () => {
     try {
-      const fostersData = await getAllFosters();
-      setData(fostersData);
+      const adoptersData = await getAllAdopters();
+      setData(adoptersData);
     } catch (error) {
-      console.error("Failed to fetch fosters:", error);
+      console.error("Failed to fetch adopters:", error);
     }
   };
 
-  const fetchApprovedFosters = async () => {
+  const fetchApprovedAdopters = async () => {
     try {
-      const approvedFostersData = await getApprovedFosters();
-      setApprovedData(approvedFostersData);
+      const approvedAdoptersData = await getApprovedAdopters();
+      setApprovedData(approvedAdoptersData);
     } catch (error) {
-      console.error("Failed to fetch approved fosters:", error);
+      console.error("Failed to fetch approved adopters:", error);
     }
   };
 
   useEffect(() => {
-    fetchFosters();
-    fetchApprovedFosters();
+    fetchAdopters();
+    fetchApprovedAdopters();
   }, []);
 
   return (
     <div className="container mx-auto w-full">
       <main className="flex-1 px-6 pb-6 w-full">
         <div className="bg-white rounded-lg h-full p-6 w-full">
-          <h2 className="text-2xl font-bold mb-4">{viewApproved ? "Approved Fosters" : "Foster Requests"}</h2>
+          <h2 className="text-2xl font-bold mb-4">{viewApproved ? "Approved Adopters" : "Registered Adopter Requests"}</h2>
           <Button onClick={() => setViewApproved(!viewApproved)} className="mb-4">
-            {viewApproved ? "View Registered Requests" : "View Approved Fosters"}
+            {viewApproved ? "View Registered Requests" : "View Approved Adopters"}
           </Button>
-          <DataTable columns={columns} data={viewApproved ? approvedData : data} fetchFosters={viewApproved ? fetchApprovedFosters : fetchFosters} />
+          <DataTable columns={columns} data={viewApproved ? approvedData : data} fetchAdopters={viewApproved ? fetchApprovedAdopters : fetchAdopters} />
         </div>
       </main>
     </div>

@@ -53,6 +53,10 @@ const UserSchema = new mongoose.Schema({
   lastLogin: {
     type: Date,
   },
+  isApproved: {
+    type: Boolean,
+    default: false,
+  },
   // Fields for password reset
   resetPasswordToken: {
     type: String,

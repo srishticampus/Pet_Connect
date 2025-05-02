@@ -38,7 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { getAllFosters, approveFoster, rejectFoster, getApprovedFosters } from "./adminService" // Import the new API functions
+import { getAllRescueShelters, approveRescueShelter, rejectRescueShelter, getApprovedRescueShelters } from "./adminService" // Import the new API functions
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -47,7 +47,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-// Define columns for the Fosters table
+// Define columns for the Rescue Shelters table
 export const columns = [
   {
     accessorKey:"id", // Accessor key is used to identify the data in the table
@@ -70,26 +70,15 @@ export const columns = [
     name:"Phone Number"
   },
   {
-    accessorKey:"profilePic",
-    header:"Photo",
-    name:"Photo",
-    cell: ({row})=>(row.getValue("profilePic")?(<Button asChild variant="link"><a href={`${import.meta.env.VITE_API_URL}${row.getValue("profilePic")}`} target="_blank">Preview <ExternalLink className="h-4 w-4" /></a></Button>):(<p>No Photo</p>))
-  },
-  {
     accessorKey:"address",
     header:"Place",
     name:"Place"
   },
   {
-    accessorKey:"aadhaarNumber",
-    header:"Aadhaar Number",
-    name:"Aadhaar Number"
-  },
-  {
-    accessorKey:"aadhaarImage",
-    header:"Aadhaar Image",
-    name:"Aadhaar Image",
-    cell: ({row})=>(row.getValue("aadhaarImage")?(<Button asChild variant="link"><a href={`${import.meta.env.VITE_API_URL}${row.getValue("aadhaarImage")}`} target="_blank">Preview <ExternalLink className="h-4 w-4" /></a></Button>):(<p>No Aadhaar Image</p>))
+    accessorKey:"certificate",
+    header:"Certificate",
+    name:"Certificate",
+    cell: ({row})=>(row.getValue("certificate")?(<Button asChild variant="link"><a href={`${import.meta.env.VITE_API_URL}${row.getValue("certificate")}`} target="_blank">Preview <ExternalLink className="h-4 w-4" /></a></Button>):(<p>No Certificate</p>))
   },
   {
     accessorKey:"isApproved",
@@ -100,20 +89,20 @@ export const columns = [
   {
       id: "actions",
       cell: ({ row, table }) => {
-        const foster = row.original
+        const rescueShelter = row.original
         const [isApproving, setIsApproving] = useState(false);
         const [isRejecting, setIsRejecting] = useState(false);
-        const fetchFosters = table.options.meta?.fetchFosters;
+        const fetchRescueShelters = table.options.meta?.fetchRescueShelters;
         const [openRejectDialog, setOpenRejectDialog] = useState(false);
 
 
         const handleApprove = async () => {
           setIsApproving(true);
           try {
-            await approveFoster(foster._id);
-            fetchFosters();
+            await approveRescueShelter(rescueShelter._id);
+            fetchRescueShelters();
           } catch (error) {
-            console.error("Failed to approve foster:", error);
+            console.error("Failed to approve rescue shelter:", error);
           } finally {
             setIsApproving(false);
           }
@@ -122,10 +111,10 @@ export const columns = [
         const handleReject = async () => {
           setIsRejecting(true);
           try {
-            await rejectFoster(foster._id);
-            fetchFosters();
+            await rejectRescueShelter(rescueShelter._id);
+            fetchRescueShelters();
           } catch (error) {
-            console.error("Failed to reject foster:", error);
+            console.error("Failed to reject rescue shelter:", error);
           } finally {
             setIsRejecting(false);
             setOpenRejectDialog(false);
@@ -144,21 +133,21 @@ export const columns = [
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                {!foster.isApproved && (
+                {!rescueShelter.isApproved && (
                   <DropdownMenuItem onClick={handleApprove} disabled={isApproving}>
-                    {isApproving ? "Approving..." : "Approve Foster"}
+                    {isApproving ? "Approving..." : "Approve Rescue Shelter"}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem variant="danger" onClick={()=>setOpenRejectDialog(true)} disabled={isRejecting}>
-                    {isRejecting ? "Rejecting..." : "Reject Foster"}
+                    {isRejecting ? "Rejecting..." : "Reject Rescue Shelter"}
                   </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Reject Foster</DialogTitle>
+                <DialogTitle>Reject Rescue Shelter</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to reject this foster? This action cannot be undone.
+                  Are you sure you want to reject this rescue shelter? This action cannot be undone.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -186,7 +175,7 @@ export const columns = [
 export function DataTable({
   columns,
   data,
-  fetchFosters
+  fetchRescueShelters
 }) {
   const [columnFilters, setColumnFilters] = useState([])
   const [currentFilter,setCurrentFilter] = useState("email")
@@ -202,7 +191,7 @@ export function DataTable({
       columnFilters
     },
     meta: {
-      fetchFosters,
+      fetchRescueShelters,
     },
   })
 
@@ -288,43 +277,43 @@ export function DataTable({
 }
 
 
-export default function FostersTable() {
+export default function RescueSheltersTable() {
   const [data, setData] = useState([]);
   const [approvedData, setApprovedData] = useState([]);
   const [viewApproved, setViewApproved] = useState(false);
 
-  const fetchFosters = async () => {
+  const fetchRescueShelters = async () => {
     try {
-      const fostersData = await getAllFosters();
-      setData(fostersData);
+      const rescueSheltersData = await getAllRescueShelters();
+      setData(rescueSheltersData);
     } catch (error) {
-      console.error("Failed to fetch fosters:", error);
+      console.error("Failed to fetch rescue shelters:", error);
     }
   };
 
-  const fetchApprovedFosters = async () => {
+  const fetchApprovedRescueShelters = async () => {
     try {
-      const approvedFostersData = await getApprovedFosters();
-      setApprovedData(approvedFostersData);
+      const approvedRescueSheltersData = await getApprovedRescueShelters();
+      setApprovedData(approvedRescueSheltersData);
     } catch (error) {
-      console.error("Failed to fetch approved fosters:", error);
+      console.error("Failed to fetch approved rescue shelters:", error);
     }
   };
 
   useEffect(() => {
-    fetchFosters();
-    fetchApprovedFosters();
+    fetchRescueShelters();
+    fetchApprovedRescueShelters();
   }, []);
 
   return (
     <div className="container mx-auto w-full">
       <main className="flex-1 px-6 pb-6 w-full">
         <div className="bg-white rounded-lg h-full p-6 w-full">
-          <h2 className="text-2xl font-bold mb-4">{viewApproved ? "Approved Fosters" : "Foster Requests"}</h2>
+          <h2 className="text-2xl font-bold mb-4">{viewApproved ? "Approved Rescue Shelters" : "Rescue Shelter Requests"}</h2>
           <Button onClick={() => setViewApproved(!viewApproved)} className="mb-4">
-            {viewApproved ? "View Registered Requests" : "View Approved Fosters"}
+            {viewApproved ? "View Registered Requests" : "View Approved Rescue Shelters"}
           </Button>
-          <DataTable columns={columns} data={viewApproved ? approvedData : data} fetchFosters={viewApproved ? fetchApprovedFosters : fetchFosters} />
+          <DataTable columns={columns} data={viewApproved ? approvedData : data} fetchRescueShelters={viewApproved ? fetchApprovedRescueShelters : fetchRescueShelters} />
         </div>
       </main>
     </div>
