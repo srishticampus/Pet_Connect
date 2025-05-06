@@ -1,15 +1,109 @@
-import React from 'react';
-import dog from "@/assets/dog.png"
-const PetDetails = () => {
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
+import api from '@/utils/api'; // Import the api utility
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+
+
+const PetDetailsPage = () => {
+  const { petId } = useParams(); // Get petId from URL
+  const [pet, setPet] = useState(null); // State to hold fetched pet details
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({
+    message: '',
+    confirmAdoption: false,
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // State for dialog visibility
+
+
+  useEffect(() => {
+    const fetchPetDetails = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await api.get(`/pets/${petId}`); // Fetch pet details by ID
+        setPet(response.data);
+      } catch (err) {
+        setError(err);
+        console.error("Failed to fetch pet details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (petId) {
+      fetchPetDetails();
+    }
+  }, [petId]); // Re-run effect if petId changes
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    // TODO: Implement actual API call to submit adoption application
+    console.log("Submitting adoption application for pet:", petId, "with data:", formData);
+
+    // Simulate API call success/failure
+    try {
+      // Replace with actual API call: await api.post(`/applications/adopt/${petId}`, formData);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      setSubmitSuccess(true);
+      setIsDialogOpen(false); // Close dialog on successful submission
+      setFormData({ message: '', confirmAdoption: false }); // Reset form
+    } catch (err) {
+      // setSubmitError(err); // Use actual error from API call
+      setSubmitError({ message: "Failed to submit application (simulated error)." }); // Simulate error
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+
+  if (loading) {
+    return <div className="container mx-auto py-8">Loading pet details...</div>;
+  }
+
+  if (error) {
+    return <div className="container mx-auto py-8 text-red-500">Error loading pet details: {error.message}</div>;
+  }
+
+  if (!pet) {
+    return <div className="container mx-auto py-8">Pet not found.</div>;
+  }
+
   return (
-    <section className="container mx-auto px-3 lg:px-0 py-8">
+    <main className="container mx-auto px-3 lg:px-0 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Pet image */}
-        <img src={dog} alt="dog food" className="w-full aspect-[611/567] object-cover rounded-2xl" />
+        <img src={`${import.meta.env.VITE_API_URL}${pet.Photo}`} alt={pet.name} className="w-full aspect-[611/567] object-cover rounded-2xl" />
 
         {/* Pet details */}
-        <div>
-          <h1 className="text-xl">Max</h1>
+        <div className="flex flex-col justify-between">
+          <h1 className="text-xl">{pet.name}</h1>
           {/* Details grid */}
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="flex gap-4 items-center">
@@ -27,7 +121,7 @@ const PetDetails = () => {
               </svg>
               <div>
                 <p className="text-sm font-light text-[#7f7f7f]">Age</p>
-                <p>8 months</p>
+                <p>{pet.Age}</p>
               </div>
             </div>
             <div className="flex gap-4 items-center">
@@ -41,7 +135,7 @@ const PetDetails = () => {
               </svg>
               <div>
                 <p className="text-sm font-light text-[#7f7f7f]">Gender</p>
-                <p>Female</p>
+                <p>{pet.Gender}</p>
               </div>
             </div>
             <div className="flex gap-4 items-center">
@@ -54,7 +148,7 @@ const PetDetails = () => {
               </svg>
               <div>
                 <p className="text-sm font-light text-[#7f7f7f]">Breed</p>
-                <p>Golden Retriever</p>
+                <p>{pet.Breed}</p>
               </div>
             </div>
             <div className="flex gap-4 items-center">
@@ -68,30 +162,73 @@ const PetDetails = () => {
               </svg>
               <div>
                 <p className="text-sm font-light text-[#7f7f7f]">Size</p>
-                <p>Medium</p>
+                <p>{pet.Size}</p>
               </div>
             </div>
           </div>
 
           <p className="pb-2">Description</p>
           <p className="text-sm font-light ">
-            Max is a loving and energetic Golden Retriever puppy who adores people and other dogs. She's
-            incredibly smart and already knows basic commands. Luna would thrive in an active family
-            that can
-            provide her with plenty of exercise and mental stimulation.
+            {pet.description}
           </p>
-          <p className="pt-6">Health &amp; Vaccinations</p>
-          <ul className="text-sm font-light py-4 bullets">
-            <li>Fully vaccinated</li>
-            <li>Spayed</li>
-            <li>Microchipped</li>
-          </ul>
-          {/* Apply to Adopt button */}
-          <div className="flex items-center gap-4">
-            <button className="bg-[#e54c00] text-white px-4 py-2 rounded-4xl w-full hover:cursor-pointer hover:bg-[#ED824D]">
-              Apply to Adopt
-            </button>
-          </div>
+          {pet.healthVaccinations && pet.healthVaccinations.length > 0 && (
+            <>
+              <p className="pt-6">Health & Vaccinations</p>
+              <ul className="text-sm font-light py-4 bullets">
+                {pet.healthVaccinations.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {/* Apply to Adopt Dialog */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="mt-4 w-full">Apply to Adopt</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Adoption Application</DialogTitle>
+                <DialogDescription>
+                  Fill out the form below to apply to adopt this pet.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="message">Tell us about yourself and why you want to adopt this pet:</Label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="confirmAdoption"
+                      name="confirmAdoption"
+                      checked={formData.confirmAdoption}
+                      onCheckedChange={(checked) => setFormData({...formData, confirmAdoption: checked})}
+                      required
+                    />
+                    <Label htmlFor="confirmAdoption">
+                      I confirm I am ready to adopt this pet and provide a loving home.
+                    </Label>
+                  </div>
+
+                  {submitError && <p className="text-red-500">Error submitting application: {submitError.message}</p>}
+                  {submitSuccess && <p className="text-green-500">Application submitted successfully!</p>}
+
+                  <Button type="submit" disabled={submitting || !formData.confirmAdoption}>
+                    {submitting ? 'Submitting...' : 'Submit Application'}
+                  </Button>
+                </form>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -146,8 +283,8 @@ const PetDetails = () => {
           </div>
         </div>
       </section>
-    </section>
+    </main>
   );
 };
 
-export default PetDetails;
+export default PetDetailsPage;

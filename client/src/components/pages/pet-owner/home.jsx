@@ -112,11 +112,13 @@ export default function HomePage() {
                   <p className="text-xs font-light text-[#4c4c4c] py-1">
                     {pet.description} {/* Use pet.description */}
                   </p>
-                  <Button
-                    className="w-full mt-3"
-                  >
-                    View Details
-                  </Button>
+                  <Link to={`/pet-owner/pets/${pet._id}`}>
+                    <Button
+                      className="w-full mt-3"
+                    >
+                      View Details
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
