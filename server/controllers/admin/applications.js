@@ -55,6 +55,7 @@ router.put("/:applicationId/approve", auth, async (req, res) => {
     }
 
     pet.petOwner = application.applicant; // Assign pet to the applicant
+    pet.availableForAdoptionOrFoster = false; // Mark pet as not available for adoption
     await pet.save();
 
     res.json({ message: "Application approved successfully!", application });

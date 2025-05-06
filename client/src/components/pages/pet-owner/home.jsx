@@ -124,12 +124,12 @@ export default function HomePage() {
             </div>
           ))}
         </div>
-        <a
-          href="/pets"
+        <Link
+          to="/pet-owner/all-pets"
           className="text-center text-sm font-light text-[#e54c00] underline float-end mt-8"
         >
           View More
-        </a>
+        </Link>
       </section>
 
       <section className="container mx-auto px-3 lg:px-0 py-8">

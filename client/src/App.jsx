@@ -1,7 +1,8 @@
 import AdoptionApplication from "./components/pages/foster/adoption-application";
 import AvailablePets from "./components/pages/foster/AvailablePets"; // Import AvailablePets
 import PetDetailsAndApply from "./components/pages/foster/PetDetailsAndApply"; // Import PetDetailsAndApply
-import { Route, Routes, Navigate } from "react-router";
+import { Route, Routes, Navigate } from "react-router"; 
+import AllPetsPage from "./components/pages/pet-owner/AllPets"; // Import AllPetsPage
 
 import { Layout } from "./components/pages/layout";
 import LandingPage from "./components/pages";
@@ -102,6 +103,7 @@ function App() {
         <Route path="/pet-owner/find-pet" element={<ProtectedRoute><FindPet /></ProtectedRoute>} /> {/* Added FindPet route */}
         <Route path="/pet-owner/add-lost-pet" element={<ProtectedRoute><AddLostPet /></ProtectedRoute>} /> {/* Added AddLostPet route */}
         <Route path="/pet-owner/edit-lost-pet/:petId" element={<ProtectedRoute><EditLostPet /></ProtectedRoute>} /> {/* Added EditLostPet route */}
+        <Route path="/pet-owner/all-pets" element={<AllPetsPage />} /> {/* Added route for AllPetsPage */}
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/about-privacy" element={<AboutPrivacy />} />
         <Route path="/faq" element={<FAQ />} />
@@ -115,7 +117,6 @@ function App() {
         <Route path="/rescue-shelter/edit-pet/:id" element={<ProtectedRoute><RescueShelterEditPet /></ProtectedRoute>} />
       </Route>
 
-      <Route path="/pets" element={<PetSearch />} />
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="fosters" element={<FostersTable />} /> {/* Added Fosters route */}
