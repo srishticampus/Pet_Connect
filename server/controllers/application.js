@@ -27,6 +27,11 @@ router.get("/owned", auth, async (req, res) => {
       .populate('applicant', 'name email phoneNumber aadharNumber place') // Populate applicant details
       .populate('pet', 'name Photo Breed Age Gender Size'); // Populate pet details
     console.log("Found applications:", applications.length);
+    // Log applicant data for each application to check for aadharNumber
+    applications.forEach(app => {
+      console.log("Applicant data for application", app._id, ":", JSON.stringify(app.applicant, null, 2));
+    });
+    console.log("Applications data being sent:", JSON.stringify(applications, null, 2));
 
     res.json(applications);
   } catch (err) {
