@@ -1,117 +1,176 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import api from '@/utils/api'; // Import the API client
 
 const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null); // State to hold the selected user
+  const [conversations, setConversations] = useState({ adopters: [], fosters: [], petOwners: [] }); // State to hold conversations
+  const [messages, setMessages] = useState([]); // State to hold messages for the selected conversation
+  const [searchTerm, setSearchTerm] = useState(''); // State to hold the search term for filtering conversations
+  const [inputMessage, setInputMessage] = useState(''); // State to hold the current message input
+  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [error, setError] = useState(null); // State for error handling
+
+  // Fetch conversations on component mount
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/chat/conversations');
+        setConversations(response.data);
+      } catch (err) {
+        setError("Failed to fetch conversations.");
+        console.error("Error fetching conversations:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConversations();
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  // Fetch messages when a user is selected
+  useEffect(() => {
+    if (selectedUser) {
+      const fetchMessages = async () => {
+        try {
+          setLoading(true);
+          // Assuming selectedUser object has an 'id' property
+          const response = await api.get(`/chat/conversations/${selectedUser.id}/messages`);
+          setMessages(response.data);
+        } catch (err) {
+          setError(`Failed to fetch messages for ${selectedUser.name}.`);
+          console.error(`Error fetching messages for user ${selectedUser.id}:`, err);
+          setMessages([]); // Clear messages on error
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchMessages();
+    } else {
+      setMessages([]); // Clear messages when no user is selected
+    }
+  }, [selectedUser]); // Rerun effect when selectedUser changes
+
+  // Function to handle sending a message
+  const handleSendMessage = async (content) => {
+    if (!selectedUser || !content.trim()) return;
+
+    try {
+      // Assuming selectedUser object has an 'id' property
+      const response = await api.post(`/chat/conversations/${selectedUser.id}/messages`, { content });
+      // Add the new message to the messages state
+      setMessages([...messages, response.data]);
+      // Clear the input field (assuming you add an input state later)
+      // setInputMessage('');
+    } catch (err) {
+      setError(`Failed to send message to ${selectedUser.name}.`);
+      console.error(`Error sending message to user ${selectedUser.id}:`, err);
+    }
+  };
+
+
   return (
     <div className="flex h-[80vh] text-gray-800">
       {/* Left Sidebar */}
       <div className="w-1/4 bg-gray-100 p-4 flex flex-col gap-4 overflow-y-auto">
-        {/* Adopter Section */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <h3 className="text-lg font-semibold mb-2">Adopter</h3>
-          <div className="relative mb-4">
-            <Input type="text" placeholder="Search here..." className="pl-8" />
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <div className="space-y-2">
-            {/* Example User */}
-            <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser({ name: 'Priya' })}>
-              <Avatar>
-                <AvatarImage src="/path/to/adopter-avatar-1.jpg" />
-                <AvatarFallback>AB</AvatarFallback>
-              </Avatar>
-              <span>Abisha</span>
+        {loading && <p>Loading conversations...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+        {!loading && !error && (
+          <>
+            {/* Adopter Section */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <h3 className="text-lg font-semibold mb-2">Adopter</h3>
+              <div className="relative mb-4">
+                <Input
+                  type="text"
+                  placeholder="Search here..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <div className="space-y-2">
+                {conversations.adopters
+                  .filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .map(user => (
+                  <div key={user.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
+                    <Avatar>
+                      <AvatarImage src={user.avatar} />
+                      <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <span>{user.name}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-             <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser({ name: 'Richard' })}>
-              <Avatar>
-                <AvatarImage src="/path/to/adopter-avatar-2.jpg" />
-                <AvatarFallback>PR</AvatarFallback>
-              </Avatar>
-              <span>Priya</span>
-            </div>
-             <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser({ name: 'Abisha' })}>
-              <Avatar>
-                <AvatarImage src="/path/to/adopter-avatar-3.jpg" />
-                <AvatarFallback>JE</AvatarFallback>
-              </Avatar>
-              <span>Jersha</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Foster Section */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <h3 className="text-lg font-semibold mb-2">Foster</h3>
-           <div className="relative mb-4">
-            <Input type="text" placeholder="Search here..." className="pl-8" />
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <div className="space-y-2">
-            {/* Example User */}
-            <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser({ name: 'Abisha' })}>
-              <Avatar>
-                <AvatarImage src="/path/to/foster-avatar-1.jpg" />
-                <AvatarFallback>AB</AvatarFallback>
-              </Avatar>
-              <span>Abisha</span>
+            {/* Foster Section */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <h3 className="text-lg font-semibold mb-2">Foster</h3>
+              <div className="relative mb-4">
+                <Input
+                  type="text"
+                  placeholder="Search here..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <div className="space-y-2">
+                 {conversations.fosters
+                   .filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                   .map(user => (
+                  <div key={user.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
+                    <Avatar>
+                      <AvatarImage src={user.avatar} />
+                      <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <span>{user.name}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-             <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser({ name: 'Priya' })}>
-              <Avatar>
-                <AvatarImage src="/path/to/foster-avatar-2.jpg" />
-                <AvatarFallback>PR</AvatarFallback>
-              </Avatar>
-              <span>Priya</span>
-            </div>
-             <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser({ name: 'Jersha' })}>
-              <Avatar>
-                <AvatarImage src="/path/to/foster-avatar-3.jpg" />
-                <AvatarFallback>JE</AvatarFallback>
-              </Avatar>
-              <span>Jersha</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Pet Owner Section */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <h3 className="text-lg font-semibold mb-2">Pet Owner</h3>
-           <div className="relative mb-4">
-            <Input type="text" placeholder="Search here..." className="pl-8" />
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <div className="space-y-2">
-            {/* Example User */}
-            <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser({ name: 'Abisha' })}>
-              <Avatar>
-                <AvatarImage src="/path/to/pet-owner-avatar-1.jpg" />
-                <AvatarFallback>AB</AvatarFallback>
-              </Avatar>
-              <span>Abisha</span>
+            {/* Pet Owner Section */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <h3 className="text-lg font-semibold mb-2">Pet Owner</h3>
+              <div className="relative mb-4">
+                <Input
+                  type="text"
+                  placeholder="Search here..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <div className="space-y-2">
+                 {conversations.petOwners
+                   .filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                   .map(user => (
+                  <div key={user.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
+                    <Avatar>
+                      <AvatarImage src={user.avatar} />
+                      <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <span>{user.name}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-             <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser({ name: 'Priya' })}>
-              <Avatar>
-                <AvatarImage src="/path/to/pet-owner-avatar-2.jpg" />
-                <AvatarFallback>PR</AvatarFallback>
-              </Avatar>
-              <span>Priya</span>
-            </div>
-             <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser({ name: 'Jersha' })}>
-              <Avatar>
-                <AvatarImage src="/path/to/pet-owner-avatar-3.jpg" />
-                <AvatarFallback>JE</AvatarFallback>
-              </Avatar>
-              <span>Jersha</span>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
 
       {/* Right Chat Area */}
@@ -124,75 +183,60 @@ const Chat = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               <Avatar>
-                <AvatarImage src="/src/assets/profile-pic.png" /> {/* Placeholder image */}
-                <AvatarFallback>RI</AvatarFallback>
+                <AvatarImage src={selectedUser.avatar || "/src/assets/profile-pic.png"} /> {/* Use user's avatar or placeholder */}
+                <AvatarFallback>{selectedUser.name.substring(0, 2)}</AvatarFallback>
               </Avatar>
               <span className="text-lg font-semibold">{selectedUser.name}</span>
             </div>
 
             {/* Chat Messages Area */}
             <div className="flex-1 p-4 overflow-y-auto w-full">
-              {/* Example Incoming Message */}
-              <div className="flex items-start space-x-3 mb-4">
-                <Avatar>
-                  <AvatarImage src="/src/assets/profile-pic.png" /> {/* Placeholder image */}
-                  <AvatarFallback>RI</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col">
-                  <div className="bg-gray-200 p-3 rounded-lg max-w-xs">
-                    Hiiii
+              {loading && <p>Loading messages...</p>}
+              {error && <p className="text-red-500">{error}</p>}
+              {!loading && !error && messages.map((message, index) => (
+                <div key={index} className={`flex items-start space-x-3 mb-4 ${message.sender === selectedUser.id ? '' : 'justify-end'}`}>
+                   {message.sender === selectedUser.id && ( // Render avatar for incoming messages
+                     <Avatar>
+                       <AvatarImage src={selectedUser.avatar || "/src/assets/profile-pic.png"} /> {/* Use user's avatar or placeholder */}
+                       <AvatarFallback>{selectedUser.name.substring(0, 2)}</AvatarFallback>
+                     </Avatar>
+                   )}
+                  <div className="flex flex-col">
+                    <div className={`p-3 rounded-lg max-w-xs ${message.sender === selectedUser.id ? 'bg-gray-200' : 'bg-purple-500 text-white'}`}>
+                      {message.content}
+                    </div>
+                    <span className={`text-xs text-gray-500 mt-1 ${message.sender === selectedUser.id ? 'self-start' : 'self-end'}`}>
+                      {message.timestamp} {/* Assuming timestamp is formatted */}
+                    </span>
                   </div>
-                  <span className="text-xs text-gray-500 mt-1 self-start">4:20 PM</span>
+                   {message.sender !== selectedUser.id && ( // Render avatar for outgoing messages
+                     <Avatar>
+                       <AvatarImage src="/src/assets/profile-pic.png" /> {/* Placeholder for current user's avatar */}
+                       <AvatarFallback>ME</AvatarFallback> {/* Placeholder */}
+                     </Avatar>
+                   )}
                 </div>
-              </div>
-
-              {/* Example Outgoing Message */}
-              <div className="flex items-start justify-end space-x-3 mb-4">
-                 <div className="flex flex-col items-end">
-                  <div className="bg-purple-500 text-white p-3 rounded-lg max-w-xs">
-                    How can I help you ?
-                  </div>
-                  <span className="text-xs text-gray-500 mt-1 self-end">4:20 PM</span>
-                </div>
-                 <Avatar>
-                  <AvatarImage src="/src/assets/profile-pic.png" /> {/* Placeholder image */}
-                  <AvatarFallback>ME</AvatarFallback>
-                </Avatar>
-              </div>
-
-               {/* Example Incoming Message */}
-              <div className="flex items-start space-x-3 mb-4">
-                <Avatar>
-                  <AvatarImage src="/src/assets/profile-pic.png" /> {/* Placeholder image */}
-                  <AvatarFallback>RI</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col">
-                  <div className="bg-gray-200 p-3 rounded-lg max-w-xs">
-                    Pets update...?
-                  </div>
-                  <span className="text-xs text-gray-500 mt-1 self-start">4:20 PM</span>
-                </div>
-              </div>
-
-               {/* Example Outgoing Message */}
-              <div className="flex items-start justify-end space-x-3 mb-4">
-                 <div className="flex flex-col items-end">
-                  <div className="bg-purple-500 text-white p-3 rounded-lg max-w-xs">
-                    It's Good.
-                  </div>
-                  <span className="text-xs text-gray-500 mt-1 self-end">4:20 PM</span>
-                </div>
-                 <Avatar>
-                  <AvatarImage src="/src/assets/profile-pic.png" /> {/* Placeholder image */}
-                  <AvatarFallback>ME</AvatarFallback>
-                </Avatar>
-              </div>
+              ))}
             </div>
 
             {/* Message Input Area */}
             <div className="p-4 border-t flex items-center space-x-3 w-full">
-              <Input type="text" placeholder="Text..." className="flex-1" />
-               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <Input
+                type="text"
+                placeholder="Text..."
+                className="flex-1"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={(e) => { if (e.key === 'Enter') handleSendMessage(inputMessage); }}
+              />
+               <svg
+                 xmlns="http://www.w3.org/2000/svg"
+                 className="h-6 w-6 text-gray-500 cursor-pointer"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+                 onClick={() => handleSendMessage(inputMessage)}
+               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </div>
