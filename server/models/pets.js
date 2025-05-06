@@ -38,19 +38,18 @@ const petSchema = new mongoose.Schema({
   Location: { // Consider making this more structured (e.g., GeoJSON) later
     type: String,
   },
-  // Renamed from Rescue and updated ref
-  organization: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Organization", // Reference to the Organization model
-  },
   petOwner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User", // Reference to the User model (Pet Owner)
   },
   origin: {
     type: String,
-    enum: ["owner", "foster"],
+    enum: ["owner", "foster", "rescue-shelter"],
     required: true,
+  },
+  availableForAdoptionOrFoster: {
+    type: Boolean,
+    default: false,
   },
   status: {
     type: String,
@@ -78,7 +77,6 @@ petSchema.pre('save', function(next) {
 
 // Indexing for common search fields
 petSchema.index({ Species: 1, Breed: 1, Size: 1, Age: 1 });
-petSchema.index({ organization: 1 });
 petSchema.index({ Location: "text" }); // Basic text search on location
 
 export default mongoose.model("Pets", petSchema);

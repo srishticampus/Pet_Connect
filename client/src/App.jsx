@@ -41,6 +41,9 @@ import LostFoundPets from "./components/pages/admin/lost-found-pets";
 import FindPet from "./components/pages/pet-owner/find-pet"; // Import FindPet
 import AddLostPet from "./components/pages/pet-owner/add-lost-pet"; // Import AddLostPet
 import EditLostPet from "./components/pages/pet-owner/edit-lost-pet"; // Import EditLostPet
+import RescueShelterAddPet from "./components/pages/rescue-shelter/AddPet"; // Import RescueShelterAddPet
+import RescueShelterManagePets from "./components/pages/rescue-shelter/ManagePets"; // Import RescueShelterManagePets
+import RescueShelterEditPet from "./components/pages/rescue-shelter/EditPet"; // Import RescueShelterEditPet
 
 function App() {
   const { isAuthenticated, user, isLoading } = useAuth();
@@ -102,6 +105,10 @@ function App() {
         {/* Foster routes */}
         <Route path="/foster/pets" element={<AvailablePets />} />
         <Route path="/foster/apply/:petId" element={<PetDetailsAndApply />} />
+        {/* Rescue/Shelter routes */}
+        <Route path="/rescue-shelter/add-pet" element={<ProtectedRoute><RescueShelterAddPet /></ProtectedRoute>} />
+        <Route path="/rescue-shelter/manage-pets" element={<ProtectedRoute><RescueShelterManagePets /></ProtectedRoute>} />
+        <Route path="/rescue-shelter/edit-pet/:id" element={<ProtectedRoute><RescueShelterEditPet /></ProtectedRoute>} />
       </Route>
 
       <Route path="/pets" element={<PetSearch />} />

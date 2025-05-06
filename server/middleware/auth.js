@@ -31,6 +31,7 @@ const auth = async (req, res, next) => {
     }
 
     req.user = user; // Attach the user object to the request
+    req.userType = user.role; // Attach the user type to the request
     next();
   } catch (err) {
     res.status(401).json({ msg: "Token is not valid" });

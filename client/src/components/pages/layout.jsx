@@ -84,6 +84,22 @@ const Navbar = () => {
                 </Link>
               </>
             )}
+            {user?.role === 'rescue-shelter' && (
+              <>
+                <Link
+                  to="/rescue-shelter/manage-pets"
+                  className="hover:text-primary transition"
+                >
+                  Manage Pets
+                </Link>
+                <Link
+                  to="/rescue-shelter/add-pet"
+                  className="hover:text-primary transition"
+                >
+                  Add Pet
+                </Link>
+              </>
+            )}
             {user?.role === 'foster' && (
               <Link
                 to="/foster/pets"

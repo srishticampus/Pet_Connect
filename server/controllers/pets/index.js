@@ -110,6 +110,18 @@ router.get("/", async (req, res) => {
   }
 });
 
+// @route   GET /api/pets/available-for-adoption
+// @desc    Get all pets available for adoption or foster
+// @access  Public
+router.get("/available-for-adoption", async (req, res) => {
+  try {
+    const pets = await Pets.find({ availableForAdoptionOrFoster: true });
+    res.json(pets);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Get a specific pet by ID
 router.get("/:id", async (req, res) => {
   try {
@@ -149,4 +161,154 @@ router.delete("/:id", async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+});
+
+// @route   GET /api/pets/rescue-shelter/my-pets
+// @desc    Get all pets for the authenticated rescue/shelter user
+// @access  Private (Rescue/Shelter only)
+router.get("/rescue-shelter/my-pets", auth, async (req, res) => {
+    // Check if the authenticated user is a rescue-shelter
+    if (req.userType !== 'rescue-shelter') {
+        return res.status(403).json({ message: 'Unauthorized: Only rescue-shelters can view their pets.' });
+    }
+
+    try {
+        const pets = await Pets.find({ petOwner: req.userId, origin: 'rescue-shelter' });
+        res.json(pets);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
+// @route   POST /api/pets/rescue-shelter
+// @desc    Add a new pet by a rescue/shelter
+// @access  Private (Rescue/Shelter only)
+router.post(
+  "/rescue-shelter",
+  auth, // Add auth middleware
+  upload.single('image'), // 'image' is the name of the file field in the form
+  async (req, res, next) => {
+    try {
+      if (req.body.healthVaccinations) {
+        req.body.healthVaccinations = JSON.parse(req.body.healthVaccinations);
+      }
+      next();
+    } catch (error) {
+      return res.status(400).json({ message: 'Invalid healthVaccinations format' });
+    }
+  },
+  [
+    body("name").notEmpty().withMessage("Name is required"),
+    body("species").notEmpty().withMessage("Species is required"),
+    body("shortDescription").notEmpty().withMessage("Short description is required"),
+    body("age").isInt({ gt: 0 }).withMessage("Age must be a positive integer"),
+    body("gender").isIn(["male", "female", "other"]).withMessage("Invalid gender"),
+    body("breed").notEmpty().withMessage("Breed is required"),
+    body("size").isIn(["small", "medium", "large"]).withMessage("Invalid size"),
+    body("description").notEmpty().withMessage("Description is required"),
+    body("healthVaccinations").isArray().withMessage("Health and vaccinations must be an array"),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Check if the authenticated user is a rescue-shelter
+    if (req.userType !== 'rescue-shelter') {
+        return res.status(403).json({ message: 'Unauthorized: Only rescue-shelters can add pets this way.' });
+    }
+
+    try {
+      const { name, species, shortDescription, age, gender, breed, size, description, healthVaccinations } = req.body;
+      let imagePath = null;
+      if (req.file) {
+        imagePath = '/uploads/' + req.file.filename; // Save the path to the image
+      }
+
+      const newPet = new Pets({
+        name,
+        Species: species,
+        shortDescription,
+        Age: age,
+        Gender: gender,
+        Breed: breed,
+        Size: size,
+        description,
+        healthVaccinations,
+        Photo: imagePath,
+        petOwner: req.userId, // Associate pet with the rescue/shelter user
+        origin: 'rescue-shelter', // Set origin to rescue-shelter
+        availableForAdoptionOrFoster: true, // Mark as available for adoption/foster
+      });
+
+      const savedPet = await newPet.save();
+      res.status(201).json(savedPet);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  },
+);
+
+// @route   PATCH /api/pets/rescue-shelter/:id
+// @desc    Edit a pet by a rescue/shelter
+// @access  Private (Rescue/Shelter only)
+router.patch("/rescue-shelter/:id", auth, upload.single('image'), async (req, res) => {
+    // Check if the authenticated user is a rescue-shelter
+    if (req.userType !== 'rescue-shelter') {
+        return res.status(403).json({ message: 'Unauthorized: Only rescue-shelters can edit pets.' });
+    }
+
+    try {
+        const petId = req.params.id;
+        const updates = req.body;
+
+        // Find the pet by ID and petOwner ID to ensure ownership
+        const pet = await Pets.findOneAndUpdate(
+            { _id: petId, petOwner: req.userId },
+            updates,
+            { new: true }
+        );
+
+        if (!pet) {
+            return res.status(404).json({ message: "Pet not found or you do not have permission to edit this pet." });
+        }
+
+        // Handle image upload if a new image is provided
+        if (req.file) {
+            pet.Photo = '/uploads/' + req.file.filename;
+            await pet.save();
+        }
+
+
+        res.json(pet);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// @route   DELETE /api/pets/rescue-shelter/:id
+// @desc    Delete a pet by a rescue/shelter
+// @access  Private (Rescue/Shelter only)
+router.delete("/rescue-shelter/:id", auth, async (req, res) => {
+    // Check if the authenticated user is a rescue-shelter
+    if (req.userType !== 'rescue-shelter') {
+        return res.status(403).json({ message: 'Unauthorized: Only rescue-shelters can delete pets.' });
+    }
+
+    try {
+        const petId = req.params.id;
+
+        // Find and delete the pet by ID and petOwner ID to ensure ownership
+        const pet = await Pets.findOneAndDelete({ _id: petId, petOwner: req.userId });
+
+        if (!pet) {
+            return res.status(404).json({ message: "Pet not found or you do not have permission to delete this pet." });
+        }
+
+        res.json({ message: "Pet deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });

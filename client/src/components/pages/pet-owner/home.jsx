@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useEffect, useState } from "react"; // Import useEffect and useState
 
 import hero from "@/assets/hero.png";
 import cardimg3 from "@/assets/cardimg-3.png";
@@ -7,6 +8,7 @@ import work2 from "@/assets/work-2.png";
 import work3 from "@/assets/work-3.png";
 import dog from "@/assets/dog.png";
 import { Button } from "@/components/ui/button";
+import api from "@/utils/api"; // Import the api utility
 
 export default function HomePage() {
   const stats = [
@@ -16,29 +18,21 @@ export default function HomePage() {
     { value: "20k+", label: "Pets Rescued" },
   ];
 
-  const puppies = [
-    {
-      name: "Max",
-      breed: "Golden Retriever",
-      age: "8 months",
-      description: "Friendly and energetic puppy, great with kids and other pets.",
-      image: dog,
-    },
-    {
-      name: "Buddy",
-      breed: "Labrador",
-      age: "6 months",
-      description: "Loves to play fetch and is very affectionate.",
-      image: dog,
-    },
-    {
-      name: "Charlie",
-      breed: "Poodle",
-      age: "1 year",
-      description: "Intelligent and loves to learn new tricks.",
-      image: dog,
-    },
-  ];
+  const [pets, setPets] = useState([]); // State to hold fetched pets
+
+  useEffect(() => {
+    const fetchPets = async () => {
+      try {
+        const response = await api.get("/pets/available-for-adoption"); // Fetch pets available for adoption
+        setPets(response.data);
+      } catch (error) {
+        console.error("Failed to fetch pets:", error);
+      }
+    };
+
+    fetchPets();
+  }, []); // Empty dependency array means this effect runs once on mount
+
 
   return (
     <main className="flex-1">
@@ -91,30 +85,32 @@ export default function HomePage() {
           adoption journey today!
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {puppies.map((puppy, index) => (
-            <div key={index} className="w-full">
+          {pets.map((pet) => ( // Map over the fetched pets
+            <div key={pet._id} className="w-full"> {/* Use pet._id as key */}
               <div className="card bg-white rounded-2xl">
                 <div className="img">
                   <img
-                    src={puppy.image}
-                    alt="products"
+                    src={pet.Photo ? import.meta.env.VITE_API_URL + pet.Photo : ""} // Use pet.name for alt text
+                    alt={pet.name} // Use pet.name for alt text
                     className="w-full aspect-[137/115] object-cover rounded-t-2xl"
                   />
                 </div>
                 <div className="content p-4">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-semibold">{puppy.name}</h3>
+                    <h3 className="font-semibold">{pet.name}</h3> {/* Use pet.name */}
                     {/*badge*/}
-                    <div className="bg-[#4CAF50] text-white rounded-2xl text-[0.6rem] px-1.5 py-0.5">
-                      Available
-                    </div>
+                    {pet.availableForAdoptionOrFoster && ( // Conditionally render badge
+                      <div className="bg-[#4CAF50] text-white rounded-2xl text-[0.6rem] px-1.5 py-0.5">
+                        Available
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs font-medium text-[#4c4c4c] py-1">
-                    {puppy.breed} •{" "}
-                    <span className="text-[#7f7f7f]">{puppy.age}</span>
+                    {pet.Breed} •{" "} {/* Use pet.Breed */}
+                    <span className="text-[#7f7f7f]">{pet.Age}</span> {/* Use pet.Age */}
                   </p>
                   <p className="text-xs font-light text-[#4c4c4c] py-1">
-                    {puppy.description}
+                    {pet.description} {/* Use pet.description */}
                   </p>
                   <Button
                     className="w-full mt-3"
