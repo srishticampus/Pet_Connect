@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog"; // Import Dialog components
 
 // Assuming an API service for foster features will be created
-// import { getPetDetails, applyToFoster } from './fosterService';
+import { getPetDetails, applyToFoster } from './fosterService';
 
 const PetDetailsAndApply = () => {
   const { petId } = useParams();
@@ -40,52 +40,24 @@ const PetDetailsAndApply = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false); // State for dialog visibility
 
-  // Dummy data for now, replace with API call later
-  const dummyPetDetails = {
-    id: petId,
-    photo: '/src/assets/dog.png', // Use a placeholder or fetch from API
-    breed: 'Golden Retriever',
-    species: 'Dog',
-    size: 'Large',
-    age: '2 years',
-    healthStatus: ['Fleas & ticks', 'Dental disease'], // This should be dynamic based on species
-    location: 'Local Shelter',
-    policyLink: '#', // Placeholder link
-  };
-
-  // Dummy health status options based on species
-  const healthStatusOptions = {
-    Dog: ['Fleas & ticks', 'Ear Infections', 'Worms', 'Dental disease'],
-    Bird: ['Feather plucking', 'nutritional defecencies'],
-    Cat: ['Feline Leukemia', 'FIV', 'Upper Respiratory Infections'],
-    // Add other species health status options
-  };
-
 
   useEffect(() => {
-    // In a real scenario, fetch pet details using petId
-    setLoading(true);
-    setError(null);
-    // Replace with actual API call:
-    // getPetDetails(petId)
-    //   .then(data => {
-    //     setPet(data);
-    //     setLoading(false);
-    //   })
-    //   .catch(err => {
-    //     setError(err);
-    //     setLoading(false);
-    //   });
+    const fetchPetDetails = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getPetDetails(petId);
+        setPet(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Using dummy data for demonstration
-    setPet({
-        ...dummyPetDetails,
-        // Dynamically set health status based on species from dummy data
-        healthStatus: healthStatusOptions[dummyPetDetails.species] || []
-    });
-    setLoading(false);
+    fetchPetDetails();
 
-  }, [petId]); // Add healthStatusOptions to dependency array if it's not constant
+  }, [petId]);
 
 
   const handleInputChange = (e) => {
@@ -109,23 +81,15 @@ const PetDetailsAndApply = () => {
     setSubmitError(null);
     setSubmitSuccess(false);
 
-    // In a real scenario, submit the foster application
-    // Replace with actual API call:
-    // try {
-    //   await applyToFoster(petId, formData);
-    //   setSubmitSuccess(true);
-    // } catch (err) {
-    //   setSubmitError(err);
-    // } finally {
-    //   setSubmitting(false);
-    // }
-
-    // Simulate API call for demonstration
-    console.log('Submitting application for pet:', petId, formData);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-    setSubmitSuccess(true);
-    setSubmitting(false);
-    setIsDialogOpen(false); // Close dialog on successful submission
+    try {
+      await applyToFoster(petId, formData);
+      setSubmitSuccess(true);
+      setIsDialogOpen(false); // Close dialog on successful submission
+    } catch (err) {
+      setSubmitError(err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {

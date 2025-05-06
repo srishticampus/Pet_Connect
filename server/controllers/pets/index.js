@@ -87,6 +87,19 @@ router.post(
   },
 );
 
+// @route   GET /api/pets/species
+// @desc    Get a list of distinct pet species
+// @access  Public
+router.get("/species", async (req, res) => {
+  try {
+    const species = await Pets.distinct("Species");
+    res.json(species);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
 // Get all pets
 router.get("/", async (req, res) => {
   try {

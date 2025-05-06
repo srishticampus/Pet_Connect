@@ -5,40 +5,47 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router';
 // Assuming an API service for foster features will be created
-// import { getAvailablePets } from './fosterService';
+import { getAvailablePets, getSpeciesList } from './fosterService';
 
 const AvailablePets = () => {
   const [species, setSpecies] = useState('');
+  const [availableSpecies, setAvailableSpecies] = useState([]); // New state for species list
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Dummy data for now, replace with API call later
-  const dummyPets = [
-    { id: 'pet1', photo: '/src/assets/dog.png', breed: 'Golden Retriever', species: 'Dog', age: '2 years' },
-    { id: 'pet2', photo: '/src/assets/cardimg-1.png', breed: 'Siamese', species: 'Cat', age: '1 year' },
-    { id: 'pet3', photo: '/src/assets/cardimg-2.png', breed: 'Parrot', species: 'Bird', age: '6 months' },
-    { id: 'pet4', photo: '/src/assets/cardimg-3.png', breed: 'Beagle', species: 'Dog', age: '3 years' },
-  ];
-
+  // Effect to fetch available pets based on selected species
   useEffect(() => {
-    // In a real scenario, fetch pets based on selected species
-    setLoading(true);
-    setError(null);
-    // Replace with actual API call:
-    // getAvailablePets(species)
-    //   .then(data => setPets(data))
-    //   .catch(err => setError(err))
-    //   .finally(() => setLoading(false));
+    const fetchPets = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getAvailablePets(species);
+        setPets(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Using dummy data filtered by species for demonstration
-    const filteredPets = species
-      ? dummyPets.filter(pet => pet.species === species)
-      : dummyPets;
-    setPets(filteredPets);
-    setLoading(false);
-
+    fetchPets();
   }, [species]);
+
+  // Effect to fetch the list of available species when the component mounts
+  useEffect(() => {
+    const fetchSpecies = async () => {
+      try {
+        const speciesList = await getSpeciesList();
+        setAvailableSpecies(speciesList);
+      } catch (err) {
+        console.error("Error fetching species list:", err);
+        // Optionally set an error state for species fetching
+      }
+    };
+
+    fetchSpecies();
+  }, []); // Empty dependency array means this effect runs once on mount
 
   const handleSpeciesChange = (value) => {
     // Convert empty string value from Select to null for "All Species"
@@ -57,10 +64,9 @@ const AvailablePets = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={null}>All Species</SelectItem>
-            <SelectItem value="Dog">Dog</SelectItem>
-            <SelectItem value="Cat">Cat</SelectItem>
-            <SelectItem value="Bird">Bird</SelectItem>
-            {/* Add other species as needed */}
+            {availableSpecies.map(s => (
+              <SelectItem key={s} value={s}>{s}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

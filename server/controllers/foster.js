@@ -41,6 +41,54 @@ router.get('/pets', auth, async (req, res) => {
   }
 });
 
+// @route   GET /api/foster/pets/:petId
+// @desc    Get details for a specific pet available for fostering
+// @access  Private (Foster users only)
+router.get(
+  '/pets/:petId',
+  auth, // Authenticate user
+  [
+    // Validate petId parameter
+    param('petId', 'Invalid pet ID').isMongoId(),
+  ],
+  async (req, res) => {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Check if the authenticated user is a foster
+    if (req.user.role !== 'foster') {
+      return res.status(403).json({ msg: 'Access denied. Only foster users can view pet details.' });
+    }
+
+    const { petId } = req.params;
+
+    try {
+      // Find the pet by ID, ensuring it's active and available for fostering
+      const pet = await Pets.findOne({
+        _id: petId,
+        status: 'active',
+        $or: [
+          { origin: 'owner' },
+          { organization: { $exists: true } }
+        ]
+      }).populate('organization', 'name'); // Populate organization name
+
+      if (!pet) {
+        return res.status(404).json({ msg: 'Pet not found or not available for fostering' });
+      }
+
+      res.json(pet);
+
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
 // @route   POST /api/foster/apply/:petId
 // @desc    Submit a foster application for a pet
 // @access  Private (Foster users only)
