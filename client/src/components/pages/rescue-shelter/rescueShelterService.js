@@ -59,3 +59,34 @@ export const deletePet = async (id) => {
     throw err;
   }
 };
+
+// New functions for managing applications for owned pets
+export const getOwnedApplications = async () => {
+  try {
+    const res = await api.get('/applications/owned');
+    return res.data;
+  } catch (err) {
+    console.error('Error fetching owned applications:', err);
+    throw err;
+  }
+};
+
+export const approveApplicationByOwner = async (applicationId) => {
+  try {
+    const res = await api.put(`/applications/${applicationId}/approve-by-owner`);
+    return res.data;
+  } catch (err) {
+    console.error('Error approving application by owner:', err);
+    throw err;
+  }
+};
+
+export const rejectApplicationByOwner = async (applicationId) => {
+  try {
+    const res = await api.put(`/applications/${applicationId}/reject-by-owner`);
+    return res.data;
+  } catch (err) {
+    console.error('Error rejecting application by owner:', err);
+    throw err;
+  }
+};

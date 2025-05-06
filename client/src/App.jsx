@@ -46,6 +46,7 @@ import RescueShelterAddPet from "./components/pages/rescue-shelter/AddPet"; // I
 import RescueShelterManagePets from "./components/pages/rescue-shelter/ManagePets"; // Import RescueShelterManagePets
 import RescueShelterEditPet from "./components/pages/rescue-shelter/EditPet"; // Import RescueShelterEditPet
 import AdminApplicationsPage from "./components/pages/admin/applications"; // Import AdminApplicationsPage
+import RescueShelterApplicationsPage from "./components/pages/rescue-shelter/Applications"; // Import RescueShelterApplicationsPage
 
 import EditPet from "./components/pages/pet-owner/edit-pet"; // Import EditPet
 
@@ -115,6 +116,7 @@ function App() {
         <Route path="/rescue-shelter/add-pet" element={<ProtectedRoute><RescueShelterAddPet /></ProtectedRoute>} />
         <Route path="/rescue-shelter/manage-pets" element={<ProtectedRoute><RescueShelterManagePets /></ProtectedRoute>} />
         <Route path="/rescue-shelter/edit-pet/:id" element={<ProtectedRoute><RescueShelterEditPet /></ProtectedRoute>} />
+        <Route path="/rescue-shelter/applications" element={<ProtectedRoute><RescueShelterApplicationsPage /></ProtectedRoute>} /> {/* Added Rescue Shelter Applications route */}
       </Route>
 
       <Route path="/admin" element={<AdminLayout />}>

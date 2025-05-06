@@ -6,6 +6,35 @@ import auth from "../middleware/auth.js"; // Import authentication middleware
 
 export const router = express.Router();
 
+// Get applications for pets owned by the authenticated user (Rescue Shelter only)
+router.get("/owned", auth, async (req, res) => {
+  try {
+    // Check if user is a rescue shelter
+    if (req.userType !== 'rescue-shelter') {
+      return res.status(403).json({ message: "Access denied. Rescue Shelter access required." });
+    }
+
+    console.log("Fetching owned applications for user:", req.user._id);
+    // Find pets owned by the authenticated user
+    const ownedPets = await Pets.find({ petOwner: req.user._id }).select('_id');
+    console.log("Found owned pets:", ownedPets.length);
+    const ownedPetIds = ownedPets.map(pet => pet._id);
+    console.log("Owned pet IDs:", ownedPetIds);
+
+    // Find applications for these pets
+    console.log("Finding applications for owned pet IDs...");
+    const applications = await Application.find({ pet: { $in: ownedPetIds } })
+      .populate('applicant', 'name email phoneNumber aadharNumber place') // Populate applicant details
+      .populate('pet', 'name Photo Breed Age Gender Size'); // Populate pet details
+    console.log("Found applications:", applications.length);
+
+    res.json(applications);
+  } catch (err) {
+    console.error("Error fetching owned applications:", err);
+    res.status(500).json({ message: "Failed to fetch owned applications.", error: err.message });
+  }
+});
+
 // Get application details by ID
 router.get("/:applicationId", async (req, res) => {
   try {
@@ -71,5 +100,84 @@ router.post("/adopt/:petId", auth, async (req, res) => {
   } catch (err) {
     console.error("Error submitting adoption application:", err);
     res.status(500).json({ message: "Failed to submit adoption application.", error: err.message });
+  }
+});
+
+// Approve an application by the pet owner (Rescue Shelter only)
+router.put("/:applicationId/approve-by-owner", auth, async (req, res) => {
+  try {
+    // Check if user is a rescue shelter
+    if (req.userType !== 'rescue-shelter') {
+      return res.status(403).json({ message: "Access denied. Rescue Shelter access required." });
+    }
+
+    const application = await Application.findById(req.params.applicationId);
+
+    if (!application) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    // Verify that the authenticated user is the owner of the pet associated with the application
+    if (!application.owner.equals(req.user._id)) {
+         return res.status(403).json({ message: "Access denied. You do not own this pet's application." });
+    }
+
+
+    if (application.status !== 'pending') {
+        return res.status(400).json({ message: `Application is already ${application.status}.` });
+    }
+
+    application.status = 'approved';
+    await application.save();
+
+    // Update pet owner and availability
+    const pet = await Pets.findById(application.pet);
+    if (!pet) {
+        console.error(`Pet with ID ${application.pet} not found for application ${application._id}`);
+        return res.status(404).json({ message: "Associated pet not found." });
+    }
+
+    pet.petOwner = application.applicant; // Assign pet to the applicant
+    pet.availableForAdoptionOrFoster = false; // Mark pet as not available
+    await pet.save();
+
+    res.json({ message: "Application approved successfully!", application });
+  } catch (err) {
+    console.error("Error approving application by owner:", err);
+    res.status(500).json({ message: "Failed to approve application.", error: err.message });
+  }
+});
+
+// Reject an application by the pet owner (Rescue Shelter only)
+router.put("/:applicationId/reject-by-owner", auth, async (req, res) => {
+  try {
+    // Check if user is a rescue shelter
+    if (req.userType !== 'rescue-shelter') {
+      return res.status(403).json({ message: "Access denied. Rescue Shelter access required." });
+    }
+
+    const application = await Application.findById(req.params.applicationId);
+
+    if (!application) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+     // Verify that the authenticated user is the owner of the pet associated with the application
+    if (!application.owner.equals(req.user._id)) {
+         return res.status(403).json({ message: "Access denied. You do not own this pet's application." });
+    }
+
+
+    if (application.status !== 'pending') {
+        return res.status(400).json({ message: `Application is already ${application.status}.` });
+    }
+
+    application.status = 'rejected';
+    await application.save();
+
+    res.json({ message: "Application rejected successfully!", application });
+  } catch (err) {
+    console.error("Error rejecting application by owner:", err);
+    res.status(500).json({ message: "Failed to reject application.", error: err.message });
   }
 });
