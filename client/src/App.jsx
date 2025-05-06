@@ -44,6 +44,7 @@ import EditLostPet from "./components/pages/pet-owner/edit-lost-pet"; // Import 
 import RescueShelterAddPet from "./components/pages/rescue-shelter/AddPet"; // Import RescueShelterAddPet
 import RescueShelterManagePets from "./components/pages/rescue-shelter/ManagePets"; // Import RescueShelterManagePets
 import RescueShelterEditPet from "./components/pages/rescue-shelter/EditPet"; // Import RescueShelterEditPet
+import AdminApplicationsPage from "./components/pages/admin/applications"; // Import AdminApplicationsPage
 
 import EditPet from "./components/pages/pet-owner/edit-pet"; // Import EditPet
 
@@ -124,6 +125,7 @@ function App() {
         <Route path="pet-management" element={<PetManagement />} />
         <Route path="contact-submissions" element={<ContactSubmissions />} />
         <Route path="lost-found-pets" element={<LostFoundPets />} />
+        <Route path="applications" element={<AdminApplicationsPage />} /> {/* Added Applications route */}
       </Route>
     </Routes>
   );

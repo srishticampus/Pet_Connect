@@ -64,19 +64,17 @@ const PetDetailsPage = () => {
     setSubmitError(null);
     setSubmitSuccess(false);
 
-    // TODO: Implement actual API call to submit adoption application
     console.log("Submitting adoption application for pet:", petId, "with data:", formData);
 
-    // Simulate API call success/failure
     try {
-      // Replace with actual API call: await api.post(`/applications/adopt/${petId}`, formData);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      const response = await api.post(`/applications/adopt/${petId}`, formData);
+      console.log("Application submitted successfully:", response.data);
       setSubmitSuccess(true);
       setIsDialogOpen(false); // Close dialog on successful submission
       setFormData({ message: '', confirmAdoption: false }); // Reset form
     } catch (err) {
-      // setSubmitError(err); // Use actual error from API call
-      setSubmitError({ message: "Failed to submit application (simulated error)." }); // Simulate error
+      console.error("Failed to submit application:", err);
+      setSubmitError(err.response?.data || { message: "An unexpected error occurred." }); // Use actual error from API call
     } finally {
       setSubmitting(false);
     }

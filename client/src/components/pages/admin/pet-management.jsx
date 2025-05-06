@@ -131,6 +131,17 @@ export const columns = [
     name: "Origin"
   },
   {
+    accessorKey: "owner",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Owner" />
+    ),
+    cell: ({ row }) => {
+      const pet = row.original;
+      return pet.petOwner ? pet.petOwner.name : "No owner";
+    },
+    name: "Owner"
+  },
+  {
     id: "actions",
     cell: ({ row, table }) => {
       const pet = row.original

@@ -7,6 +7,7 @@ import { getAllAdopters, approveAdopter, rejectAdopter, getApprovedAdopters } fr
 import { getAllFosters, approveFoster, rejectFoster, getApprovedFosters } from './fosters.js'; // Import foster controllers
 import { getAllRescueShelters, approveRescueShelter, rejectRescueShelter, getApprovedRescueShelters } from './rescue-shelters.js'; // Import rescue shelter controllers
 import lostFoundPetsRouter from './lost-found-pets.js';
+import applicationsRouter from './applications.js'; // Import applications router
 
 const router = express.Router();
 
@@ -39,5 +40,6 @@ router.delete('/rescue-shelters/:id/reject', rejectRescueShelter);
 router.get('/rescue-shelters/approved', getApprovedRescueShelters);
 
 router.use('/lost-found-pets', lostFoundPetsRouter);
+router.use('/applications', applicationsRouter); // Use applications router
 
 export default router;

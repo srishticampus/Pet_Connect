@@ -76,6 +76,11 @@ const items = [
     url: "/admin/lost-found-pets",
     icon: Search,
   },
+  {
+    title: "Adoption Applications",
+    url: "/admin/applications",
+    icon: FileText, // Using FileText icon for applications
+  },
 ];
 
 function AppSidebar() {

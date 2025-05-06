@@ -3,7 +3,7 @@ import { body, validationResult } from 'express-validator';
 
 const getAllPets = async (req, res) => {
   try {
-    const pets = await Pets.find();
+    const pets = await Pets.find().populate('petOwner', 'name');
     res.status(200).json(pets);
   } catch (error) {
     console.error(error);

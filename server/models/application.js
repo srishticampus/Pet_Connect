@@ -11,10 +11,10 @@ const applicationSchema = new mongoose.Schema({
     ref: "Pets",
     required: true,
   },
-  organization: { // The organization managing the pet (rescue/shelter)
+  owner: { // The owner managing the pet (rescue/shelter or individual pet owner)
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Organization",
-    required: true, // Assuming pets are always linked to an org
+    ref: "User", // Assuming owner can be a User (pet owner) or Organization
+    required: true,
   },
   applicationType: {
     type: String,

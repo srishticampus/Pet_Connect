@@ -172,3 +172,34 @@ export const updatePetStatus = async (id, status) => {
     throw error;
   }
 };
+
+// New functions for managing applications
+export const getApplications = async () => {
+  try {
+    const response = await api.get('/admin/applications');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    throw error;
+  }
+};
+
+export const approveApplication = async (applicationId) => {
+  try {
+    const response = await api.put(`/admin/applications/${applicationId}/approve`);
+    return response.data;
+  } catch (error) {
+    console.error('Error approving application:', error);
+    throw error;
+  }
+};
+
+export const rejectApplication = async (applicationId) => {
+  try {
+    const response = await api.put(`/admin/applications/${applicationId}/reject`);
+    return response.data;
+  } catch (error) {
+    console.error('Error rejecting application:', error);
+    throw error;
+  }
+};
