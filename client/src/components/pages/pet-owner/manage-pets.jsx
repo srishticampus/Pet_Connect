@@ -1,18 +1,37 @@
 import React, { useEffect, useState } from 'react'; // Import useEffect and useState
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import Pet from '@/components/pet';
-import api from '@/utils/api'; // Import the api service
+import petOwnerService from './petOwnerService'; // Import the petOwnerService
 
 const ManagePets = () => {
   const [userPets, setUserPets] = useState([]); // State for fetched pets
   const [loading, setLoading] = useState(true); // State for loading
   const [error, setError] = useState(null); // State for error
 
+  const navigate = useNavigate();
+
+  const handleDeletePet = async (petId) => {
+    if (window.confirm('Are you sure you want to delete this pet?')) {
+      try {
+        await petOwnerService.deletePet(petId);
+        // Remove the deleted pet from the state
+        setUserPets(userPets.filter(pet => pet._id !== petId));
+      } catch (err) {
+        setError(err.message);
+        console.error('Error deleting pet:', err);
+      }
+    }
+  };
+
+  const handleEditPet = (petId) => {
+    navigate(`/pet-owner/edit-pet/${petId}`);
+  };
+
   useEffect(() => {
     const fetchUserPets = async () => {
       try {
-        const response = await api.get('/pets/'); // Use api.get to fetch pets
-        setUserPets(response.data); // Axios puts the response data in .data
+        const response = await petOwnerService.getUserPets(); // Use petOwnerService to fetch user pets
+        setUserPets(response); // petOwnerService returns the data directly
       } catch (err) {
         setError(err.message);
         console.error('Error fetching pets:', err);
@@ -48,7 +67,12 @@ const ManagePets = () => {
             .filter(pet => pet.status === 'active') // Filter out lost/found pets
             .map(pet => (
             // Pet component will need to be adapted to accept pet data as props
-            <Pet key={pet._id} pet={pet} /> // Use pet._id for the key
+            <Pet
+              key={pet._id}
+              pet={pet}
+              onEdit={() => handleEditPet(pet._id)}
+              onDelete={() => handleDeletePet(pet._id)}
+            /> // Use pet._id for the key
           ))
         ) : (
           <p>You don't have any pets listed yet.</p>
@@ -57,5 +81,6 @@ const ManagePets = () => {
     </section>
   );
 };
+
 
 export default ManagePets;

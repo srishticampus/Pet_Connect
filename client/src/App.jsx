@@ -45,6 +45,8 @@ import RescueShelterAddPet from "./components/pages/rescue-shelter/AddPet"; // I
 import RescueShelterManagePets from "./components/pages/rescue-shelter/ManagePets"; // Import RescueShelterManagePets
 import RescueShelterEditPet from "./components/pages/rescue-shelter/EditPet"; // Import RescueShelterEditPet
 
+import EditPet from "./components/pages/pet-owner/edit-pet"; // Import EditPet
+
 function App() {
   const { isAuthenticated, user, isLoading } = useAuth();
 
@@ -95,6 +97,7 @@ function App() {
         <Route path="/pet-details" element={<PetDetails />} />
         <Route path="/pet-owner/manage-pets" element={<ProtectedRoute><ManagePets /></ProtectedRoute>} />
         <Route path="/pet-owner/add-pet" element={<ProtectedRoute><AddPet /></ProtectedRoute>} />
+        <Route path="/pet-owner/edit-pet/:petId" element={<ProtectedRoute><EditPet /></ProtectedRoute>} /> {/* Added EditPet route */}
         <Route path="/pet-owner/find-pet" element={<ProtectedRoute><FindPet /></ProtectedRoute>} /> {/* Added FindPet route */}
         <Route path="/pet-owner/add-lost-pet" element={<ProtectedRoute><AddLostPet /></ProtectedRoute>} /> {/* Added AddLostPet route */}
         <Route path="/pet-owner/edit-lost-pet/:petId" element={<ProtectedRoute><EditLostPet /></ProtectedRoute>} /> {/* Added EditLostPet route */}

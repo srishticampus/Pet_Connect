@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Pet = ({ pet }) => {
+const Pet = ({ pet, onEdit, onDelete }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Pet image */}
@@ -87,10 +87,19 @@ const Pet = ({ pet }) => {
             <li key={index}>{item}</li>
           ))}
         </ul>
-        {/* Apply to Adopt button */}
+        {/* Action buttons */}
         <div className="flex items-center gap-4 mt-auto">
-          <button className="mt-auto bg-[#e54c00] text-white px-4 py-2 rounded-4xl w-full hover:cursor-pointer hover:bg-[#ED824D]">
-            Manage
+          <button
+            onClick={onEdit}
+            className="mt-auto bg-blue-500 text-white px-4 py-2 rounded-4xl w-full hover:cursor-pointer hover:bg-blue-600"
+          >
+            Edit
+          </button>
+          <button
+            onClick={onDelete}
+            className="mt-auto bg-red-500 text-white px-4 py-2 rounded-4xl w-full hover:cursor-pointer hover:bg-red-600"
+          >
+            Delete
           </button>
         </div>
       </div>

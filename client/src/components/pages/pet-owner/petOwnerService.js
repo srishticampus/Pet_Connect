@@ -55,6 +55,49 @@ const petOwnerService = {
       throw error;
     }
   },
+  deletePet: async (petId) => {
+    try {
+      const response = await api.delete(`/pet-owner/my-pets/${petId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error deleting pet with ID ${petId}:`, error);
+      throw error;
+    }
+  },
+  getPetById: async (petId) => {
+    try {
+      const response = await api.get(`/pet-owner/my-pets/${petId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching pet with ID ${petId}:`, error);
+      throw error;
+    }
+  },
+
+  updatePet: async (petId, petData) => {
+    try {
+      const response = await api.put(`/pet-owner/my-pets/${petId}`, petData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Important for sending FormData
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating pet with ID ${petId}:`, error);
+      throw error;
+    }
+  },
 };
 
 export default petOwnerService;
+
+// Add a new function to fetch all pets for the authenticated user
+petOwnerService.getUserPets = async () => {
+  try {
+    const response = await api.get('/pet-owner/my-pets');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user pets:', error);
+    throw error;
+  }
+};
