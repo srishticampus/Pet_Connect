@@ -89,10 +89,7 @@ const RescueShelterApplicationsPage = () => {
                       <span><strong>Size:</strong> {app.pet?.Size || 'N/A'}</span>
                     </div>
                   </div>
-                  {/* Pet View More Link */}
-                  <Button variant="link" size="sm" className="p-0 h-auto text-orange-500 underline mt-2">
-                    View More <ExternalLink className="w-3 h-3 ml-1" />
-                  </Button>
+                 
                 </div>
               </div>
 
@@ -103,10 +100,7 @@ const RescueShelterApplicationsPage = () => {
                 <div><strong>Email:</strong> {app.applicant?.email || 'N/A'}</div>
                 <div><strong>Location:</strong> {app.applicant?.place || 'N/A'}</div>
                 <div><strong>Aadhaar:</strong> {app.applicant?.aadharNumber || 'N/A'}</div>
-                {/* Applicant View More Link */}
-                <Button variant="link" size="sm" className="p-0 h-auto text-orange-500 underline mt-2">
-                  View More <ExternalLink className="w-3 h-3 ml-1" />
-                </Button>
+                
               </div>
 
               {/* Actions */}

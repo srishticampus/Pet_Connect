@@ -84,6 +84,7 @@ const Navbar = () => {
                 </Link>
               </>
             )}
+          
             {user?.role === 'rescue-shelter' && (
               <>
                 <Link
@@ -93,10 +94,10 @@ const Navbar = () => {
                   Manage Pets
                 </Link>
                 <Link
-                  to="/rescue-shelter/add-pet"
+                  to="/rescue-shelter/applications"
                   className="hover:text-primary transition"
                 >
-                  Add Pet
+                  Applications
                 </Link>
               </>
             )}
