@@ -35,26 +35,42 @@ const Chat = () => {
   // Fetch messages when a user is selected
   useEffect(() => {
     if (selectedUser) {
-      const fetchMessages = async () => {
+      const fetchMessagesAndMarkAsRead = async () => {
         try {
           setLoading(true);
           // Assuming selectedUser object has an 'id' property
           const response = await api.get(`/chat/conversations/${selectedUser.id}/messages`);
           setMessages(response.data);
+
+          // Mark messages as read
+          await api.post(`/chat/conversations/${selectedUser.id}/mark-as-read`);
+
+          // Update unread count in conversations state
+          setConversations(prevConversations => {
+            const updatedConversations = { ...prevConversations };
+            for (const category in updatedConversations) {
+              updatedConversations[category] = updatedConversations[category].map(user =>
+                user.id === selectedUser.id ? { ...user, unreadCount: 0 } : user
+              );
+            }
+            return updatedConversations;
+          });
+
         } catch (err) {
-          setError(`Failed to fetch messages for ${selectedUser.name}.`);
-          console.error(`Error fetching messages for user ${selectedUser.id}:`, err);
+          setError(`Failed to fetch messages or mark as read for ${selectedUser.name}.`);
+          console.error(`Error fetching messages or marking as read for user ${selectedUser.id}:`, err);
           setMessages([]); // Clear messages on error
         } finally {
           setLoading(false);
         }
       };
 
-      fetchMessages();
+      fetchMessagesAndMarkAsRead();
+
     } else {
       setMessages([]); // Clear messages when no user is selected
     }
-  }, [selectedUser]); // Rerun effect when selectedUser changes
+  }, [selectedUser, currentUser?.id]); // Rerun effect when selectedUser or currentUser changes
 
   // Function to handle sending a message
   const handleSendMessage = async (content) => {
@@ -100,13 +116,19 @@ const Chat = () => {
               <div className="space-y-2">
                 {conversations.adopters
                   .filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .sort((a, b) => (b.unreadCount || 0) - (a.unreadCount || 0)) // Sort by unread count descending
                   .map(user => (
-                  <div key={user.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
-                    <Avatar>
-                      <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
-                      <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
-                    </Avatar>
-                    <span>{user.name}</span>
+                  <div key={user.id} className="flex items-center justify-between space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
+                    <div className="flex items-center space-x-3">
+                      <Avatar>
+                        <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
+                        <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
+                      </Avatar>
+                      <span>{user.name}</span>
+                    </div>
+                    {user.unreadCount > 0 && (
+                      <span className="flex h-2 w-2 translate-x-1 translate-y-1 rounded-full bg-red-500" />
+                    )}
                   </div>
                 ))}
               </div>
@@ -130,15 +152,21 @@ const Chat = () => {
               <div className="space-y-2">
                  {conversations.fosters
                    .filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                   .sort((a, b) => (b.unreadCount || 0) - (a.unreadCount || 0)) // Sort by unread count descending
                    .map(user => (
-                  <div key={user.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
-                    <Avatar>
-                      <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
-                      <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
-                    </Avatar>
-                    <span>{user.name}</span>
-                  </div>
-                ))}
+                   <div key={user.id} className="flex items-center justify-between space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
+                     <div className="flex items-center space-x-3">
+                       <Avatar>
+                         <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
+                         <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
+                       </Avatar>
+                       <span>{user.name}</span>
+                     </div>
+                     {user.unreadCount > 0 && (
+                       <span className="flex h-2 w-2 translate-x-1 translate-y-1 rounded-full bg-red-500" />
+                     )}
+                   </div>
+                 ))}
               </div>
             </div>
 
@@ -160,13 +188,55 @@ const Chat = () => {
               <div className="space-y-2">
                  {conversations.petOwners
                    .filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                   .sort((a, b) => (b.unreadCount || 0) - (a.unreadCount || 0)) // Sort by unread count descending
                    .map(user => (
-                  <div key={user.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
-                    <Avatar>
-                      <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
-                      <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
-                    </Avatar>
-                    <span>{user.name}</span>
+                   <div key={user.id} className="flex items-center justify-between space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
+                     <div className="flex items-center space-x-3">
+                       <Avatar>
+                         <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
+                         <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
+                       </Avatar>
+                       <span>{user.name}</span>
+                     </div>
+                     {user.unreadCount > 0 && (
+                       <span className="flex h-2 w-2 translate-x-1 translate-y-1 rounded-full bg-red-500" />
+                     )}
+                   </div>
+                 ))}
+              </div>
+            </div>
+
+            {/* Rescue Shelter Section */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <h3 className="text-lg font-semibold mb-2">Rescue Shelter</h3>
+              <div className="relative mb-4">
+                <Input
+                  type="text"
+                  placeholder="Search here..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <div className="space-y-2">
+                 {conversations.rescueShelters
+                   .filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                   .sort((a, b) => (b.unreadCount || 0) - (a.unreadCount || 0)) // Sort by unread count descending
+                   .map(user => (
+                  <div key={user.id} className="flex items-center justify-between space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
+                    <div className="flex items-center space-x-3">
+                      <Avatar>
+                        <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
+                        <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
+                      </Avatar>
+                      <span>{user.name}</span>
+                    </div>
+                    {user.unreadCount > 0 && (
+                      <span className="flex h-2 w-2 translate-x-1 translate-y-1 rounded-full bg-red-500" />
+                    )}
                   </div>
                 ))}
               </div>

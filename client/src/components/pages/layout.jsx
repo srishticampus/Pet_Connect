@@ -2,10 +2,44 @@ import { Link, Outlet, useLocation } from "react-router";
 import { Dog, MoveRight, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../../hooks/auth";
+import React, { useState, useEffect } from 'react'; // Import useState and useEffect
+import api from '@/utils/api'; // Import the API client
 
 const Navbar = () => {
   const { user, isAuthenticated } = useAuth();
   const { pathname } = useLocation();
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+  const [loadingUnreadCount, setLoadingUnreadCount] = useState(true);
+
+  useEffect(() => {
+    const fetchTotalUnreadCount = async () => {
+      if (!isAuthenticated) {
+        setTotalUnreadCount(0);
+        setLoadingUnreadCount(false);
+        return;
+      }
+      try {
+        setLoadingUnreadCount(true);
+        const response = await api.get('/chat/unread-count');
+        setTotalUnreadCount(response.data.totalUnreadCount);
+      } catch (err) {
+        console.error("Error fetching total unread count:", err);
+        setTotalUnreadCount(0); // Assume 0 on error
+      } finally {
+        setLoadingUnreadCount(false);
+      }
+    };
+
+    fetchTotalUnreadCount();
+
+    // Optional: Poll for new messages periodically (e.g., every 30 seconds)
+    const pollingInterval = setInterval(fetchTotalUnreadCount, 30000);
+
+    return () => clearInterval(pollingInterval); // Cleanup interval on unmount or dependency change
+
+  }, [isAuthenticated]); // Rerun when authentication status changes
+
+
   return (
     <nav className="py-6 ">
       <div className="container mx-auto px-4 lg:px-0 flex justify-between items-center">
@@ -118,9 +152,12 @@ const Navbar = () => {
             </Link>
             <Link
               to="/chat"
-              className="hover:text-primary transition"
+              className="hover:text-primary transition relative" // Added relative positioning
             >
               <MessageSquare size={24} />
+              {!loadingUnreadCount && totalUnreadCount > 0 && (
+                <span className="absolute top-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-red-500" /> // Red bubble
+              )}
             </Link>
           </div>
         )}

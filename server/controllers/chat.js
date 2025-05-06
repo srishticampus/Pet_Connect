@@ -26,12 +26,25 @@ router.get("/conversations", auth, async (req, res) => {
 
 
     // Structure the response based on frontend requirements, categorizing by role
+    // Fetch unread message counts for each user
+    const usersWithUnreadCounts = await Promise.all(allUsers.map(async (user) => {
+      const unreadCount = await Message.countDocuments({
+        sender: user._id,
+        recipient: currentUserId,
+        read: false,
+      });
+      return {
+        ...user.toObject(), // Convert Mongoose document to plain object
+        unreadCount,
+      };
+    }));
+
     // Structure the response based on frontend requirements, categorizing by role
     const structuredConversations = {
-      adopters: allUsers.filter(user => user.role === 'adopter').map(user => ({ id: user._id, name: user.name, avatar: user.avatar })),
-      fosters: allUsers.filter(user => user.role === 'foster').map(user => ({ id: user._id, name: user.name, avatar: user.avatar })),
-      petOwners: allUsers.filter(user => user.role === 'pet_owner').map(user => ({ id: user._id, name: user.name, avatar: user.avatar })), // Corrected role name
-      rescueShelters: allUsers.filter(user => user.role === 'rescue-shelter').map(user => ({ id: user._id, name: user.name, avatar: user.avatar })), // Added rescue shelters
+      adopters: usersWithUnreadCounts.filter(user => user.role === 'adopter').map(user => ({ id: user._id, name: user.name, avatar: user.avatar, unreadCount: user.unreadCount })),
+      fosters: usersWithUnreadCounts.filter(user => user.role === 'foster').map(user => ({ id: user._id, name: user.name, avatar: user.avatar, unreadCount: user.unreadCount })),
+      petOwners: usersWithUnreadCounts.filter(user => user.role === 'pet_owner').map(user => ({ id: user._id, name: user.name, avatar: user.avatar, unreadCount: user.unreadCount })), // Corrected role name
+      rescueShelters: usersWithUnreadCounts.filter(user => user.role === 'rescue-shelter').map(user => ({ id: user._id, name: user.name, avatar: user.avatar, unreadCount: user.unreadCount })), // Added rescue shelters
     };
 
     res.status(200).json(structuredConversations);
@@ -103,6 +116,55 @@ router.post("/conversations/:userId/messages", auth, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error sending message" });
+  }
+});
+
+// Route to mark messages in a conversation as read
+router.post("/conversations/:userId/mark-as-read", auth, async (req, res) => {
+  console.log("POST /chat/conversations/:userId/mark-as-read route hit");
+  try {
+    const { userId } = req.params;
+    const currentUserId = req.user.id; // Assuming user is authenticated
+
+    // Update messages where the sender is userId, recipient is currentUserId, and read is false
+    const result = await Message.updateMany(
+      {
+        sender: userId,
+        recipient: currentUserId,
+        read: false,
+      },
+      {
+        $set: { read: true },
+      }
+    );
+
+    console.log(`Marked ${result.modifiedCount} messages as read for conversation with user ${userId}`);
+
+    res.status(200).json({ message: "Messages marked as read", modifiedCount: result.modifiedCount });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error marking messages as read" });
+  }
+});
+
+// Route to get the total number of unread messages for the logged-in user
+router.get("/unread-count", auth, async (req, res) => {
+  console.log("GET /chat/unread-count route hit");
+  try {
+    const currentUserId = req.user.id; // Assuming user is authenticated
+
+    // Count unread messages where the recipient is the current user
+    const totalUnreadCount = await Message.countDocuments({
+      recipient: currentUserId,
+      read: false,
+    });
+
+    console.log(`Total unread messages for user ${currentUserId}: ${totalUnreadCount}`);
+
+    res.status(200).json({ totalUnreadCount });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error fetching unread count" });
   }
 });
 
