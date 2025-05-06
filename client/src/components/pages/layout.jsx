@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router";
-import { Dog, MoveRight } from "lucide-react";
+import { Dog, MoveRight, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../../hooks/auth";
 
@@ -115,6 +115,12 @@ const Navbar = () => {
               className="hover:text-primary transition"
             >
               Profile
+            </Link>
+            <Link
+              to="/chat"
+              className="hover:text-primary transition"
+            >
+              <MessageSquare size={24} />
             </Link>
           </div>
         )}
