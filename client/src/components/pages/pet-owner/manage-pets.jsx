@@ -44,7 +44,9 @@ const ManagePets = () => {
       </div>
       <div className="border rounded-lg p-4 bg-white shadow-md">
         {userPets.length > 0 ? (
-          userPets.map(pet => (
+          userPets
+            .filter(pet => pet.status === 'active') // Filter out lost/found pets
+            .map(pet => (
             // Pet component will need to be adapted to accept pet data as props
             <Pet key={pet._id} pet={pet} /> // Use pet._id for the key
           ))

@@ -69,12 +69,20 @@ const Navbar = () => {
         {isAuthenticated && user?.role !== 'admin' && (
           <div className="hidden md:flex gap-6">
             {user?.role === 'pet_owner' && (
-              <Link
-                to="/pet-owner/manage-pets"
-                className="hover:text-primary transition"
-              >
-                Manage Pets
-              </Link>
+              <>
+                <Link
+                  to="/pet-owner/manage-pets"
+                  className="hover:text-primary transition"
+                >
+                  Manage Pets
+                </Link>
+                <Link
+                  to="/pet-owner/find-pet"
+                  className="hover:text-primary transition"
+                >
+                  Find Pet
+                </Link>
+              </>
             )}
             {user?.role === 'foster' && (
               <Link

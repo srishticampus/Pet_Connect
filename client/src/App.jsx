@@ -38,6 +38,9 @@ import AboutPrivacy from "./components/pages/AboutPrivacy";
 import FAQ from "./components/pages/FAQ";
 import LogoutPrompt from "./components/pages/auth/LogoutPrompt";
 import LostFoundPets from "./components/pages/admin/lost-found-pets";
+import FindPet from "./components/pages/pet-owner/find-pet"; // Import FindPet
+import AddLostPet from "./components/pages/pet-owner/add-lost-pet"; // Import AddLostPet
+import EditLostPet from "./components/pages/pet-owner/edit-lost-pet"; // Import EditLostPet
 
 function App() {
   const { isAuthenticated, user, isLoading } = useAuth();
@@ -89,6 +92,9 @@ function App() {
         <Route path="/pet-details" element={<PetDetails />} />
         <Route path="/pet-owner/manage-pets" element={<ProtectedRoute><ManagePets /></ProtectedRoute>} />
         <Route path="/pet-owner/add-pet" element={<ProtectedRoute><AddPet /></ProtectedRoute>} />
+        <Route path="/pet-owner/find-pet" element={<ProtectedRoute><FindPet /></ProtectedRoute>} /> {/* Added FindPet route */}
+        <Route path="/pet-owner/add-lost-pet" element={<ProtectedRoute><AddLostPet /></ProtectedRoute>} /> {/* Added AddLostPet route */}
+        <Route path="/pet-owner/edit-lost-pet/:petId" element={<ProtectedRoute><EditLostPet /></ProtectedRoute>} /> {/* Added EditLostPet route */}
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/about-privacy" element={<AboutPrivacy />} />
         <Route path="/faq" element={<FAQ />} />
