@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import api from '@/utils/api'; // Import the API client
+import { useAuth } from '@/hooks/auth'; // Import the useAuth hook
 
 const Chat = () => {
+  const { user: currentUser } = useAuth(); // Get the current authenticated user
   const [selectedUser, setSelectedUser] = useState(null); // State to hold the selected user
   const [conversations, setConversations] = useState({ adopters: [], fosters: [], petOwners: [] }); // State to hold conversations
   const [messages, setMessages] = useState([]); // State to hold messages for the selected conversation
@@ -63,8 +65,8 @@ const Chat = () => {
       const response = await api.post(`/chat/conversations/${selectedUser.id}/messages`, { content });
       // Add the new message to the messages state
       setMessages([...messages, response.data]);
-      // Clear the input field (assuming you add an input state later)
-      // setInputMessage('');
+      // Clear the input field
+      setInputMessage('');
     } catch (err) {
       setError(`Failed to send message to ${selectedUser.name}.`);
       console.error(`Error sending message to user ${selectedUser.id}:`, err);
@@ -101,7 +103,7 @@ const Chat = () => {
                   .map(user => (
                   <div key={user.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
                     <Avatar>
-                      <AvatarImage src={user.avatar} />
+                      <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
                       <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
                     </Avatar>
                     <span>{user.name}</span>
@@ -131,7 +133,7 @@ const Chat = () => {
                    .map(user => (
                   <div key={user.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
                     <Avatar>
-                      <AvatarImage src={user.avatar} />
+                      <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
                       <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
                     </Avatar>
                     <span>{user.name}</span>
@@ -161,7 +163,7 @@ const Chat = () => {
                    .map(user => (
                   <div key={user.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
                     <Avatar>
-                      <AvatarImage src={user.avatar} />
+                      <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
                       <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
                     </Avatar>
                     <span>{user.name}</span>
@@ -183,7 +185,7 @@ const Chat = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               <Avatar>
-                <AvatarImage src={selectedUser.avatar || "/src/assets/profile-pic.png"} /> {/* Use user's avatar or placeholder */}
+                <AvatarImage src={selectedUser.profilePic || "/src/assets/profile-pic.png"} /> {/* Use user's profilePic or placeholder */}
                 <AvatarFallback>{selectedUser.name.substring(0, 2)}</AvatarFallback>
               </Avatar>
               <span className="text-lg font-semibold">{selectedUser.name}</span>
@@ -197,11 +199,11 @@ const Chat = () => {
                 <div key={index} className={`flex items-start space-x-3 mb-4 ${message.sender === selectedUser.id ? '' : 'justify-end'}`}>
                    {message.sender === selectedUser.id && ( // Render avatar for incoming messages
                      <Avatar>
-                       <AvatarImage src={selectedUser.avatar || "/src/assets/profile-pic.png"} /> {/* Use user's avatar or placeholder */}
+                       <AvatarImage src={selectedUser.profilePic || "/src/assets/profile-pic.png"} /> {/* Use user's profilePic or placeholder */}
                        <AvatarFallback>{selectedUser.name.substring(0, 2)}</AvatarFallback>
                      </Avatar>
                    )}
-                  <div className="flex flex-col">
+                   <div className="flex flex-col">
                     <div className={`p-3 rounded-lg max-w-xs ${message.sender === selectedUser.id ? 'bg-gray-200' : 'bg-purple-500 text-white'}`}>
                       {message.content}
                     </div>
@@ -211,11 +213,11 @@ const Chat = () => {
                   </div>
                    {message.sender !== selectedUser.id && ( // Render avatar for outgoing messages
                      <Avatar>
-                       <AvatarImage src="/src/assets/profile-pic.png" /> {/* Placeholder for current user's avatar */}
-                       <AvatarFallback>ME</AvatarFallback> {/* Placeholder */}
+                       <AvatarImage src={currentUser?.profilePic || "/src/assets/profile-pic.png"} /> {/* Use current user's profilePic or placeholder */}
+                       <AvatarFallback>{currentUser?.name?.substring(0, 2) || 'ME'}</AvatarFallback> {/* Use current user's initials or placeholder */}
                      </Avatar>
                    )}
-                </div>
+                 </div>
               ))}
             </div>
 

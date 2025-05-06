@@ -14,51 +14,24 @@ router.get("/conversations", auth, async (req, res) => {
   try {
     console.log("Fetching conversations for user:", req.user ? req.user.id : 'User not authenticated');
     const currentUserId = req.user.id;
+    console.log("Current user ID:", currentUserId);
 
-    // Find unique user IDs involved in conversations with the current user
-    const conversations = await Message.aggregate([
-      {
-        $match: {
-          $or: [
-            { sender: currentUserId },
-            { receiver: currentUserId },
-          ],
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          participants: {
-            $addToSet: {
-              $cond: {
-                if: { $eq: ["$sender", currentUserId] },
-                then: "$receiver",
-                else: "$sender",
-              },
-            },
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          participants: 1,
-        },
-      },
-    ]);
-
-    const participantIds = conversations.length > 0 ? conversations[0].participants : [];
-
-    // Fetch details of the participants
-    const participants = await User.find({
-      _id: { $in: participantIds },
+    // Fetch all users except the current user
+    const allUsers = await User.find({
+      _id: { $ne: currentUserId }, // Exclude the current user
     }).select('_id name avatar role'); // Select necessary fields
 
-    // Structure the response based on frontend requirements
+    console.log("Number of users found (excluding current):", allUsers.length);
+    console.log("Roles of users found:", allUsers.map(user => user.role));
+
+
+    // Structure the response based on frontend requirements, categorizing by role
+    // Structure the response based on frontend requirements, categorizing by role
     const structuredConversations = {
-      adopters: participants.filter(p => p.role === 'adopter').map(p => ({ id: p._id, name: p.name, avatar: p.avatar })),
-      fosters: participants.filter(p => p.role === 'foster').map(p => ({ id: p._id, name: p.name, avatar: p.avatar })),
-      petOwners: participants.filter(p => p.role === 'petOwner').map(p => ({ id: p._id, name: p.name, avatar: p.avatar })),
+      adopters: allUsers.filter(user => user.role === 'adopter').map(user => ({ id: user._id, name: user.name, avatar: user.avatar })),
+      fosters: allUsers.filter(user => user.role === 'foster').map(user => ({ id: user._id, name: user.name, avatar: user.avatar })),
+      petOwners: allUsers.filter(user => user.role === 'pet_owner').map(user => ({ id: user._id, name: user.name, avatar: user.avatar })), // Corrected role name
+      rescueShelters: allUsers.filter(user => user.role === 'rescue-shelter').map(user => ({ id: user._id, name: user.name, avatar: user.avatar })), // Added rescue shelters
     };
 
     res.status(200).json(structuredConversations);
@@ -80,15 +53,15 @@ router.get("/conversations/:userId/messages", auth, async (req, res) => {
     // Implement logic to fetch messages between currentUserId and userId
     const messages = await Message.find({
       $or: [
-        { sender: currentUserId, receiver: userId },
-        { sender: userId, receiver: currentUserId },
+        { sender: currentUserId, recipient: userId }, // Changed from receiver to recipient
+        { sender: userId, recipient: currentUserId }, // Changed from receiver to recipient
       ],
     }).sort({ timestamp: 1 });
 
     // Format timestamps for the frontend (optional, depends on frontend needs)
     const formattedMessages = messages.map(message => ({
       ...message.toObject(), // Convert Mongoose document to plain object
-      timestamp: new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // Use createdAt
     }));
 
     res.status(200).json(formattedMessages);
@@ -111,18 +84,18 @@ router.post("/conversations/:userId/messages", auth, async (req, res) => {
     // Implement logic to save the new message
     const newMessage = new Message({
       sender: senderId,
-      receiver: userId,
+      recipient: userId, // Changed from receiver to recipient
       content: content,
-      timestamp: new Date(), // Or use schema default
+      // timestamp: new Date(), // Removed explicit timestamp setting, using schema default createdAt
     });
     await newMessage.save();
 
-    // Respond with the saved message, formatting the timestamp
+    // Respond with the saved message, formatting the createdAt timestamp
     const sentMessage = {
       sender: newMessage.sender,
-      receiver: newMessage.receiver,
+      recipient: newMessage.recipient,
       content: newMessage.content,
-      timestamp: new Date(newMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date(newMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // Use createdAt
       _id: newMessage._id, // Include the message ID
     };
 
