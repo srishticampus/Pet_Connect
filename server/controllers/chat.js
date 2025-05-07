@@ -19,7 +19,7 @@ router.get("/conversations", auth, async (req, res) => {
     // Fetch all users except the current user
     const allUsers = await User.find({
       _id: { $ne: currentUserId }, // Exclude the current user
-    }).select('_id name avatar role'); // Select necessary fields
+    }).select('_id name profilePic role'); // Select necessary fields
 
     console.log("Number of users found (excluding current):", allUsers.length);
     console.log("Roles of users found:", allUsers.map(user => user.role));
@@ -41,10 +41,10 @@ router.get("/conversations", auth, async (req, res) => {
 
     // Structure the response based on frontend requirements, categorizing by role
     const structuredConversations = {
-      adopters: usersWithUnreadCounts.filter(user => user.role === 'adopter').map(user => ({ id: user._id, name: user.name, avatar: user.avatar, unreadCount: user.unreadCount })),
-      fosters: usersWithUnreadCounts.filter(user => user.role === 'foster').map(user => ({ id: user._id, name: user.name, avatar: user.avatar, unreadCount: user.unreadCount })),
-      petOwners: usersWithUnreadCounts.filter(user => user.role === 'pet_owner').map(user => ({ id: user._id, name: user.name, avatar: user.avatar, unreadCount: user.unreadCount })), // Corrected role name
-      rescueShelters: usersWithUnreadCounts.filter(user => user.role === 'rescue-shelter').map(user => ({ id: user._id, name: user.name, avatar: user.avatar, unreadCount: user.unreadCount })), // Added rescue shelters
+      adopters: usersWithUnreadCounts.filter(user => user.role === 'adopter').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount })),
+      fosters: usersWithUnreadCounts.filter(user => user.role === 'foster').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount })),
+      petOwners: usersWithUnreadCounts.filter(user => user.role === 'pet_owner').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount })), // Corrected role name
+      rescueShelters: usersWithUnreadCounts.filter(user => user.role === 'rescue-shelter').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount })), // Added rescue shelters
     };
 
     res.status(200).json(structuredConversations);

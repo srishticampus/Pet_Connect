@@ -21,6 +21,7 @@ const Chat = () => {
         setLoading(true);
         const response = await api.get('/chat/conversations');
         setConversations(response.data);
+        console.log(response.data);
       } catch (err) {
         setError("Failed to fetch conversations.");
         console.error("Error fetching conversations:", err);
@@ -49,6 +50,7 @@ const Chat = () => {
           setConversations(prevConversations => {
             const updatedConversations = { ...prevConversations };
             for (const category in updatedConversations) {
+              
               updatedConversations[category] = updatedConversations[category].map(user =>
                 user.id === selectedUser.id ? { ...user, unreadCount: 0 } : user
               );
@@ -121,7 +123,7 @@ const Chat = () => {
                   <div key={user.id} className="flex items-center justify-between space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
                     <div className="flex items-center space-x-3">
                       <Avatar>
-                        <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
+                        <AvatarImage src={import.meta.env.VITE_API_URL+"/"+user.profilePic} /> {/* Use profilePic */}
                         <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
                       </Avatar>
                       <span>{user.name}</span>
@@ -193,7 +195,7 @@ const Chat = () => {
                    <div key={user.id} className="flex items-center justify-between space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
                      <div className="flex items-center space-x-3">
                        <Avatar>
-                         <AvatarImage src={user.profilePic} /> {/* Use profilePic */}
+                         <AvatarImage src={import.meta.env.VITE_API_URL+user.profilePic} /> {/* Use profilePic */}
                          <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
                        </Avatar>
                        <span>{user.name}</span>
@@ -255,7 +257,7 @@ const Chat = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               <Avatar>
-                <AvatarImage src={selectedUser.profilePic || "/src/assets/profile-pic.png"} /> {/* Use user's profilePic or placeholder */}
+                <AvatarImage src={import.meta.env.VITE_API_URL+selectedUser.profilePic} /> {/* Use user's profilePic or placeholder */}
                 <AvatarFallback>{selectedUser.name.substring(0, 2)}</AvatarFallback>
               </Avatar>
               <span className="text-lg font-semibold">{selectedUser.name}</span>
@@ -269,7 +271,7 @@ const Chat = () => {
                 <div key={index} className={`flex items-start space-x-3 mb-4 ${message.sender === selectedUser.id ? '' : 'justify-end'}`}>
                    {message.sender === selectedUser.id && ( // Render avatar for incoming messages
                      <Avatar>
-                       <AvatarImage src={selectedUser.profilePic || "/src/assets/profile-pic.png"} /> {/* Use user's profilePic or placeholder */}
+                       <AvatarImage src={import.meta.env.VITE_API_URL+selectedUser.profilePic} /> {/* Use user's profilePic or placeholder */}
                        <AvatarFallback>{selectedUser.name.substring(0, 2)}</AvatarFallback>
                      </Avatar>
                    )}
