@@ -91,13 +91,13 @@ const Pet = ({ pet, onEdit, onDelete }) => {
         <div className="flex items-center gap-4 mt-auto">
           <button
             onClick={onEdit}
-            className="mt-auto bg-blue-500 text-white px-4 py-2 rounded-4xl w-full hover:cursor-pointer hover:bg-blue-600"
+            className="mt-auto text-primary outline outline-primary px-4 py-2 rounded-4xl w-full hover:cursor-pointer hover:bg-primary/30 "
           >
             Edit
           </button>
           <button
             onClick={onDelete}
-            className="mt-auto bg-red-500 text-white px-4 py-2 rounded-4xl w-full hover:cursor-pointer hover:bg-red-600"
+            className="mt-auto bg-primary text-white px-4 py-2 rounded-4xl w-full hover:cursor-pointer hover:bg-primary/90"
           >
             Delete
           </button>

@@ -53,10 +53,10 @@ const ManagePets = () => {
 
   return (
     <section className="container mx-auto px-4 lg:px-0 py-8">
+      <div className="flex justify-between mb-6">
       <h1 className="text-2xl font-semibold mb-6">Manage Your Pets</h1>
-      <div className="flex justify-end mb-6">
         <Link to="/pet-owner/add-pet">
-          <button className="bg-[#e54c00] text-white px-4 py-2 rounded-md hover:bg-[#ED824D]">
+          <button className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/80">
             Add New Pet
           </button>
         </Link>
