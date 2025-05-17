@@ -46,6 +46,11 @@ app.use("/api/admin", adminRouter); // Use admin routes
 
 
 //static files for uploads servedin /uploads url
+// create uploads folder if it doesn't exist
+if (!fs.existsSync("./uploads")) {
+  fs.mkdirSync("./uploads");
+}
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
