@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '@/hooks/auth';
+import { Eye, EyeOff } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -31,6 +32,8 @@ const AdopterSignUp = () => {
     role: "adopter"
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
   const [aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
@@ -103,9 +106,12 @@ const AdopterSignUp = () => {
       errors.email = 'Invalid email format';
     }
     if (!data.phoneNumber) errors.phoneNumber = 'Phone number is required';
+    else if (!/^\d{10}$/.test(data.phoneNumber)) errors.phoneNumber = 'Phone number must be 10 digits';
     if (!data.address) errors.address = 'Address is required';
+    else if (/^[^a-zA-Z]+$/.test(data.address)) errors.address = 'Address must contain at least one letter or number';
     if (!data.aadhaarImage) errors.aadhaarImage = "Aadhaar image is required";
     if (!data.aadhaarNumber) errors.aadhaarNumber = 'Aadhaar number is required';
+    else if (!/^\d{12}$/.test(data.aadhaarNumber)) errors.aadhaarNumber = 'Aadhaar number must be 12 digits';
     if (!data.newPassword) {
       errors.newPassword = 'Password is required';
     } else if (data.newPassword.length < 6) {
@@ -177,27 +183,53 @@ const AdopterSignUp = () => {
 
         <label className="flex flex-col">
           <span>New Password</span>
-          <Input
-            type="password"
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
             name="newPassword"
             value={formData.newPassword}
             onChange={handleChange}
             disabled={isLoading}
             autocomplete="new-password"
           />
+          <button
+            type="button"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 focus:outline-none"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </button>
+          </div>
           {errors.newPassword && <span className="text-red-500">{errors.newPassword}</span>}
         </label>
 
         <label className="flex flex-col">
           <span>Confirm Password</span>
+          <div className="relative">
           <Input
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
             disabled={isLoading}
             autocomplete="new-password"
           />
+          <button
+            type="button"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 focus:outline-none"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </button>
+          </div>
           {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword}</span>}
         </label>
 
