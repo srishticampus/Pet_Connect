@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '@/hooks/auth';
+import { Eye, EyeOff } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -30,7 +31,8 @@ const FosterSignUp = () => {
     confirmPassword: '',
     role: "foster"
   });
-
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
   const [aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
@@ -101,10 +103,26 @@ const FosterSignUp = () => {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       errors.email = 'Invalid email format';
     }
-    if (!data.phoneNumber) errors.phoneNumber = 'Phone number is required';
-    if (!data.address) errors.address = 'Address is required';
+    if (!data.phoneNumber) {
+      errors.phoneNumber = 'Phone number is required';
+    } else if (!/^[0-9]+$/.test(data.phoneNumber)) {
+      errors.phoneNumber = 'Phone number must contain only digits';
+    } else if (/^0+$/.test(data.phoneNumber)) {
+      errors.phoneNumber = 'Phone number cannot be all zeros';
+    }
+    if (!data.address) {
+      errors.address = 'Address is required';
+    } else if (/^[^a-zA-Z0-9\s]+$/.test(data.address)) {
+      errors.address = 'Address cannot contain only special characters';
+    }
     if (!data.aadhaarImage) errors.aadhaarImage = "Aadhaar image is required";
-    if (!data.aadhaarNumber) errors.aadhaarNumber = 'Aadhaar number is required';
+    if (!data.aadhaarNumber) {
+      errors.aadhaarNumber = 'Aadhaar number is required';
+    } else if (!/^[0-9]+$/.test(data.aadhaarNumber)) {
+      errors.aadhaarNumber = 'Aadhaar number must contain only digits';
+    } else if (/^0+$/.test(data.aadhaarNumber)) {
+      errors.aadhaarNumber = 'Aadhaar number cannot be all zeros';
+    }
     if (!data.newPassword) {
       errors.newPassword = 'Password is required';
     } else if (data.newPassword.length < 6) {
@@ -174,29 +192,43 @@ const FosterSignUp = () => {
           {errors.aadhaarNumber && <span className="text-red-500">{errors.aadhaarNumber}</span>}
         </label>
 
-        <label className="flex flex-col">
+        <label className="flex flex-col relative">
           <span>New Password</span>
           <Input
-            type="password"
+            type={showNewPassword ? "text" : "password"}
             name="newPassword"
             value={formData.newPassword}
             onChange={handleChange}
             disabled={isLoading}
-            autocomplete="new-password"
+            autoComplete="new-password"
           />
+          <button
+            type="button"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+            onClick={() => setShowNewPassword(!showNewPassword)}
+          >
+            {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
           {errors.newPassword && <span className="text-red-500">{errors.newPassword}</span>}
         </label>
 
-        <label className="flex flex-col">
+        <label className="flex flex-col relative">
           <span>Confirm Password</span>
           <Input
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
             disabled={isLoading}
-            autocomplete="new-password"
+            autoComplete="new-password"
           />
+          <button
+            type="button"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
           {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword}</span>}
         </label>
 
