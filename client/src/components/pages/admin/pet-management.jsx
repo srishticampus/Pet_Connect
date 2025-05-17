@@ -365,7 +365,7 @@ export default function PetManagement() {
         <div className="bg-white rounded-lg h-full p-6 w-full">
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button variant="primary">Add Pet</Button>
+              {/* <Button variant="primary">Add Pet</Button> */}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>

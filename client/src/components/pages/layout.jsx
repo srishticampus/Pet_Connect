@@ -71,16 +71,18 @@ const Navbar = () => {
           >
             About
           </Link>
-          <Link
-            to="/contact"
-            className="hover:text-primary transition"
-            style={{
-              textDecoration: pathname === "/contact" ? "underline" : "none",
-              color: pathname === "/contact" ? "#E54C00" : "",
-            }}
-          >
-            Contact
-          </Link>
+          {user?.role !== 'admin' && (
+            <Link
+              to="/contact"
+              className="hover:text-primary transition"
+              style={{
+                textDecoration: pathname === "/contact" ? "underline" : "none",
+                color: pathname === "/contact" ? "#E54C00" : "",
+              }}
+            >
+              Contact
+            </Link>
+          )}
         </div>
 
         {user?.role === 'admin' && (

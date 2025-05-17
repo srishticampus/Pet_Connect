@@ -97,7 +97,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} /> {/* Added :token */}
         <Route path="/contact" element={<Contact />} />
-        <Route path="/profile" element={<PetOwnerProfile />} />
+        <Route path="/profile" element={<ProtectedRoute><PetOwnerProfile /></ProtectedRoute>} />
         <Route path="/pet-owner/pets/:petId" element={<PetDetails />} /> {/* Added route for pet details */}
         <Route path="/pet-owner/manage-pets" element={<ProtectedRoute><ManagePets /></ProtectedRoute>} />
         <Route path="/pet-owner/add-pet" element={<ProtectedRoute><AddPet /></ProtectedRoute>} />

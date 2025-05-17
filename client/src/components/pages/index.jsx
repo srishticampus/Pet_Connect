@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useAuth } from "../../hooks/auth";
 import { ArrowUpRight } from "lucide-react";
 
 import hero from "@/assets/hero.png";
@@ -152,69 +153,76 @@ export default function LandingPage() {
       </section>
 
       {/* <!&ndash; cta banner &ndash;> */}
-      <section className="container mx-auto px-3 lg:px-0 py-8">
-        <div className="relative p-12  text-white rounded-2xl flex flex-col gap-6 items-start overflow-hidden">
-          <div className="cta-gradient -m-12 p-12 w-full h-full absolute z-1">
-            <div className="md:w-1/2">
-              <h3 className="text-2xl font-semibold">
-                Be a part of a compassionate network dedicated to pet rescue, adoption, and fostering. Whether you're looking to adopt, foster, or help reunite lost pets, your support makes a difference!
-              </h3>
-            </div>
-            <Link
-              to="/register"
-              className="bg-white w-fit mt-3 text-[#e54c00] px-6 py-2 rounded-full flex text-sm gap-2 items-center"
-            >
-              Join Us Today!{" "}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-move-right"
-              >
-                <path d="M18 8L22 12L18 16" />
-                <path d="M2 12H22" />
-              </svg>
-            </Link>
-          </div>
-          <div className="absolute w-full h-full  inset-0 z-0">
-            <img
-              src={cardimg3}
-              alt="volunteer helping a dog"
-              className="md:w-1/2 h-full object-cover object-top right-0 absolute rotate-y-180"
-            />
-          </div>
+      {(() => {
+        const { user } = useAuth();
+        if (user?.role !== 'admin') {
+          return (
+            <section className="container mx-auto px-3 lg:px-0 py-8">
+              <div className="relative p-12  text-white rounded-2xl flex flex-col gap-6 items-start overflow-hidden">
+                <div className="cta-gradient -m-12 p-12 w-full h-full absolute z-1">
+                  <div className="md:w-1/2">
+                    <h3 className="text-2xl font-semibold">
+                      Be a part of a compassionate network dedicated to pet rescue, adoption, and fostering. Whether you're looking to adopt, foster, or help reunite lost pets, your support makes a difference!
+                    </h3>
+                  </div>
+                  <Link
+                    to="/register"
+                    className="bg-white w-fit mt-3 text-[#e54c00] px-6 py-2 rounded-full flex text-sm gap-2 items-center"
+                  >
+                    Join Us Today!{" "}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-move-right"
+                    >
+                      <path d="M18 8L22 12L18 16" />
+                      <path d="M2 12H22" />
+                    </svg>
+                  </Link>
+                </div>
+                <div className="absolute w-full h-full  inset-0 z-0">
+                  <img
+                    src={cardimg3}
+                    alt="volunteer helping a dog"
+                    className="md:w-1/2 h-full object-cover object-top right-0 absolute rotate-y-180"
+                  />
+                </div>
 
-          <div className="md:w-1/2">
-            <h3 className="text-2xl font-semibold">
-              Be a part of a compassionate network dedicated to pet rescue, adoption, and fostering. Whether you're looking to adopt, foster, or help reunite lost pets, your support makes a difference!
-            </h3>
-          </div>
-          <button className="bg-white text-[#e54c00] px-6 py-2 rounded-full flex text-sm gap-2 items-center">
-            Register Now{" "}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-move-right"
-            >
-              <path d="M18 8L22 12L18 16" />
-              <path d="M2 12H22" />
-            </svg>
-          </button>
-        </div>
-      </section>
+                <div className="md:w-1/2">
+                  <h3 className="text-2xl font-semibold">
+                    Be a part of a compassionate network dedicated to pet rescue, adoption, and fostering. Whether you're looking to adopt, foster, or help reunite lost pets, your support makes a difference!
+                  </h3>
+                </div>
+                <button className="bg-white text-[#e54c00] px-6 py-2 rounded-full flex text-sm gap-2 items-center">
+                  Register Now{" "}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-move-right"
+                  >
+                    <path d="M18 8L22 12L18 16" />
+                    <path d="M2 12H22" />
+                  </svg>
+                </button>
+              </div>
+            </section>
+          );
+        }
+      })()}
     </main>
   );
 }

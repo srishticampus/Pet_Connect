@@ -26,6 +26,22 @@ import { useAuth } from '@/hooks/auth'; // Import useAuth
 import { Label } from '@/components/ui/label';
 
 const PetOwnerProfile = () => {
+  const { user } = useAuth();
+
+  if (user?.role === 'admin') {
+    return (
+      <div className="w-full">
+        <div className="bg-primary h-44 relative"></div>
+        <div className="bg-white p-4 relative -mt-16">
+          <div className="flex flex-col items-center">
+            <h2 className="text-xl text-primary font-semibold mt-2">Admin Profile Not Accessible</h2>
+            <p className="mt-2">Admins do not have access to their profile page.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const [profile, setProfile] = useState({
       name: '',
       phoneNumber: '',
@@ -198,7 +214,7 @@ const PetOwnerProfile = () => {
               <label
                 htmlFor="profilePictureInput"
                 className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-              >
+                >
                 <Camera className="h-6 w-6 text-white" /> {/* Camera icon */}
               </label>
             </div>
