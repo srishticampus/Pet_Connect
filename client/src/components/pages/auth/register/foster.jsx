@@ -204,7 +204,7 @@ const FosterSignUp = () => {
           />
           <button
             type="button"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+            className="absolute right-2 top-1/2 transform translate-y-2/12 cursor-pointer flex items-center justify-center"
             onClick={() => setShowNewPassword(!showNewPassword)}
           >
             {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -224,7 +224,7 @@ const FosterSignUp = () => {
           />
           <button
             type="button"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+            className="absolute right-2 top-1/2 transform translate-y-2/12 cursor-pointer"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
           >
             {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
