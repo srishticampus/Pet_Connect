@@ -289,32 +289,32 @@ const PetOwnerProfile = () => {
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                           <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">
+                            <Label htmlFor="name" className="text-left">
                               Name
                             </Label>
                             <Input id="name" name="name" value={editFormData.name || ''} onChange={handleEditInputChange} className="col-span-3" />
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="phoneNumber" className="text-right">
+                            <Label htmlFor="phoneNumber" className="text-left">
                               Phone Number
                             </Label>
                             <Input id="phoneNumber" name="phoneNumber" value={editFormData.phoneNumber || ''} onChange={handleEditInputChange} className="col-span-3" />
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="email" className="text-right">
+                            <Label htmlFor="email" className="text-left">
                               Email
                             </Label>
                             <Input id="email" name="email" value={editFormData.email || ''} onChange={handleEditInputChange} className="col-span-3" />
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="address" className="text-right">
+                            <Label htmlFor="address" className="text-left">
                               {profile.role === 'rescue-shelter' ? 'Place' : 'Address'}
                             </Label>
                             <Input id="address" name="address" value={editFormData.address || ''} onChange={handleEditInputChange} className="col-span-3" />
                           </div>
                           {profile.role === 'adopter' || profile.role === 'foster' ? (
                             <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="aadhaarNumber" className="text-right">
+                              <Label htmlFor="aadhaarNumber" className="text-left">
                                 Aadhaar Number
                               </Label>
                               <Input id="aadhaarNumber" name="aadhaarNumber" value={editFormData.aadhaarNumber || ''} onChange={handleEditInputChange} className="col-span-3" />
