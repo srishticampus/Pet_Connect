@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router';
 import api from '@/utils/api'; // Import the api service
-
+import imagePrev from "@/assets/imageprev.png";
 const AddPet = () => {
   const navigate = useNavigate(); // Initialize useNavigate
   const [formData, setFormData] = useState({
@@ -131,16 +131,22 @@ const AddPet = () => {
   return (
     <section className="container mx-auto px-4 lg:px-0 py-8">
       <h1 className="text-2xl font-semibold mb-6">Add New Pet</h1>
-      <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
+      <form className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto" onSubmit={handleSubmit}>
         {/* Image Input */}
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="image">Pet Image</Label>
+          <img
+            src={imagePrev}
+             alt="Upload"
+             style={{ cursor: 'pointer', maxWidth: '500px', display: 'block', margin: '0 auto' }}
+             onClick={() => document.getElementById('imageInput').click()}
+          />
           <Input
-            id="image"
+            id="imageInput"
             name="image"
             type="file"
             accept="image/*"
-            className="h-auto file:px-2 file:my-1 px-2 py-1 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e54c00] file:text-white hover:file:bg-[#ED824D]"
+            style={{ display: 'none' }}
             onChange={handleInputChange}
           />
         </div>

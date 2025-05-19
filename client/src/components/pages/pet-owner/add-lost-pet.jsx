@@ -1,3 +1,6 @@
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,10 +9,46 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import petOwnerService from '@/components/pages/pet-owner/petOwnerService'; // Import petOwnerService
 import { useNavigate, useParams } from 'react-router'; // Import useParams
+import imagePrev from "@/assets/imageprev.png";
+
+const Gender = z.enum(['male', 'female', 'other']);
+const Size = z.enum(['small', 'medium', 'large']);
+
+const formSchema = z.object({
+  name: z.string().min(2, {
+    message: "Pet name must be at least 2 characters.",
+  }),
+  species: z.string().min(2, {
+    message: "Species must be at least 2 characters.",
+  }),
+  shortDescription: z.string().min(2, {
+    message: "Description must be at least 2 characters.",
+  }),
+  age: z.string().refine((value) => {
+    const num = Number(value);
+    return !isNaN(num) && num > 0;
+  }, {
+    message: "Age must be a positive number.",
+  }),
+  gender: Gender,
+  breed: z.string().min(2, {
+    message: "Breed must be at least 2 characters.",
+  }),
+  size: Size,
+  description: z.string().min(10, {
+    message: "Description must be at least 10 characters.",
+  }),
+  healthVaccinations: z.string().optional(),
+  lostDate: z.string(),
+  location: z.string().min(2, {
+    message: "Location must be at least 2 characters.",
+  }),
+  photo: z.any().optional()
+});
 
 const AddLostPet = () => {
   const navigate = useNavigate();
-  const { petId } = useParams(); // Get petId from URL parameters
+  const { petId } = useParams();
 
   // Form state
   const [petName, setPetName] = useState('');
@@ -24,7 +63,25 @@ const AddLostPet = () => {
   const [petLostDate, setPetLostDate] = useState('');
   const [petLocation, setPetLocation] = useState('');
   const [petPhoto, setPetPhoto] = useState(null); // State to store the selected file object
-  const [existingPhotoUrl, setExistingPhotoUrl] = useState(''); // State to store existing photo URL
+  const [existingPhotoUrl, setExistingPhotoUrl] = useState('');
+
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      species: '',
+      shortDescription: '',
+      age: '',
+      gender: 'male',
+      breed: '',
+      size: 'small',
+      description: '',
+      healthVaccinations: '',
+      lostDate: '',
+      location: '',
+      photo: null,
+    },
+  });
 
   useEffect(() => {
     // If petId exists, fetch pet data and populate the form
@@ -32,18 +89,18 @@ const AddLostPet = () => {
       const fetchPetData = async () => {
         try {
           const data = await petOwnerService.getLostPetById(petId);
-          setPetName(data.name || '');
-          setPetSpecies(data.Species || '');
-          setPetOneLineDescription(data.shortDescription || '');
-          setPetAge(data.Age || '');
-          setPetGender(data.Gender || '');
-          setPetBreed(data.Breed || '');
-          setPetSize(data.Size || '');
-          setPetDescription(data.description || '');
-          setPetHealthVaccinations(data.healthVaccinations ? data.healthVaccinations.join(', ') : '');
-          setPetLostDate(data.lostDate ? new Date(data.lostDate).toISOString().split('T')[0] : ''); // Format date for input
-          setPetLocation(data.Location || '');
-          setExistingPhotoUrl(data.Photo || ''); // Set existing photo URL
+          setValue('name', data.name || '');
+          setValue('species', data.Species || '');
+          setValue('shortDescription', data.shortDescription || '');
+          setValue('age', data.Age || '');
+          setValue('gender', data.Gender || '');
+          setValue('breed', data.Breed || '');
+          setValue('size', data.Size || '');
+          setValue('description', data.description || '');
+          setValue('healthVaccinations', data.healthVaccinations ? data.healthVaccinations.join(', ') : '');
+          setValue('lostDate', data.lostDate ? new Date(data.lostDate).toISOString().split('T')[0] : '');
+          setValue('location', data.Location || '');
+          setExistingPhotoUrl(data.Photo || '');
         } catch (error) {
           console.error('Failed to fetch pet data:', error);
           // Handle error (e.g., show an error message, redirect)
@@ -63,19 +120,19 @@ const AddLostPet = () => {
     }
   };
 
-  const handleSavePet = async () => {
+  const handleSavePet = async (data) => {
     const formData = new FormData();
-    formData.append('name', petName);
-    formData.append('species', petSpecies);
-    formData.append('shortDescription', petOneLineDescription);
-    formData.append('age', parseInt(petAge, 10));
-    formData.append('gender', petGender);
-    formData.append('breed', petBreed);
-    formData.append('size', petSize);
-    formData.append('description', petDescription);
-    formData.append('healthVaccinations', petHealthVaccinations);
-    formData.append('location', petLocation);
-    formData.append('lostDate', petLostDate);
+    formData.append('name', data.name);
+    formData.append('species', data.species);
+    formData.append('shortDescription', data.shortDescription);
+    formData.append('age', parseInt(data.age, 10));
+    formData.append('gender', data.gender);
+    formData.append('breed', data.breed);
+    formData.append('size', data.size);
+    formData.append('description', data.description);
+    formData.append('healthVaccinations', data.healthVaccinations);
+    formData.append('location', data.location);
+    formData.append('lostDate', data.lostDate);
     if (petPhoto) {
       formData.append('photo', petPhoto);
     }
@@ -103,7 +160,19 @@ const AddLostPet = () => {
       {/* Image Upload */}
       <div className="mb-6">
         <Label htmlFor="photo">Pet Photo</Label>
-        <Input id="photo" type="file" accept="image/*" onChange={handleFileChange} />
+        <img
+          src={imagePrev}
+          alt="Upload"
+          style={{ cursor: 'pointer', maxWidth: '500px', display: 'block', margin: '0 auto' }}
+          onClick={() => document.getElementById('photoInput').click()}
+        />
+        <Input
+          id="photoInput"
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
         {petPhoto && <p className="text-sm mt-2">Selected file: {petPhoto.name}</p>}
         {!petPhoto && existingPhotoUrl && (
           <div className="mt-4">
@@ -117,25 +186,34 @@ const AddLostPet = () => {
         {/* Species */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="species">Species</Label>
-          <Input id="species" value={petSpecies} onChange={(e) => setPetSpecies(e.target.value)} />
+          <Input id="species" {...register("species")} />
+          {errors.species && (
+            <p className="text-red-500 text-sm">{errors.species?.message}</p>
+          )}
         </div>
 
         {/* 1 line Description */}
         <div className="flex flex-col gap-2">
-          <Label htmlFor="oneLineDescription">1 line Description</Label>
-          <Input id="oneLineDescription" value={petOneLineDescription} onChange={(e) => setPetOneLineDescription(e.target.value)} />
+          <Label htmlFor="shortDescription">1 line Description</Label>
+          <Input id="shortDescription" {...register("shortDescription")} />
+          {errors.shortDescription && (
+            <p className="text-red-500 text-sm">{errors.shortDescription?.message}</p>
+          )}
         </div>
 
         {/* Age */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="age">Age</Label>
-          <Input id="age" type="number" value={petAge} onChange={(e) => setPetAge(e.target.value)} />
+          <Input id="age" type="number" {...register("age")} />
+          {errors.age && (
+            <p className="text-red-500 text-sm">{errors.age?.message}</p>
+          )}
         </div>
 
         {/* Gender */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="gender">Gender</Label>
-           <Select onValueChange={setPetGender} value={petGender}>
+          <Select {...register("gender")}>
             <SelectTrigger>
               <SelectValue placeholder="Select gender" />
             </SelectTrigger>
@@ -145,18 +223,24 @@ const AddLostPet = () => {
               <SelectItem value="other">Other</SelectItem>
             </SelectContent>
           </Select>
+          {errors.gender && (
+            <p className="text-red-500 text-sm">{errors.gender.message}</p>
+          )}
         </div>
 
         {/* Breed */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="breed">Breed</Label>
-          <Input id="breed" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} />
+          <Input id="breed" {...register("breed")} />
+          {errors.breed && (
+            <p className="text-red-500 text-sm">{errors.breed?.message}</p>
+          )}
         </div>
 
         {/* Size */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="size">Size</Label>
-           <Select onValueChange={setPetSize} value={petSize}>
+          <Select {...register("size")}>
             <SelectTrigger>
               <SelectValue placeholder="Select size" />
             </SelectTrigger>
@@ -166,36 +250,57 @@ const AddLostPet = () => {
               <SelectItem value="large">Large</SelectItem>
             </SelectContent>
           </Select>
+          {errors.size && (
+            <p className="text-red-500 text-sm">{errors.size?.message}</p>
+          )}
         </div>
 
         {/* Description */}
         <div className="flex flex-col gap-2 col-span-1 md:col-span-2">
           <Label htmlFor="description">Description</Label>
-          <Textarea id="description" value={petDescription} onChange={(e) => setPetDescription(e.target.value)} />
+          <Textarea id="description" {...register("description")} />
+          {errors.description && (
+            <p className="text-red-500 text-sm">{errors.description?.message}</p>
+          )}
         </div>
 
         {/* Health & Vaccinations */}
         <div className="flex flex-col gap-2 col-span-1 md:col-span-2">
-          <Label htmlFor="healthVaccinations">Health & Vaccinations (comma-separated)</Label>
-          <Textarea id="healthVaccinations" value={petHealthVaccinations} onChange={(e) => setPetHealthVaccinations(e.target.value)} />
+          <Label htmlFor="healthVaccinations">
+            Health & Vaccinations (comma-separated)
+          </Label>
+          <Textarea id="healthVaccinations" {...register("healthVaccinations")} />
+          {errors.healthVaccinations && (
+            <p className="text-red-500 text-sm">
+              {errors.healthVaccinations?.message}
+            </p>
+          )}
         </div>
 
         {/* Lost Date */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="lostDate">Lost Date</Label>
-          <Input id="lostDate" type="date" value={petLostDate} onChange={(e) => setPetLostDate(e.target.value)} />
+          <Input id="lostDate" type="date" {...register("lostDate")} />
+          {errors.lostDate && (
+            <p className="text-red-500 text-sm">{errors.lostDate?.message}</p>
+          )}
         </div>
 
         {/* Location */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="location">Location</Label>
-          <Input id="location" value={petLocation} onChange={(e) => setPetLocation(e.target.value)} />
+          <Input id="location" {...register("location")} />
+          {errors.location && (
+            <p className="text-red-500 text-sm">{errors.location?.message}</p>
+          )}
         </div>
       </div>
 
       {/* Confirm Button */}
       <div className="mt-6">
-        <Button onClick={handleSavePet}>{petId ? 'Save Changes' : 'Confirm'}</Button>
+        <Button onClick={handleSubmit(handleSavePet)}>
+          {petId ? 'Save Changes' : 'Confirm'}
+        </Button>
       </div>
     </div>
   );
