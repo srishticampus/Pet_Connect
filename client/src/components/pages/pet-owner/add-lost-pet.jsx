@@ -280,7 +280,7 @@ const AddLostPet = () => {
         {/* Lost Date */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="lostDate">Lost Date</Label>
-          <Input id="lostDate" type="date" {...register("lostDate")} />
+          <Input id="lostDate" type="date" {...register("lostDate")} max={new Date().toISOString().split('T')[0]} />
           {errors.lostDate && (
             <p className="text-red-500 text-sm">{errors.lostDate?.message}</p>
           )}
