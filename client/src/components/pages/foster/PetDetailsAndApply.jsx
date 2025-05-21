@@ -108,11 +108,11 @@ const PetDetailsAndApply = () => {
     <section className="container mx-auto px-3 lg:px-0 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Pet image */}
-        <img src={pet.photo} alt={pet.breed} className="w-full aspect-[611/567] object-cover rounded-2xl" />
+        <img src={`${import.meta.env.VITE_API_URL}${pet.Photo}`} alt={pet.Breed} className="w-full aspect-[611/567] object-cover rounded-2xl" />
 
         {/* Pet details */}
         <div className="flex flex-col justify-between">
-          <h1 className="text-xl">{pet.breed}</h1> {/* Using breed as title for now */}
+          <h1 className="text-xl">{pet.Breed}</h1> {/* Using breed as title for now */}
           {/* Details grid */}
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="flex gap-4 items-center">
@@ -130,7 +130,7 @@ const PetDetailsAndApply = () => {
               </svg>
               <div>
                 <p className="text-sm font-light text-[#7f7f7f]">Age</p>
-                <p>{pet.age}</p>
+                <p>{pet.Age}</p>
               </div>
             </div>
             <div className="flex gap-4 items-center">
@@ -144,7 +144,7 @@ const PetDetailsAndApply = () => {
               </svg>
               <div>
                 <p className="text-sm font-light text-[#7f7f7f]">Species</p>
-                <p>{pet.species}</p>
+                <p>{pet.Species}</p>
               </div>
             </div>
             <div className="flex gap-4 items-center">
@@ -157,7 +157,7 @@ const PetDetailsAndApply = () => {
               </svg>
               <div>
                 <p className="text-sm font-light text-[#7f7f7f]">Breed</p>
-                <p>{pet.breed}</p>
+                <p>{pet.Breed}</p>
               </div>
             </div>
             <div className="flex gap-4 items-center">
@@ -171,7 +171,7 @@ const PetDetailsAndApply = () => {
               </svg>
               <div>
                 <p className="text-sm font-light text-[#7f7f7f]">Size</p>
-                <p>{pet.size}</p>
+                <p>{pet.Size}</p>
               </div>
             </div>
           </div>
@@ -186,7 +186,7 @@ const PetDetailsAndApply = () => {
           </p> */}
           <p className="pt-6">Health Status</p> {/* Changed from Health & Vaccinations */}
           <ul className="text-sm font-light py-4 bullets">
-            {pet.healthStatus.map((status, index) => (
+            {pet.healthVaccinations && pet.healthVaccinations.map((status, index) => (
               <li key={index}>{status}</li>
             ))}
           </ul>
@@ -225,6 +225,7 @@ const PetDetailsAndApply = () => {
                       selected={formData.fromDate}
                       onSelect={(date) => handleDateSelect(date, 'fromDate')}
                       initialFocus
+                      disabled={(date) => date < new Date()} // Disable dates before today
                     />
                   </PopoverContent>
                 </Popover>
@@ -250,6 +251,7 @@ const PetDetailsAndApply = () => {
                       selected={formData.toDate}
                       onSelect={(date) => handleDateSelect(date, 'toDate')}
                       initialFocus
+                      disabled={(date) => date < new Date()} // Disable dates before today
                     />
                   </PopoverContent>
                 </Popover>

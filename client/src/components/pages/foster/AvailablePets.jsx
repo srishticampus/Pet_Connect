@@ -78,13 +78,13 @@ const AvailablePets = () => {
         {pets.map(pet => (
           <Card key={pet.id}>
             <CardHeader>
-              <CardTitle>{pet.breed}</CardTitle>
+              <CardTitle>{pet.Breed}</CardTitle>
             </CardHeader>
             <CardContent>
-              <img src={pet.photo} alt={pet.breed} className="w-full h-48 object-cover mb-4 rounded" />
-              <p><strong>Species:</strong> {pet.species}</p>
-              <p><strong>Age:</strong> {pet.age}</p>
-              <Link to={`/foster/apply/${pet.id}`}>
+              <img src={`${import.meta.env.VITE_API_URL}${pet.Photo}`} alt={pet.Breed} className="w-full h-48 object-cover mb-4 rounded" />
+              <p><strong>Species:</strong> {pet.Species}</p>
+              <p><strong>Age:</strong> {pet.Age}</p>
+              <Link to={`/foster/apply/${pet._id}`}>
                 <Button className="mt-4 w-full">View More</Button>
               </Link>
             </CardContent>

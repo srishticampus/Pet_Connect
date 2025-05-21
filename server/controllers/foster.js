@@ -32,7 +32,16 @@ router.get('/pets', auth, async (req, res) => {
 
   try {
     // Find pets that are active and either from an owner or an organization
-    const pets = await Pets.find(filter).populate('organization', 'name'); // Populate organization name
+    const pets = await Pets.find(filter);
+    console.log('Pets before population:', pets.map(pet => ({ _id: pet._id, origin: pet.origin, rawPetOwner: pet.petOwner })));
+
+    // Populate petOwner if origin is 'owner'
+    await Pets.populate(pets, {
+      path: 'user',
+      select: 'name', // Assuming User model has a 'name' field
+      match: { role: 'pet_owner' } // Only populate if the referenced user is a pet-owner
+    });
+    console.log('Pets after population:', pets.map(pet => ({ _id: pet._id, origin: pet.origin, populatedPetOwner: pet.petOwner })));
 
     res.json(pets);
   } catch (err) {
@@ -74,7 +83,17 @@ router.get(
           { origin: 'owner' },
           { organization: { $exists: true } }
         ]
-      }).populate('organization', 'name'); // Populate organization name
+      });
+      console.log('Pet before population:', { _id: pet._id, origin: pet.origin, rawPetOwner: pet.petOwner });
+
+      // Populate petOwner if origin is 'owner'
+      await Pets.populate(pet, {
+        path: 'petOwner',
+        select: 'name', // Assuming User model has a 'name' field
+        match: { role: 'pet-owner' } // Only populate if the referenced user is a pet-owner
+      });
+      console.log('Pet after population:', { _id: pet._id, origin: pet.origin, populatedPetOwner: pet.petOwner });
+
 
       if (!pet) {
         return res.status(404).json({ msg: 'Pet not found or not available for fostering' });
