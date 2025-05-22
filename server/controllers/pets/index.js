@@ -135,6 +135,23 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// @route   GET /api/pets/rescue-shelter/my-pets
+// @desc    Get all pets for the authenticated rescue/shelter user
+// @access  Private (Rescue/Shelter only)
+router.get("/rescue-shelter/my-pets", auth, async (req, res) => {
+    // Check if the authenticated user is a rescue-shelter
+    if (req.userType !== 'rescue-shelter') {
+        return res.status(403).json({ message: 'Unauthorized: Only rescue-shelters can view their pets.' });
+    }
+
+    try {
+        const pets = await Pets.find({ petOwner: req.userId, origin: 'rescue-shelter' });
+        res.json(pets);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // Update a pet
 router.patch("/:id", async (req, res) => {
   try {
@@ -163,19 +180,32 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// @route   GET /api/pets/rescue-shelter/my-pets
-// @desc    Get all pets for the authenticated rescue/shelter user
+// @route   GET /api/pets/rescue-shelter/:id
+// @desc    Get a specific pet by ID for the authenticated rescue/shelter user
 // @access  Private (Rescue/Shelter only)
-router.get("/rescue-shelter/my-pets", auth, async (req, res) => {
+router.get("/rescue-shelter/:id", auth, async (req, res) => {
+    console.log(`Attempting to fetch pet with ID: ${req.params.id} for user: ${req.userId}`); // Log for validation
     // Check if the authenticated user is a rescue-shelter
     if (req.userType !== 'rescue-shelter') {
-        return res.status(403).json({ message: 'Unauthorized: Only rescue-shelters can view their pets.' });
+        console.log('Unauthorized attempt to access rescue-shelter pet by non-rescue-shelter user.'); // Log for validation
+        return res.status(403).json({ message: 'Unauthorized: Only rescue-shelters can view their pets this way.' });
     }
 
     try {
-        const pets = await Pets.find({ petOwner: req.userId, origin: 'rescue-shelter' });
-        res.json(pets);
+        const petId = req.params.id;
+
+        // Find the pet by ID and petOwner ID to ensure ownership
+        const pet = await Pets.findOne({ _id: petId, petOwner: req.userId });
+
+        if (!pet) {
+            console.log(`Pet with ID: ${petId} not found or not owned by user: ${req.userId}`); // Log for validation
+            return res.status(404).json({ message: "Pet not found or you do not have permission to view this pet." });
+        }
+
+        console.log(`Successfully fetched pet with ID: ${petId}`); // Log for validation
+        res.json(pet);
     } catch (err) {
+        console.error(`Error fetching pet with ID: ${req.params.id}`, err); // Log for validation
         res.status(500).json({ message: err.message });
     }
 });
@@ -263,6 +293,16 @@ router.patch("/rescue-shelter/:id", auth, upload.single('image'), async (req, re
     try {
         const petId = req.params.id;
         const updates = req.body;
+
+        // Parse healthVaccinations if it's a string (sent as JSON string from client)
+        if (updates.healthVaccinations && typeof updates.healthVaccinations === 'string') {
+            try {
+                updates.healthVaccinations = JSON.parse(updates.healthVaccinations);
+            } catch (error) {
+                console.error('Failed to parse healthVaccinations JSON string:', error);
+                return res.status(400).json({ message: 'Invalid healthVaccinations format' });
+            }
+        }
 
         // Find the pet by ID and petOwner ID to ensure ownership
         const pet = await Pets.findOneAndUpdate(

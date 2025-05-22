@@ -56,7 +56,7 @@ const ManagePets = () => {
                 <h1 className="text-2xl font-semibold ">Manage Pets for adoption</h1>
                 <div className="flex justify-end ">
                     <Link to="/rescue-shelter/add-pet">
-                        <button className="bg-[#e54c00] text-white px-4 py-2 rounded-md hover:bg-[#ED824D]">
+                        <button className="bg-[#e54c00] text-white hover:bg-[#ED824D] px-6 py-3 rounded-full font-semibold">
                             Add New Pet
                         </button>
                     </Link>
@@ -67,14 +67,24 @@ const ManagePets = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {pets.map(pet => (
-                        <div key={pet._id} className="border rounded-lg p-4">
-                            <h3 className="text-xl font-semibold">{pet.name}</h3>
-                            <p>Species: {pet.Species}</p>
-                            <p>Breed: {pet.Breed}</p>
-                            {/* Add more pet details here */}
-                            <div className="mt-4 flex space-x-2">
-                                <Button onClick={() => handleEdit(pet._id)} variant="outline">Edit</Button>
-                                <Button onClick={() => handleDelete(pet._id)} variant="destructive">Delete</Button>
+                        <div key={pet._id} className="rounded-xl overflow-hidden shadow-md bg-white">
+                            <img
+                                src={pet?.Photo ? `${import.meta.env.VITE_API_URL}${pet.Photo}` :"https://placedog.net/500/300"} // Placeholder image URL
+                                alt={`Image of ${pet.name}`}
+                                className="w-full h-60 object-cover"
+                            />
+                            <div className="p-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-xl font-semibold">{pet.name}</h3>
+                                    <span className="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Available</span>
+                                </div>
+                                <p className="text-gray-500 text-sm">{pet.Breed} - 8 months</p>
+                                <p className="mt-2 text-gray-700">
+                                    {pet.description}
+                                </p>
+                                <Button asChild>
+                                    <Link to={`/rescue-shelter/edit-pet/${pet._id}`} className="mt-4 text-[#e54c00]  w-full bg-primary font-semibold">View Details</Link>
+                                </Button>
                             </div>
                         </div>
                     ))}
