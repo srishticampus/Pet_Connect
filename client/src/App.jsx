@@ -54,9 +54,9 @@ import EditPet from "./components/pages/pet-owner/edit-pet"; // Import EditPet
 function App() {
   const { isAuthenticated, user, isLoading } = useAuth();
 
-  if (isLoading) {
-    return <div>Loading...</div>; // Or a loading spinner
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>; // Or a loading spinner
+  // }
 
   const isPetOwner = user?.role === "pet_owner";
 

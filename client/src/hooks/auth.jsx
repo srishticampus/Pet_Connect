@@ -103,7 +103,8 @@ export const AuthProvider = ({ children }) => {
           },
         });
       }
-      return data;
+      console.log("Registration response:", data);
+      return { ...data, registrationComplete: true }; // Add a field to indicate completion
     } catch (err) {
       const errorMsg = err.response?.data?.msg || err.response?.data?.errors?.[0]?.msg || err?.response?.data?.error || err?.message?.error  || "Registration failed";
       console.error("Registration error:", err.response?.data || err.message);

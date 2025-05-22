@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Alert } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import profilepic from "@/assets/profile-pic.png";
 
 const AdopterSignUp = () => {
@@ -37,6 +37,7 @@ const AdopterSignUp = () => {
   const [errors, setErrors] = useState({});
   const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
   const [aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false); // New state for success message
   const { register, error: authError, clearError, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -89,8 +90,12 @@ const AdopterSignUp = () => {
         if (formData.profilePic) imageData.append('profilePic', formData.profilePic);
         if (formData.aadhaarImage) imageData.append('aadhaarImage', formData.aadhaarImage);
 
-        await register('adopter', userData, imageData);
-        navigate("/login");
+        const registrationResult = await register('adopter', userData, imageData);
+        if (registrationResult?.registrationComplete) {
+          setRegistrationSuccess(true);
+        } else {
+          console.error("Registration not complete");
+        }
       } catch (err) {
         console.error("Registration failed", err);
       }
@@ -126,10 +131,20 @@ const AdopterSignUp = () => {
   return (
     <main className="container mx-3 md:mx-auto flex flex-col items-center gap-4 my-16">
       <h1 className="text-center text-primary text-3xl">Sign Up!</h1>
-      <label className="flex flex-col items-center justify-center">
-        <img src={profilePicPreview} alt="upload profile pic" className="w-48 h-56 object-contain rounded-full" />
-        <input type="file" accept="image/*" onChange={handleProfilePicChange} className="hidden" />
-      </label>
+
+      {registrationSuccess ? (
+        <Alert className="w-[80%] max-w-[600px]">
+          <AlertTitle>Success!</AlertTitle>
+          <AlertDescription>
+          Your application for adopter has been sent to the admin for approval. You will be notified once it is approved.
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <> {/* Wrap elements in a Fragment */}
+          <label className="flex flex-col items-center justify-center">
+            <img src={profilePicPreview} alt="upload profile pic" className="w-48 h-56 object-contain rounded-full" />
+            <input type="file" accept="image/*" onChange={handleProfilePicChange} className="hidden" />
+          </label>
 
       {authError && <div className="text-red-500 text-sm">{authError}</div>}
 
@@ -238,6 +253,8 @@ const AdopterSignUp = () => {
         </Button>
       </form>
       <p>Already have an account? <Link to="/login" className="underline">Login</Link></p>
+        </>
+      )}
     </main>
   );
 };
