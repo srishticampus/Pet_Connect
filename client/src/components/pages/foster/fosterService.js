@@ -45,3 +45,14 @@ export const getSpeciesList = async () => {
     throw error;
   }
 };
+
+// Function to fetch foster applications
+export const getFosterApplications = async () => {
+  try {
+    const response = await api.get('/foster/applications');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching foster applications:', error);
+    throw error;
+  }
+};

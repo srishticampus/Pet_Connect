@@ -82,6 +82,7 @@ const PetDetailsAndApply = () => {
     setSubmitSuccess(false);
 
     try {
+      console.log('Submitting formData:', formData); // Log formData before sending
       await applyToFoster(petId, formData);
       setSubmitSuccess(true);
       setIsDialogOpen(false); // Close dialog on successful submission

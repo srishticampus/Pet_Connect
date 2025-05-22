@@ -50,6 +50,7 @@ import RescueShelterApplicationsPage from "./components/pages/rescue-shelter/App
 import Chat from "./components/pages/rescue-shelter/Chat"; // Import Chat
 
 import EditPet from "./components/pages/pet-owner/edit-pet"; // Import EditPet
+import ApplicationStatus from "./components/pages/foster/ApplicationStatus";
 
 function App() {
   const { isAuthenticated, user, isLoading } = useAuth();
@@ -113,6 +114,7 @@ function App() {
         {/* Foster routes */}
         <Route path="/foster/pets" element={<AvailablePets />} />
         <Route path="/foster/apply/:petId" element={<PetDetailsAndApply />} />
+        <Route path="/foster/application-status" element={<ApplicationStatus />} />
         {/* Rescue/Shelter routes */}
         <Route path="/rescue-shelter/add-pet" element={<ProtectedRoute><RescueShelterAddPet /></ProtectedRoute>} />
         <Route path="/rescue-shelter/manage-pets" element={<ProtectedRoute><RescueShelterManagePets /></ProtectedRoute>} />

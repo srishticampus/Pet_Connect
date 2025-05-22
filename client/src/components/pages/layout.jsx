@@ -138,12 +138,20 @@ const Navbar = () => {
               </>
             )}
             {user?.role === 'foster' && (
-              <Link
-                to="/foster/pets"
-                className="hover:text-primary transition"
-              >
-                Foster Pets
-              </Link>
+              <>
+                <Link
+                  to="/foster/pets"
+                  className="hover:text-primary transition"
+                >
+                  Foster Pets
+                </Link>
+                <Link
+                  to="/foster/application-status"
+                  className="hover:text-primary transition"
+                >
+                  Application Status
+                </Link>
+              </>
             )}
             <Link
               // to={`/${user?.role}/profile`} // Using user.role as confirmed

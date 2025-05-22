@@ -118,13 +118,15 @@ router.post(
     // Validate request body
     body('fromDate', 'Foster start date is required').notEmpty().isISO8601(),
     body('toDate', 'Foster end date is required').notEmpty().isISO8601(),
-    body('policyApproved', 'Policy approval is required').isBoolean().equals(true),
+    body('policyApproved', 'Policy approval is required').isIn([true]),
     // Validate petId parameter
     param('petId', 'Invalid pet ID').isMongoId(),
   ],
   async (req, res) => {
+    console.log('Request body:', req.body); // Log request body
     // Check for validation errors
     const errors = validationResult(req);
+    console.log('Validation errors:', errors.array()); // Log validation errors
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
@@ -169,6 +171,7 @@ router.post(
       const newApplication = new Application({
         applicant: applicantId,
         pet: petId,
+        owner: pet.origin === 'owner' ? pet.petOwner : pet.organization, // Set owner based on pet origin
         organization: pet.organization, // Link to the pet's organization if applicable
         applicationType: 'foster',
         fromDate,
@@ -186,5 +189,28 @@ router.post(
     }
   }
 );
+
+// @route   GET /api/foster/applications
+// @desc    Get foster applications for the authenticated foster user
+// @access  Private (Foster users only)
+router.get('/applications', auth, async (req, res) => {
+  // Check if the authenticated user is a foster
+  if (req.user.role !== 'foster') {
+    return res.status(403).json({ msg: 'Access denied. Only foster users can view their applications.' });
+  }
+
+  try {
+    // Find applications for the authenticated foster user
+    const applications = await Application.find({
+      applicant: req.user.id,
+      applicationType: 'foster',
+    }).populate('pet', ['name', 'Species', 'Breed', 'Gender', 'Size', 'Photo', 'Age']); // Populate pet details
+
+    res.json(applications);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 export default router;
