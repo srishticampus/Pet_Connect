@@ -50,9 +50,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 // Define columns for the Rescue Shelters table
 export const columns = [
   {
-    accessorKey:"id", // Accessor key is used to identify the data in the table
     header:"S.No.",
     name:"S.No.",
+    cell: ({row})=>(Number(row.id)+1)
   },
   {
     accessorKey: "name",

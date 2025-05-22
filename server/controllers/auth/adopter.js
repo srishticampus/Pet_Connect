@@ -33,7 +33,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, newPassword, phoneNumber, address } = req.body;
+    const { name, email, newPassword, phoneNumber, address, aadhaarNumber } = req.body;
 
     try {
       // See if user exists
@@ -55,6 +55,7 @@ router.post(
         phoneNumber,
         address,
         role: "adopter",
+        aadhaarNumber,
       });
 
       // Encrypt password
