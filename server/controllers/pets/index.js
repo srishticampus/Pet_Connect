@@ -285,6 +285,9 @@ router.post(
 // @desc    Edit a pet by a rescue/shelter
 // @access  Private (Rescue/Shelter only)
 router.patch("/rescue-shelter/:id", auth, upload.single('image'), async (req, res) => {
+    console.log('PATCH /rescue-shelter/:id route hit'); // Log route hit
+    console.log('req.file:', req.file); // Log req.file
+
     // Check if the authenticated user is a rescue-shelter
     if (req.userType !== 'rescue-shelter') {
         return res.status(403).json({ message: 'Unauthorized: Only rescue-shelters can edit pets.' });
@@ -317,8 +320,11 @@ router.patch("/rescue-shelter/:id", auth, upload.single('image'), async (req, re
 
         // Handle image upload if a new image is provided
         if (req.file) {
+            console.log('New image uploaded. Updating pet.Photo'); // Log image update
             pet.Photo = '/uploads/' + req.file.filename;
-            await pet.save();
+            console.log('pet.Photo after update:', pet.Photo); // Log updated pet.Photo
+            const savedPet = await pet.save(); // Save the pet document with the new photo path
+            console.log('Result of pet.save() after image update:', savedPet); // Log save result
         }
 
 

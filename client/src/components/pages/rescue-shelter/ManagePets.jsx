@@ -83,7 +83,7 @@ const ManagePets = () => {
                                     {pet.description}
                                 </p>
                                 <Button asChild>
-                                    <Link to={`/rescue-shelter/edit-pet/${pet._id}`} className="mt-4 text-[#e54c00]  w-full bg-primary font-semibold">View Details</Link>
+                                    <Link to={`/rescue-shelter/edit-pet/${pet._id}`} className="mt-4 text-[#e54c00]  w-full bg-primary font-semibold">Edit</Link>
                                 </Button>
                             </div>
                         </div>

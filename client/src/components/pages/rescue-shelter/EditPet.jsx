@@ -55,10 +55,15 @@ const EditPet = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'file' ? files[0] : value
-    });
+    if (type === 'file' && name === 'image') { // Check for file input with name 'image'
+        console.log('Image file selected. File:', files[0]); // Log the file
+        setImage(files[0]); // Update the image state
+    } else {
+        setFormData({
+          ...formData,
+          [name]: type === 'file' ? files[0] : value // Keep existing logic for other inputs
+        });
+    }
     // Clear validation error for the field when it changes
     setValidationErrors(prevErrors => ({
       ...prevErrors,
@@ -134,12 +139,14 @@ const EditPet = () => {
     petData.append('description', formData.description);
     const healthVaccinationsArray = formData.healthVaccinations.split(',').map(item => item.trim()).filter(item => item);
     petData.append('healthVaccinations', JSON.stringify(healthVaccinationsArray));
+console.log('Image state before appending to FormData:', image); // Log image state
     if (image) {
       petData.append('image', image);
     }
 
     try {
-      await updatePet(id, petData); // Use the updatePet function
+      const res = await updatePet(id, petData); // Use the updatePet function
+console.log('Update pet response:', res); // Log the response
 
       // Pet updated successfully
       alert('Pet updated successfully!');
