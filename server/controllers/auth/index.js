@@ -59,6 +59,10 @@ router.post(
         }
       }
 
+      if (user.role === "foster" && !user.isApproved) {
+        return res.status(403).json({ msg: "Your foster application is pending approval. Please wait for admin approval." });
+      }
+
       // Update last login time
       user.lastLogin = Date.now();
       await user.save();

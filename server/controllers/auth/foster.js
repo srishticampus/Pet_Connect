@@ -33,7 +33,8 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, newPassword, phoneNumber, address } = req.body;
+    const { name, email, newPassword, phoneNumber, address, aadhaarNumber } = req.body;
+    console.log("Received Aadhaar Number:", aadhaarNumber);
 
     try {
       // See if user exists
@@ -54,6 +55,7 @@ router.post(
         email,
         phoneNumber,
         address,
+        aadhaarNumber,
         role: "foster",
       });
 
