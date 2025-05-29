@@ -38,7 +38,7 @@ app.use(morgan("combined", { stream: accessLogStream }));
 
 // Root route (public, no CSRF here)
 app.get("/", (req, res) => {
-  res.send("Expresssss");
+  res.send("Express API. /api for API routes. The client is at "+import.meta.env.VITE_CLIENT_URL);
 });
 
 // API routes
