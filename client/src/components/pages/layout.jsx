@@ -118,6 +118,12 @@ const Navbar = () => {
                 >
                   Find Pet
                 </Link>
+                <Link
+                  to="/pet-owner/manage-lost-found"
+                  className="hover:text-primary transition"
+                >
+                  Lost/Found Reports
+                </Link>
               </>
             )}
           
@@ -135,6 +141,24 @@ const Navbar = () => {
                 >
                   Applications
                 </Link>
+                <Link
+                  to="/rescue-shelter/lost-found-reports"
+                  className="hover:text-primary transition"
+                >
+                  Lost & Found Reports
+                </Link>
+                <Link
+                  to="/rescue-shelter/adopted-pets"
+                  className="hover:text-primary transition"
+                >
+                  Adopted Pets
+                </Link>
+                <Link
+                  to="/rescue-shelter/fostered-pets"
+                  className="hover:text-primary transition"
+                >
+                  Fostered Pets
+                </Link>
               </>
             )}
             {user?.role === 'foster' && (
@@ -150,6 +174,46 @@ const Navbar = () => {
                   className="hover:text-primary transition"
                 >
                   Application Status
+                </Link>
+                <Link
+                  to="/foster/assigned-pets"
+                  className="hover:text-primary transition"
+                >
+                  Assigned Pets
+                </Link>
+              </>
+            )}
+            {user?.role === 'adopter' && (
+              <>
+                <Link
+                  to="/adopter/adopt-a-pet"
+                  className="hover:text-primary transition"
+                  style={{
+                    textDecoration: pathname === "/adopt-a-pet" ? "underline" : "none",
+                    color: pathname === "/adopt-a-pet" ? "#E54C00" : "",
+                  }}
+                >
+                  Adopt pets
+                </Link>
+                <Link
+                  to="/adopter/application-status"
+                  className="hover:text-primary transition"
+                  style={{
+                    textDecoration: pathname === "/adopter/application-status" ? "underline" : "none",
+                    color: pathname === "/adopter/application-status" ? "#E54C00" : "",
+                  }}
+                >
+                  Application Status
+                </Link>
+                <Link
+                  to="/adopter/adopted-pets"
+                  className="hover:text-primary transition"
+                  style={{
+                    textDecoration: pathname === "/adopter/adopted-pets" ? "underline" : "none",
+                    color: pathname === "/adopter/adopted-pets" ? "#E54C00" : "",
+                  }}
+                >
+                  Adopted Pets
                 </Link>
               </>
             )}

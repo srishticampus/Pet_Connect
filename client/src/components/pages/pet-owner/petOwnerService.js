@@ -1,9 +1,9 @@
 import api from '@/utils/api';
 
 const petOwnerService = {
-  getLostPets: async () => {
+  getLostFoundReportsForPetOwner: async () => {
     try {
-      const response = await api.get('/pet-owner/lost-pets');
+      const response = await api.get('/pet-owner/lost-found-reports');
       return response.data;
     } catch (error) {
       console.error('Error fetching lost pets:', error);

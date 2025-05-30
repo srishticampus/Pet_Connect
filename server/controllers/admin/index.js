@@ -8,6 +8,7 @@ import { getAllFosters, approveFoster, rejectFoster, getApprovedFosters } from '
 import { getAllRescueShelters, approveRescueShelter, rejectRescueShelter, getApprovedRescueShelters } from './rescue-shelters.js'; // Import rescue shelter controllers
 import lostFoundPetsRouter from './lost-found-pets.js';
 import applicationsRouter from './applications.js'; // Import applications router
+import documentsRouter from './documents.js'; // Import documents router
 
 const router = express.Router();
 
@@ -41,5 +42,6 @@ router.get('/rescue-shelters/approved', getApprovedRescueShelters);
 
 router.use('/lost-found-pets', lostFoundPetsRouter);
 router.use('/applications', applicationsRouter); // Use applications router
+router.use('/documents', documentsRouter); // Use documents router
 
 export default router;

@@ -39,7 +39,14 @@ const formSchema = z.object({
     message: "Description must be at least 10 characters.",
   }),
   healthVaccinations: z.string().optional(),
-  lostDate: z.string(),
+  lostDate: z.string().refine((dateString) => {
+    const selectedDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of today for comparison
+    return selectedDate <= today;
+  }, {
+    message: "Lost Date cannot be in the future."
+  }),
   location: z.string().min(2, {
     message: "Location must be at least 2 characters.",
   }),

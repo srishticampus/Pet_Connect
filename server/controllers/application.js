@@ -40,6 +40,26 @@ router.get("/owned", auth, async (req, res) => {
   }
 });
 
+// Get adoption applications for the authenticated adopter user
+router.get("/my-adoptions", auth, async (req, res) => {
+  try {
+    // Check if user is an adopter
+    if (req.userType !== 'adopter') {
+      return res.status(403).json({ message: "Access denied. Adopter access required." });
+    }
+
+    const applications = await Application.find({
+      applicant: req.user._id,
+      applicationType: 'adoption',
+    }).populate('pet', ['name', 'Species', 'Breed', 'Gender', 'Size', 'Photo', 'Age']); // Populate pet details
+
+    res.json(applications);
+  } catch (err) {
+    console.error("Error fetching adopter's applications:", err);
+    res.status(500).json({ message: "Failed to fetch adopter's applications.", error: err.message });
+  }
+});
+
 // Get application details by ID
 router.get("/:applicationId", async (req, res) => {
   try {
@@ -144,6 +164,8 @@ router.put("/:applicationId/approve-by-owner", auth, async (req, res) => {
 
     pet.petOwner = application.applicant; // Assign pet to the applicant
     pet.availableForAdoptionOrFoster = false; // Mark pet as not available
+    pet.isAdopted = true; // Mark pet as adopted
+    pet.status = 'adopted'; // Set pet status to adopted
     await pet.save();
 
     res.json({ message: "Application approved successfully!", application });

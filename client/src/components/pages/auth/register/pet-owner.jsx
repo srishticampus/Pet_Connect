@@ -1,9 +1,11 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import profilepic from "@/assets/profile-pic.png";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/auth";
 import { Link, useNavigate } from 'react-router';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function PetOwnerSignUp() {
   const [formData, setFormData] = useState({
@@ -22,7 +24,9 @@ export default function PetOwnerSignUp() {
   const [errors, setErrors] = useState({});
   const [profilePicPreview, setProfilePicPreview] = useState(profilepic);
   const [aadhaarImagePreview, setAadhaarImagePreview] = useState(null);
-  const { register, error: authError, clearError, isLoading,isAuthenticated } = useAuth();
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { register, error: authError, clearError, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
     // Redirect if already authenticated
@@ -165,27 +169,61 @@ export default function PetOwnerSignUp() {
 
         <label className="flex flex-col">
           <span>New Password</span>
-          <Input
-            type="password"
-            name="newPassword"
-            value={formData.newPassword}
-            onChange={handleChange}
-            disabled={isLoading}
-            autocomplete="new-password"
-          />
+          <div className="relative">
+            <Input
+              type={showNewPassword ? "text" : "password"}
+              name="newPassword"
+              value={formData.newPassword}
+              onChange={handleChange}
+              disabled={isLoading}
+              autocomplete="new-password"
+              className="pr-10"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              onClick={() => setShowNewPassword((prev) => !prev)}
+              disabled={isLoading}
+            >
+              {showNewPassword ? (
+                <EyeOffIcon className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <EyeIcon className="h-4 w-4 text-muted-foreground" />
+              )}
+            </Button>
+          </div>
           {errors.newPassword && <span className="text-red-500">{errors.newPassword}</span>}
         </label>
 
         <label className="flex flex-col">
           <span>Confirm Password</span>
-          <Input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            disabled={isLoading}
-            autocomplete="new-password"
-          />
+          <div className="relative">
+            <Input
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              disabled={isLoading}
+              autocomplete="new-password"
+              className="pr-10"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              disabled={isLoading}
+            >
+              {showConfirmPassword ? (
+                <EyeOffIcon className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <EyeIcon className="h-4 w-4 text-muted-foreground" />
+              )}
+            </Button>
+          </div>
           {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword}</span>}
         </label>
 

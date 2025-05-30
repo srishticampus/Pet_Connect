@@ -42,11 +42,7 @@ router.put("/:applicationId/approve", auth, async (req, res) => {
         return res.status(400).json({ message: `Application is already ${application.status}.` });
     }
 
-    application.status = 'approved';
-    application.markModified('owner'); // Explicitly mark owner as modified
-    await application.save();
-
-    // Update pet owner
+    // Fetch the pet details first to get its current owner
     const pet = await Pets.findById(application.pet);
     if (!pet) {
         // This should ideally not happen if application refers to a valid pet
@@ -54,8 +50,17 @@ router.put("/:applicationId/approve", auth, async (req, res) => {
         return res.status(404).json({ message: "Associated pet not found." });
     }
 
+    application.status = 'approved';
+    // Set the owner of the application to the current owner of the pet
+    application.owner = pet.petOwner; 
+    await application.save();
+
+    // Update pet owner
+
     pet.petOwner = application.applicant; // Assign pet to the applicant
     pet.availableForAdoptionOrFoster = false; // Mark pet as not available for adoption
+    pet.isAdopted = true; // Mark pet as adopted
+    pet.status = 'adopted'; // Set pet status to adopted
     await pet.save();
 
     res.json({ message: "Application approved successfully!", application });

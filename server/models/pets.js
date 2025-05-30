@@ -42,6 +42,10 @@ const petSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User", // Reference to the User model (Pet Owner)
   },
+  organization: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User", // Reference to the User model (Rescue Shelter or Foster)
+  },
   origin: {
     type: String,
     enum: ["owner", "foster", "rescue-shelter"],
@@ -51,9 +55,13 @@ const petSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isAdopted: { // New field to indicate if the pet has been adopted
+    type: Boolean,
+    default: false,
+  },
   status: {
     type: String,
-    enum: ["active", "lost", "found"],
+    enum: ["active", "lost", "found", "adopted"], // Added "adopted" status
     default: "active",
   },
   // Added timestamps

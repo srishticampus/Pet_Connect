@@ -76,6 +76,7 @@ router.post(
         healthVaccinations,
         Photo: imagePath, // Save the image path to the database
         petOwner: req.userId, // Assuming req.userId is set by auth middleware
+        organization: origin === 'foster' ? req.userId : undefined, // Set organization if origin is foster
         origin,
       });
 
@@ -111,11 +112,23 @@ router.get("/", async (req, res) => {
 });
 
 // @route   GET /api/pets/available-for-adoption
-// @desc    Get all pets available for adoption or foster
+// @desc    Get all pets available for adoption or foster (not yet adopted)
 // @access  Public
 router.get("/available-for-adoption", async (req, res) => {
   try {
-    const pets = await Pets.find({ availableForAdoptionOrFoster: true });
+    const pets = await Pets.find({ availableForAdoptionOrFoster: true, isAdopted: false });
+    res.json(pets);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// @route   GET /api/pets/adopted
+// @desc    Get all pets that have been adopted
+// @access  Public (or Private, depending on requirements, but client side assumes public for now)
+router.get("/adopted", async (req, res) => {
+  try {
+    const pets = await Pets.find({ isAdopted: true });
     res.json(pets);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -125,7 +138,7 @@ router.get("/available-for-adoption", async (req, res) => {
 // Get a specific pet by ID
 router.get("/:id", async (req, res) => {
   try {
-    const pet = await Pets.findById(req.params.id);
+    const pet = await Pets.findById(req.params.id).populate('petOwner', 'name email profilePic'); // Populate petOwner
     if (!pet) {
       return res.status(404).json({ message: "Pet not found" });
     }
@@ -269,6 +282,7 @@ router.post(
         healthVaccinations,
         Photo: imagePath,
         petOwner: req.userId, // Associate pet with the rescue/shelter user
+        organization: req.userId, // Associate organization with the rescue/shelter user
         origin: 'rescue-shelter', // Set origin to rescue-shelter
         availableForAdoptionOrFoster: true, // Mark as available for adoption/foster
       });

@@ -213,4 +213,31 @@ router.get('/applications', auth, async (req, res) => {
   }
 });
 
+// @route   GET /api/foster/assigned-pets
+// @desc    Get pets assigned to the authenticated foster user
+// @access  Private (Foster users only)
+router.get('/assigned-pets', auth, async (req, res) => {
+  // Check if the authenticated user is a foster
+  if (req.user.role !== 'foster') {
+    return res.status(403).json({ msg: 'Access denied. Only foster users can view assigned pets.' });
+  }
+
+  try {
+    // Find approved foster applications for the authenticated foster user
+    const assignedApplications = await Application.find({
+      applicant: req.user.id,
+      applicationType: 'foster',
+      status: 'approved',
+    }).populate('pet', ['name', 'Species', 'Breed', 'Gender', 'Size', 'Photo', 'Age', 'petOwner']); // Populate pet details including petOwner
+
+    // Extract pets from the applications
+    const assignedPets = assignedApplications.map(app => app.pet);
+
+    res.json(assignedPets);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 export default router;

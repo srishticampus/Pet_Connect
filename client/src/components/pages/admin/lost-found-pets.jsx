@@ -1,31 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  getFilteredRowModel
-} from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { DataTableColumnHeader } from "@/components/ui/column-header";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { DataTablePagination } from "@/components/ui/table-pagination";
 import {
   Select,
   SelectContent,
@@ -33,141 +8,120 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { getLostFoundPets, updatePetStatus } from './adminService';
-import { MoreHorizontal } from 'lucide-react';
+import { Search, Calendar, PawPrint, Ruler, Home, MapPin, User, Heart } from 'lucide-react';
 
-export const columns = [
-  {
-    accessorKey: "id",
-    header: "S.No.",
-    name: "S.No."
-  },
-  {
-    accessorKey: "Photo",
-    header: "Photo",
-    cell: ({ row }) => {
-      const pet = row.original;
-      return pet.Photo ? (
-        <img src={pet.Photo} alt={pet.name} className="w-16 h-16 object-cover rounded-md" />
-      ) : (
-        <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
-          No Image
-        </div>
-      );
-    },
-    name: "Photo"
-  },
-  {
-    accessorKey: "Breed",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Breed" />
-    ),
-    name: "Breed"
-  },
-  {
-    accessorKey: "Species",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Species" />
-    ),
-    name: "Species"
-  },
-  {
-    accessorKey: "Size",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Size" />
-    ),
-    name: "Size"
-  },
-  {
-    accessorKey: "Age",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Age" />
-    ),
-    name: "Age"
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
-    name: "Status"
-  },
-  {
-    id: "actions",
-    cell: ({ row, table }) => {
-      const pet = row.original;
-      const fetchPets = table.options.meta?.fetchPets;
-      const [open, setOpen] = useState(false);
-      const [newStatus, setNewStatus] = useState(pet.status);
+function PetCard({ pet, fetchPets }) {
+  const [open, setOpen] = useState(false);
+  const [newStatus, setNewStatus] = useState(pet.status);
 
-      const handleStatusChange = async () => {
-        if (newStatus) {
-          try {
-            await updatePetStatus(pet._id, newStatus);
-            fetchPets(); // Refresh the list
-            setOpen(false); // Close the dialog
-          } catch (error) {
-            console.error('Error updating pet status:', error);
-          }
-        }
-      };
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
-      return (
-        <>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => setOpen(true)}>
-                  View Details / Update Status
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Pet Details</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="flex flex-col items-center">
-                  <Label>Photo</Label>
+  const handleStatusChange = async () => {
+    if (newStatus) {
+      try {
+        await updatePetStatus(pet._id, newStatus);
+        fetchPets(); // Refresh the list
+        setOpen(false); // Close the dialog
+      } catch (error) {
+        console.error('Error updating pet status:', error);
+      }
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <img
+        src={pet.Photo ? `${import.meta.env.VITE_API_URL}/${pet.Photo}` : 'https://via.placeholder.com/150'}
+        alt={pet.name}
+        className="w-full h-48 object-cover"
+      />
+      <div className="p-4">
+        <h3 className="text-lg font-semibold">{pet.name ||pet.Species || 'N/A'}</h3>
+        <p className="text-sm text-gray-600">{pet.Breed || 'N/A'} • {pet.Age || 'N/A'} months</p>
+        <p className="text-sm text-gray-500 mt-2 line-clamp-2">{pet.description || 'No description available.'}</p>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="link" className="p-0 h-auto mt-2">View Details / Update Status</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-4xl p-0">
+            <DialogHeader className="p-6 pb-0">
+              <DialogTitle>Pet Details</DialogTitle>
+            </DialogHeader>
+            <div className="grid md:grid-cols-2 gap-6 p-6">
+              {/* Left Column: Images */}
+              <div className="flex flex-col items-center">
+                <div className="w-full h-96 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
                   {pet.Photo ? (
-                    <img src={pet.Photo} alt={pet.name} className="w-32 h-32 object-cover rounded-md mt-2" />
+                    <img src={`${import.meta.env.VITE_API_URL}/${pet.Photo}`} alt={pet.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-32 h-32 bg-gray-200 rounded-md flex items-center justify-center text-gray-500 mt-2">
-                      No Image
-                    </div>
+                    <span className="text-gray-500">No Image</span>
                   )}
                 </div>
-                <div>
-                  <Label>Breed</Label>
-                  <p>{pet.Breed || 'N/A'}</p>
+              </div>
+
+              {/* Right Column: Details */}
+              <div className="flex flex-col">
+                <h2 className="text-2xl font-bold mb-4">{pet.name || pet.Species || 'N/A'}</h2>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="h-5 w-5 text-gray-600" />
+                    <div>
+                      <p className="text-sm text-gray-500">Age</p>
+                      <p className="font-medium">{pet.Age || 'N/A'} Months</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <PawPrint className="h-5 w-5 text-gray-600" />
+                    <div>
+                      <p className="text-sm text-gray-500">Breed</p>
+                      <p className="font-medium">{pet.Breed || 'N/A'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Heart className="h-5 w-5 text-gray-600" /> {/* Using Heart for Gender, can be changed */}
+                    <div>
+                      <p className="text-sm text-gray-500">Gender</p>
+                      <p className="font-medium">{pet.Gender || 'N/A'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Ruler className="h-5 w-5 text-gray-600" />
+                    <div>
+                      <p className="text-sm text-gray-500">Size</p>
+                      <p className="font-medium">{pet.Size || 'N/A'}</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <Label>Species</Label>
-                  <p>{pet.Species}</p>
-                </div>
-                <div>
-                  <Label>Size</Label>
-                  <p>{pet.Size || 'N/A'}</p>
-                </div>
-                <div>
-                  <Label>Age</Label>
-                  <p>{pet.Age || 'N/A'}</p>
-                </div>
-                <div>
-                  <Label htmlFor="status">Update Status</Label>
+
+                <h3 className="text-lg font-semibold mb-2">Description</h3>
+                <p className="text-gray-700 mb-4">{pet.description || 'No description available.'}</p>
+
+                <h3 className="text-lg font-semibold mb-2">Health & Vaccinations</h3>
+                <ul className="list-none p-0 mb-4">
+                  {pet.health && pet.health.vaccinations && pet.health.vaccinations.length > 0 ? (
+                    pet.health.vaccinations.map((vaccine, index) => (
+                      <li key={index} className="flex items-center text-green-600">
+                        <span className="mr-2">✔</span> {vaccine}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">No vaccination information available.</li>
+                  )}
+                  {/* Add more health details as needed */}
+                </ul>
+
+                {/* Update Status Section */}
+                <div className="mt-auto pt-4 border-t border-gray-200">
+                  <Label htmlFor="status" className="mb-2 block">Update Status</Label>
                   <Select onValueChange={setNewStatus} value={newStatus}>
                     <SelectTrigger id="status">
                       <SelectValue placeholder="Select status" />
@@ -180,136 +134,74 @@ export const columns = [
                   </Select>
                 </div>
               </div>
-              <DialogFooter>
-                <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleStatusChange}>Update Status</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </>
-      );
-    },
-  },
-];
+            </div>
 
-function DataTable({
-  columns,
-  data,
-  fetchPets
-}) {
-  const [columnFilters, setColumnFilters] = useState([])
-  const [currentFilter, setCurrentFilter] = useState("Breed")
+            {/* Lost Details / Updated By Section */}
+            <div className="grid md:grid-cols-2 gap-6 p-6 border-t border-gray-200">
+              {pet.status === 'lost' && pet.lostDetails && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-2">Lost Details</h3>
+                  <div className="flex items-center space-x-2 text-gray-700">
+                    <MapPin className="h-4 w-4" />
+                    <p>Location: {pet.lostDetails.location || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2 text-gray-700 mt-1">
+                    <Calendar className="h-4 w-4" />
+                    <p>Lost Date: {formatDate(pet.lostDetails.lostDate)}</p>
+                  </div>
+                </div>
+              )}
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      columnFilters
-    },
-    meta: {
-      fetchPets,
-    },
-  })
+              {pet.status === 'found' && pet.foundDetails && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-2">Found Details</h3>
+                  <div className="flex items-center space-x-2 text-gray-700">
+                    <MapPin className="h-4 w-4" />
+                    <p>Location: {pet.foundDetails.location || 'N/A'}</p>
+                  </div>
+                  <div className="flex items-center space-x-2 text-gray-700 mt-1">
+                    <Calendar className="h-4 w-4" />
+                    <p>Found Date: {formatDate(pet.foundDetails.foundDate)}</p>
+                  </div>
+                </div>
+              )}
 
-  return (
-    <div className="rounded-md border w-full">
-      <div className="flex items-center p-4 gap-2">
-        <Select value={currentFilter} onValueChange={setCurrentFilter} >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by..." />
-          </SelectTrigger>
-          <SelectContent>
-            {table.getAllLeafColumns().map(column => {
-              return column.columnDef.name && (
-                <SelectItem
-                  key={column.id}
-                  value={column.id}
-                >
-                  {column.columnDef.name}
-                </SelectItem>
-              )
-            })}
-          </SelectContent>
-        </Select>
+              {pet.petOwner && (pet.status === 'lost' || pet.status === 'found') && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-2">Reported By</h3>
+                  <div className="flex items-center space-x-3">
+                    <img src={pet?.petOwner?.profilePic ? `${import.meta.env.VITE_API_URL}/${pet.petOwner.profilePic}` : 'https://via.placeholder.com/40'} alt={pet.petOwner.name} className="w-10 h-10 rounded-full object-cover" />
+                    <div>
+                      <p className="font-medium">{pet.petOwner.name || 'N/A'}</p>
+                      <p className="text-sm text-gray-500">Owner Name</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
-        <Input
-          placeholder={`Filter ${currentFilter}`}
-          value={(table.getColumn(currentFilter)?.getFilterValue()) ?? ""}
-          onChange={(event) =>
-            table.getColumn(currentFilter)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+            <DialogFooter className="p-6 pt-0">
+              <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleStatusChange}>Update Status</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  </TableHead>
-                )
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-
-      <div className="p-2">
-        <DataTablePagination table={table} className="" />
-      </div>
-
     </div>
-  )
+  );
 }
-
 
 export default function LostFoundPets() {
   const [data, setData] = useState([]);
+  const [filterStatus, setFilterStatus] = useState('lost'); // Default to 'lost' as per image
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchPets = async () => {
+  const fetchPets = async (status = filterStatus, search = searchQuery) => {
     try {
-      let petsData = await getLostFoundPets();
-      petsData = petsData.map((pet, idx) => {
-        pet.id = idx + 1;
-        return pet;
-      });
-      setData(petsData)
+      let petsData = await getLostFoundPets(status, search);
+      setData(petsData);
     } catch (error) {
       console.error("Failed to fetch lost/found pets:", error);
     }
@@ -317,15 +209,44 @@ export default function LostFoundPets() {
 
   useEffect(() => {
     fetchPets();
-  }, []);
+  }, [filterStatus, searchQuery]);
 
   return (
     <div className="container mx-auto w-full">
       <main className="flex-1 px-6 pb-6 w-full">
         <div className="bg-white rounded-lg h-full p-6 w-full">
-          <DataTable columns={columns} data={data} fetchPets={fetchPets} />
+          <div className="flex justify-between items-center mb-6">
+            <Tabs defaultValue="lost" className="w-[200px]" onValueChange={setFilterStatus}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="found" >Found</TabsTrigger>
+                <TabsTrigger value="lost">Lost</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <div className="relative w-64">
+              <Input
+                type="text"
+                placeholder="Search here..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            </div>
+          </div>
+
+          <h2 className="text-xl font-semibold mb-4">{filterStatus === 'lost' ? 'Lost Pets' : 'Found Pets'}</h2>
+
+          <div className="flex flex-wrap gap-6">
+            {data.length > 0 ? (
+              data.map((pet) => (
+                <PetCard key={pet._id} pet={pet} fetchPets={fetchPets} />
+              ))
+            ) : (
+              <p className="col-span-full text-center text-gray-500">No pets found.</p>
+            )}
+          </div>
         </div>
       </main>
     </div>
-  )
+  );
 }

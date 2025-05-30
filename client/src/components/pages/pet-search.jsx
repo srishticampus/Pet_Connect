@@ -15,6 +15,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { Link } from "react-router"; // Import Link
 
 const PetSearch = () => {
   const [filters, setFilters] = useState({
@@ -277,7 +278,9 @@ const PetSearch = () => {
                       </div>
                     </CardContent>
                     <CardFooter className="p-4 pt-0">
-                      <Button className="w-full">View Details</Button>
+                      <Link to={`/pets/${pet.id}`} className="w-full">
+                        <Button className="w-full">View Details</Button>
+                      </Link>
                     </CardFooter>
                   </Card>
                 ))}

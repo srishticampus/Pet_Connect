@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import "./db_driver";
 import apiRouter from "./controllers";
 import adminRouter from "./controllers/admin"; // Import admin routes
+import rescueShelterRouter from "./controllers/rescue-shelter"; // Import rescue-shelter routes
 import path from "path";
 import { fileURLToPath } from "url";
 export const app = express();
@@ -44,6 +45,7 @@ app.get("/", (req, res) => {
 // API routes
 app.use("/api", apiRouter);
 app.use("/api/admin", adminRouter); // Use admin routes
+app.use("/api/rescue-shelter", rescueShelterRouter); // Use rescue-shelter routes
 
 
 //static files for uploads servedin /uploads url

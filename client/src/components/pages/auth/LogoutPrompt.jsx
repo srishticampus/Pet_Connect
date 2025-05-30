@@ -1,9 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/auth";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useEffect } from "react";
 
 export default function LogoutPrompt() {
-  const { logout, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const { logout, isLoading, isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !isLoggedIn) {
+      navigate("/login");
+    }
+  }, [isLoading, isLoggedIn, navigate]);
 
   const handleLogout = async () => {
     await logout();

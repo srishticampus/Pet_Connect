@@ -1,5 +1,5 @@
 import express from 'express';
-import { getLostPets,getLostPetById, addLostPet, editLostPet, markPetAsFound } from './lost-pets.js';
+import { getLostFoundReportsForPetOwner, getLostPetById, addLostPet, editLostPet, markPetAsFound } from './lost-pets.js';
 import auth from '../../middleware/auth.js'; // Import auth middleware (default export)
 import Pets from '../../models/pets.js'; // Import the Pets model
 import multer from 'multer'; // Import multer
@@ -95,8 +95,8 @@ router.put('/my-pets/:id', upload.single('image'), async (req, res) => {
   }
 });
 
-// Get all lost pets for the authenticated pet owner
-router.get('/lost-pets', getLostPets);
+// Get all lost/found reports for the authenticated pet owner
+router.get('/lost-found-reports', getLostFoundReportsForPetOwner);
 
 // Get a single lost pet by ID for the authenticated pet owner
 router.get('/lost-pets/:id', getLostPetById);

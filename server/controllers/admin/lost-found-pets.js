@@ -7,7 +7,26 @@ const router = Router();
 // Get all lost or found pets
 router.get('/', async (req, res) => {
   try {
-    const lostFoundPets = await Pets.find({ status: { $in: ['lost', 'found'] } }).populate('organization petOwner');
+    const { status, search } = req.query;
+    let query = {};
+
+    if (status === 'lost' || status === 'found') {
+      query.status = status;
+    } else {
+      query.status = { $in: ['lost', 'found'] };
+    }
+
+    if (search) {
+      const searchRegex = new RegExp(search, 'i'); // 'i' for case-insensitive
+      query.$or = [
+        { name: { $regex: searchRegex } },
+        { Breed: { $regex: searchRegex } },
+        { Species: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } },
+      ];
+    }
+
+    const lostFoundPets = await Pets.find(query).populate('organization petOwner');
     res.json(lostFoundPets);
   } catch (err) {
     console.error(err.message);

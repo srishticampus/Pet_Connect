@@ -153,9 +153,16 @@ export const getApprovedRescueShelters = async () => {
   }
 };
 
-export const getLostFoundPets = async () => {
+export const getLostFoundPets = async (status, search) => {
   try {
-    const response = await api.get('/admin/lost-found-pets');
+    const params = new URLSearchParams();
+    if (status) {
+      params.append('status', status);
+    }
+    if (search) {
+      params.append('search', search);
+    }
+    const response = await api.get(`/admin/lost-found-pets?${params.toString()}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching lost/found pets:', error);

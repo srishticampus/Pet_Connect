@@ -105,7 +105,17 @@ export const columns = [
 
       return (
         <>
-          <Dialog open={openRejectDialog} onOpenChange={setOpenRejectDialog}>
+          <Dialog
+            open={openRejectDialog}
+            onOpenChange={(open) => {
+              setOpenRejectDialog(open);
+              if (!open) {
+                setTimeout(() => {
+                  document.body.style.pointerEvents = 'auto'; // Enable pointer events
+                }, 300); // Close dialog after 100ms
+              }
+            }}
+          >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">

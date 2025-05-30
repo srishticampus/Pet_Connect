@@ -1,13 +1,25 @@
 import Pets from '../../models/pets.js';
+import Report from '../../models/report.js'; // Import the Report model
 import { validationResult } from 'express-validator'; // Will use later for validation
 
-// Get all lost pets for the authenticated pet owner
-export const getLostPets = async (req, res) => {
+// Get all lost/found reports relevant to the authenticated pet owner
+export const getLostFoundReportsForPetOwner = async (req, res) => {
   try {
-    const lostPets = await Pets.find({ petOwner: req.user.id, status: 'lost' });
-    res.status(200).json(lostPets);
+    // Find reports where:
+    // 1. The reportType is 'found' AND the matchedPet belongs to the current pet owner
+    // 2. The reportingUser is the current pet owner (for reports they made)
+    const reports = await Report.find({
+      $or: [
+        { reportType: 'found', matchedPet: { $in: await Pets.find({ petOwner: req.user.id }).distinct('_id') } },
+        { reportingUser: req.user.id } // Include reports made by the current pet owner
+      ]
+    })
+    .populate('reportingUser', 'username email role') // Populate reporter's basic info
+    .populate('matchedPet', 'name species breed'); // Populate matched pet's basic info
+
+    res.status(200).json(reports);
   } catch (error) {
-    console.error('Error fetching lost pets:', error);
+    console.error('Error fetching lost/found reports for pet owner:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

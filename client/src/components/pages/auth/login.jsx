@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/auth";
@@ -7,31 +7,38 @@ import { Link, useNavigate } from "react-router"; // Import useNavigate
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const { login, error, clearError, isLoading,isAuthenticated } = useAuth(); // Get login function, error, clearError, and isLoading from context
+  const { login, error, clearError, isLoading, isAuthenticated } = useAuth(); // Get login function, error, clearError, and isLoading from context
   const navigate = useNavigate(); // Hook for navigation
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginAttempted, setLoginAttempted] = useState(false); // New state to track login attempt
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated on initial load
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !loginAttempted) {
       navigate("/logout-prompt");
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, loginAttempted, navigate]);
+
+  // Redirect to home after successful login attempt
+  useEffect(() => {
+    if (isAuthenticated && loginAttempted && !isLoading) {
+      navigate("/home");
+    }
+  }, [isAuthenticated, loginAttempted, isLoading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     clearError(); // Clear any previous errors
+    setLoginAttempted(true); // Set login attempted to true
     try {
       await login(email, password); // Call the login function from the context
-      // If login is successful, redirect to the home page after 1 second
-      setTimeout(() => {
-        navigate("/home");
-      }, 100);
+      // Navigation will be handled by the useEffect hook
     } catch (err) {
       // Error is already handled by the AuthProvider and available in the context
       // No need to set error state here
       console.error("Login failed", err);
+      setLoginAttempted(false); // Reset if login fails
     }
   };
 
