@@ -46,7 +46,7 @@ const AssignedPets = () => {
           {assignedPets.map((pet) => (
             <Card key={pet._id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
               <img
-                src={pet.Photo?`${import.meta.env.VITE_API_URL}/${pet.Photo}` : 'https://via.placeholder.com/300'} // Placeholder image
+                src={pet.Photo?`${import.meta.env.VITE_API_URL}${pet.Photo}` : 'https://via.placeholder.com/300'} // Placeholder image
                 alt={pet.name}
                 className="w-full h-48 object-cover"
               />
