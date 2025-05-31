@@ -265,9 +265,14 @@ const PetDetailsPage = () => {
               </Button>
             </div>
           )}
-          {pet.isAdopted && (
+          {pet.isAdopted && pet.status !== 'fostered' && (
             <div className="mt-4">
               <p className="text-lg font-semibold text-green-600">This pet has been adopted!</p>
+            </div>
+          )}
+          {pet.status === 'fostered' && (
+            <div className="mt-4">
+              <p className="text-lg font-semibold text-green-600">This pet has been fostered!</p>
             </div>
           )}
         </div>
