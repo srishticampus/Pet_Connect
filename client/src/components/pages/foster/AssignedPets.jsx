@@ -14,7 +14,7 @@ const AssignedPets = () => {
   useEffect(() => {
     const fetchAssignedPets = async () => {
       try {
-        const response = await api.get('/api/foster/assigned-pets');
+        const response = await api.get('/foster/assigned-pets');
         setAssignedPets(response.data);
       } catch (err) {
         console.error('Error fetching assigned pets:', err);

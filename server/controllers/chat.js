@@ -41,10 +41,10 @@ router.get("/conversations", auth, async (req, res) => {
 
     // Structure the response based on frontend requirements, categorizing by role
     const structuredConversations = {
-      adopters: usersWithUnreadCounts.filter(user => user.role === 'adopter').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount })),
-      fosters: usersWithUnreadCounts.filter(user => user.role === 'foster').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount })),
-      petOwners: usersWithUnreadCounts.filter(user => user.role === 'pet_owner').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount })), // Corrected role name
-      rescueShelters: usersWithUnreadCounts.filter(user => user.role === 'rescue-shelter').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount })), // Added rescue shelters
+      adopters: usersWithUnreadCounts.filter(user => user.role === 'adopter').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount,role:user.role })),
+      fosters: usersWithUnreadCounts.filter(user => user.role === 'foster').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount,role:user.role })),
+      petOwners: usersWithUnreadCounts.filter(user => user.role === 'pet_owner').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount,role:user.role })), // Corrected role name
+      rescueShelters: usersWithUnreadCounts.filter(user => user.role === 'rescue-shelter').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount,role:user.role })), // Added rescue shelters
     };
 
     res.status(200).json(structuredConversations);

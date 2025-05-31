@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router'; // Import useLocation
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import api from '@/utils/api'; // Import the API client
 import { useAuth } from '@/hooks/auth'; // Import the useAuth hook
 
-const ChatInterface = ({ chatTargetRole, initialChatPartnerId }) => {
+const ChatInterface = () => {
   const { user: currentUser } = useAuth(); // Get the current authenticated user
+  const location = useLocation(); // Get the current location object
+  const queryParams = new URLSearchParams(location.search);
+  const initialChatPartnerId = queryParams.get('initialChatPartnerId');
+  const chatTargetRole = queryParams.get('chatTargetRole');
   const [selectedUser, setSelectedUser] = useState(null); // State to hold the selected user
-  const [conversations, setConversations] = useState([]); // State to hold conversations (flattened)
+  const [categorizedConversations, setCategorizedConversations] = useState({}); // State to hold categorized conversations
   const [messages, setMessages] = useState([]); // State to hold messages for the selected conversation
   const [searchTerm, setSearchTerm] = useState(''); // State to hold the search term for filtering conversations
   const [inputMessage, setInputMessage] = useState(''); // State to hold the current message input
@@ -21,17 +26,16 @@ const ChatInterface = ({ chatTargetRole, initialChatPartnerId }) => {
         setLoading(true);
         const response = await api.get('/chat/conversations');
         // Flatten the conversations object into a single array
-        const allConversations = [
-          ...(response.data.adopters || []),
-          ...(response.data.fosters || []),
-          ...(response.data.petOwners || []),
-          ...(response.data.rescueShelters || []),
-        ];
-        setConversations(allConversations);
-        console.log(allConversations);
+        setCategorizedConversations(response.data);
+        console.log(response.data);
 
         if (initialChatPartnerId) {
-          const partner = allConversations.find(user => user.id === initialChatPartnerId);
+          // Find the partner across all categories
+          let partner = null;
+          for (const category in response.data) {
+            partner = response.data[category].find(user => user.id === initialChatPartnerId);
+            if (partner) break;
+          }
           if (partner) {
             setSelectedUser(partner);
           }
@@ -46,7 +50,7 @@ const ChatInterface = ({ chatTargetRole, initialChatPartnerId }) => {
     };
 
     fetchConversations();
-  }, [initialChatPartnerId]); // Rerun when initialChatPartnerId changes
+  }, [initialChatPartnerId, chatTargetRole]); // Rerun when initialChatPartnerId or chatTargetRole changes
 
   // Fetch messages when a user is selected
   useEffect(() => {
@@ -59,12 +63,16 @@ const ChatInterface = ({ chatTargetRole, initialChatPartnerId }) => {
 
           await api.post(`/chat/conversations/${selectedUser.id}/mark-as-read`);
 
-          // Update unread count in conversations state
-          setConversations(prevConversations =>
-            prevConversations.map(user =>
-              user.id === selectedUser.id ? { ...user, unreadCount: 0 } : user
-            )
-          );
+          // Update unread count in categorizedConversations state
+          setCategorizedConversations(prevCategorizedConversations => {
+            const newCategorizedConversations = { ...prevCategorizedConversations };
+            for (const category in newCategorizedConversations) {
+              newCategorizedConversations[category] = newCategorizedConversations[category].map(user =>
+                user.id === selectedUser.id ? { ...user, unreadCount: 0 } : user
+              );
+            }
+            return newCategorizedConversations;
+          });
 
         } catch (err) {
           setError(`Failed to fetch messages or mark as read for ${selectedUser.name}.`);
@@ -96,7 +104,8 @@ const ChatInterface = ({ chatTargetRole, initialChatPartnerId }) => {
     }
   };
 
-  const filteredConversations = conversations
+  const allFilteredConversations = Object.values(categorizedConversations)
+    .flat() // Flatten all categories into a single array for filtering and sorting
     .filter(user => {
       const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRole = chatTargetRole ? user.role === chatTargetRole : true; // Filter by role if provided
@@ -128,17 +137,20 @@ const ChatInterface = ({ chatTargetRole, initialChatPartnerId }) => {
               </svg>
             </div>
             <div className="space-y-2">
-              {filteredConversations.length === 0 ? (
+              {allFilteredConversations.length === 0 ? (
                 <p className="text-gray-600 text-sm">No conversations found.</p>
               ) : (
-                filteredConversations.map(user => (
+                allFilteredConversations.map(user => (
                   <div key={user.id} className="flex items-center justify-between space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
                     <div className="flex items-center space-x-3">
                       <Avatar>
                         <AvatarImage src={import.meta.env.VITE_API_URL + "/" + user.profilePic} />
                         <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
                       </Avatar>
-                      <span>{user.name}</span>
+                      <div className="flex flex-col">
+                        <span>{user.name}</span>
+                        {user.role && <span className="text-xs text-gray-500 capitalize">{user.role.replace('-', ' ')}</span>}
+                      </div>
                     </div>
                     {user.unreadCount > 0 && (
                       <span className="flex h-2 w-2 translate-x-1 translate-y-1 rounded-full bg-red-500" />
