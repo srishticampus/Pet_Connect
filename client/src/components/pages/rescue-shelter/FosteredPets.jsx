@@ -16,7 +16,7 @@ const FosterPets = () => {
     const fetchFosterPets = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/rescue-shelter/assigned-pets'); // Changed API endpoint
+        const response = await api.get('/rescue-shelter/fostered-pets'); // Changed API endpoint
         setPets(response.data);
       } catch (err) {
         console.error("Error fetching foster pets:", err);
