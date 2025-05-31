@@ -87,7 +87,8 @@ const PetDetailsAndApply = () => {
       setSubmitSuccess(true);
       setIsDialogOpen(false); // Close dialog on successful submission
     } catch (err) {
-      setSubmitError(err);
+      // the server sends {msg:""}
+      setSubmitError(err?.response?.data?.msg || err.message);
     } finally {
       setSubmitting(false);
     }
@@ -270,7 +271,7 @@ const PetDetailsAndApply = () => {
                 </Label>
               </div>
 
-              {submitError && <p className="text-red-500">Error submitting application: {submitError.message}</p>}
+              {submitError && <p className="text-red-500">Error submitting application: {submitError.message }</p>}
               {submitSuccess && <p className="text-green-500">Application submitted successfully!</p>}
 
               <Button type="submit" disabled={submitting || !formData.policyApproved || !formData.fromDate || !formData.toDate}>
