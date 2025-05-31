@@ -192,11 +192,11 @@ const PetDetailsAndApply = () => {
             ))}
           </ul>
                 {/* Foster Application Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} modal={false}>
         <DialogTrigger asChild>
           <Button className="mt-4 w-full">Apply to Foster</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] z-30">
           <DialogHeader>
             <DialogTitle>Foster Application</DialogTitle>
             <DialogDescription>
