@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Skeleton } from '../../ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -103,7 +104,16 @@ const EditLostPet = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <section className="container mx-auto px-4 lg:px-0 py-8">
+        <div className="space-y-4">
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </section>
+    );
   }
 
   if (error) {

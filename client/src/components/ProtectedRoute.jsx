@@ -1,12 +1,18 @@
 import { useAuth } from "../hooks/auth";
 import { Navigate, useLocation } from "react-router";
+import { Skeleton } from './ui/skeleton';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading,user } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
-    return <div>Loading...</div>; // Or a more sophisticated loading indicator
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Skeleton className="h-12 w-12 rounded-full" />
+        <Skeleton className="ml-2 h-4 w-[250px]" />
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

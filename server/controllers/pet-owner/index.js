@@ -95,6 +95,24 @@ router.put('/my-pets/:id', upload.single('image'), async (req, res) => {
   }
 });
 
+// Delete a pet by ID for the authenticated pet owner
+router.delete('/my-pets/:id', async (req, res) => {
+  try {
+    const petId = req.params.id;
+    // Find and delete the pet, ensuring it belongs to the authenticated user
+    const deletedPet = await Pets.findOneAndDelete({ _id: petId, petOwner: req.userId });
+
+    if (!deletedPet) {
+      return res.status(404).json({ message: 'Pet not found or you do not have permission to delete it' });
+    }
+
+    res.status(200).json({ message: 'Pet deleted successfully' });
+  } catch (error) {
+    console.error(`Error deleting pet with ID ${req.params.id}:`, error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Get all lost/found reports for the authenticated pet owner
 router.get('/lost-found-reports', getLostFoundReportsForPetOwner);
 
