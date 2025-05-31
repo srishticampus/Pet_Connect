@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../ui/card';
 import { Input } from '../../ui/input';
 import { Button } from '../../ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../ui/dialog';
 import { Separator } from '../../ui/separator';
 import api from '@/utils/api'; // Import the API client
+import { useNavigate } from 'react-router'; // Import useNavigate
 
 const AdoptedPets = () => {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchAdoptedPets = async () => {
@@ -33,6 +34,10 @@ const AdoptedPets = () => {
     pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     pet.Breed.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleViewDetails = (petId) => {
+    navigate(`/pets/${petId}`);
+  };
 
   if (loading) {
     return <div className="container mx-auto p-4 text-center">Loading adopted pets...</div>;
@@ -88,83 +93,12 @@ const AdoptedPets = () => {
                 <p className="text-gray-700">{pet.shortDescription}</p>
               </CardContent>
               <CardFooter>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="w-full bg-orange-500 text-white hover:bg-orange-600">
-                      View Details
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl p-6 bg-white rounded-lg shadow-xl">
-                    <DialogHeader>
-                      <DialogTitle className="text-2xl font-bold">Pet Details</DialogTitle>
-                      <DialogDescription>
-                        <div className="flex flex-col lg:flex-row gap-6 mt-4">
-                          <div className="flex-shrink-0">
-                            <img src={pet.Photo || '/src/assets/dog.png'} alt={pet.name} className="w-80 h-80 object-cover rounded-lg" />
-                            {/* Thumbnails - assuming multiple photos are available in pet.Photo array or similar */}
-                            <div className="flex gap-2 mt-2">
-                              {/* {pet.Photos && pet.Photos.map((thumb, idx) => (
-                                <img key={idx} src={thumb} alt={`thumbnail ${idx + 1}`} className="w-20 h-20 object-cover rounded-lg" />
-                              ))} */}
-                              {/* Placeholder for now */}
-                              <img src={pet.Photo || '/src/assets/dog.png'} alt="thumbnail 1" className="w-20 h-20 object-cover rounded-lg" />
-                              <img src={pet.Photo || '/src/assets/dog.png'} alt="thumbnail 2" className="w-20 h-20 object-cover rounded-lg" />
-                              <img src={pet.Photo || '/src/assets/dog.png'} alt="thumbnail 3" className="w-20 h-20 object-cover rounded-lg" />
-                            </div>
-                          </div>
-                          <div className="flex-grow">
-                            <h2 className="text-3xl font-bold mb-2">{pet.name}</h2>
-                            <div className="grid grid-cols-2 gap-4 text-gray-700">
-                              <div className="flex items-center gap-2">
-                                <img src="/src/assets/work-1.png" alt="age icon" className="h-5 w-5" /> {/* Placeholder icon */}
-                                <span>Age: {pet.Age} months</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <img src="/src/assets/work-1.png" alt="gender icon" className="h-5 w-5" /> {/* Placeholder icon */}
-                                <span>Gender: {pet.Gender}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <img src="/src/assets/work-1.png" alt="breed icon" className="h-5 w-5" /> {/* Placeholder icon */}
-                                <span>Breed: {pet.Breed}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <img src="/src/assets/work-1.png" alt="size icon" className="h-5 w-5" /> {/* Placeholder icon */}
-                                <span>Size: {pet.Size}</span>
-                              </div>
-                            </div>
-
-                            <h3 className="text-xl font-semibold mt-4 mb-2">Description</h3>
-                            <p className="text-gray-700">{pet.description}</p>
-
-                            <h3 className="text-xl font-semibold mt-4 mb-2">Health & Vaccinations</h3>
-                            <ul className="list-none p-0">
-                              {pet.healthVaccinations && pet.healthVaccinations.map((item, index) => (
-                                <li key={index} className="flex items-center gap-2 text-green-600">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                  </svg>
-                                  {item}
-                                </li>
-                              ))}
-                            </ul>
-
-                            <Separator className="my-4" />
-
-                            {/* Removed Lost Details and Updated By sections as they are not relevant for adopted pets */}
-                            {/* If petOwner details are needed, they can be displayed here */}
-                            {pet.petOwner && (
-                              <div>
-                                <h3 className="text-xl font-semibold mb-2">Adopted By</h3>
-                                <p className="text-gray-700">Name: {pet.petOwner.name}</p>
-                                {/* Add other petOwner details if populated */}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </DialogDescription>
-                    </DialogHeader>
-                  </DialogContent>
-                </Dialog>
+                <Button
+                  className="w-full bg-orange-500 text-white hover:bg-orange-600"
+                  onClick={() => handleViewDetails(pet._id)}
+                >
+                  View Details
+                </Button>
               </CardFooter>
             </Card>
           ))

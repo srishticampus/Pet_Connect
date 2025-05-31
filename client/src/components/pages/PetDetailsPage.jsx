@@ -202,7 +202,7 @@ const PetDetailsPage = () => {
           )}
 
           {/* Conditional Buttons based on user role */}
-          {isAuthenticated && user?.role === 'adopter' && !pet.isAdopted && (
+          {!pet.isAdopted && isAuthenticated && user?.role === 'adopter' && (
             <div className="flex flex-col gap-4 mt-4">
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
