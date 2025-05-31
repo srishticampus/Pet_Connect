@@ -18,6 +18,7 @@ router.get('/', auth, async (req, res) => {
       organization: req.user.id,
       isAdopted: true,
       status: 'adopted',
+      status: { $ne: 'fostered' },
     }).populate('petOwner', 'name'); // Populate petOwner details if needed
 
     res.status(200).json(adoptedPets);
