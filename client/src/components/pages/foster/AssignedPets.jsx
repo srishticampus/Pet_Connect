@@ -60,7 +60,7 @@ const AssignedPets = () => {
                 <p className="text-gray-700"><strong>Age:</strong> {pet.Age} years</p>
                 <p className="text-gray-700"><strong>Size:</strong> {pet.Size}</p>
                 <div className="mt-4 flex flex-col gap-2">
-                  <Link to={`/foster/pets/${pet._id}`} className="w-full">
+                  <Link to={`/pets/${pet._id}`} className="w-full">
                     <Button className="w-full">View Details</Button>
                   </Link>
                   {pet.petOwner?._id && (
