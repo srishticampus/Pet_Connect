@@ -33,6 +33,76 @@ export const getPetStats = async () => {
   }
 };
 
+export const getAdopterStats = async () => {
+  try {
+    const response = await api.get('/admin/statistics/adopters');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching adopter statistics:', error);
+    throw error;
+  }
+};
+
+export const getApplicationStats = async () => {
+  try {
+    const response = await api.get('/admin/statistics/applications');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching application statistics:', error);
+    throw error;
+  }
+};
+
+export const getDocumentStats = async () => {
+  try {
+    const response = await api.get('/admin/statistics/documents');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching document statistics:', error);
+    throw error;
+  }
+};
+
+export const getFosterStats = async () => {
+  try {
+    const response = await api.get('/admin/statistics/fosters');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching foster statistics:', error);
+    throw error;
+  }
+};
+
+export const getLostFoundPetStats = async () => {
+  try {
+    const response = await api.get('/admin/statistics/lost-found-pets');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching lost and found pet statistics:', error);
+    throw error;
+  }
+};
+
+export const getPetOwnerStats = async () => {
+  try {
+    const response = await api.get('/admin/statistics/pet-owners');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching pet owner statistics:', error);
+    throw error;
+  }
+};
+
+export const getRescueShelterStats = async () => {
+  try {
+    const response = await api.get('/admin/statistics/rescue-shelters');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching rescue shelter statistics:', error);
+    throw error;
+  }
+};
+
 export const getAllAdopters = async () => {
   try {
     const response = await api.get('/admin/adopters');

@@ -2,7 +2,17 @@
 import express from 'express';
 import { getAllPetOwners, addPetOwner, updatePetOwner, deletePetOwner } from './pet-owners.js';
 import { getAllPets, addPet, updatePet, deletePet } from './pets.js';
-import { getUserStats, getPetStats } from './statistics.js';
+import {
+  getUserStats,
+  getPetStats,
+  getAdopterStats,
+  getApplicationStats,
+  getDocumentStats,
+  getFosterStats,
+  getLostFoundPetStats,
+  getPetOwnerStats,
+  getRescueShelterStats,
+} from './statistics.js';
 import { getAllAdopters, approveAdopter, rejectAdopter, getApprovedAdopters } from './adopters.js';
 import { getAllFosters, approveFoster, rejectFoster, getApprovedFosters } from './fosters.js'; // Import foster controllers
 import { getAllRescueShelters, approveRescueShelter, rejectRescueShelter, getApprovedRescueShelters } from './rescue-shelters.js'; // Import rescue shelter controllers
@@ -24,6 +34,13 @@ router.delete('/pets/:id', deletePet);
 
 router.get('/statistics/users', getUserStats);
 router.get('/statistics/pets', getPetStats);
+router.get('/statistics/adopters', getAdopterStats);
+router.get('/statistics/applications', getApplicationStats);
+router.get('/statistics/documents', getDocumentStats);
+router.get('/statistics/fosters', getFosterStats);
+router.get('/statistics/lost-found-pets', getLostFoundPetStats);
+router.get('/statistics/pet-owners', getPetOwnerStats);
+router.get('/statistics/rescue-shelters', getRescueShelterStats);
 
 router.get('/adopters', getAllAdopters);
 router.put('/adopters/:id/approve', approveAdopter);
