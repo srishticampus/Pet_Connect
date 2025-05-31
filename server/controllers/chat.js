@@ -45,6 +45,7 @@ router.get("/conversations", auth, async (req, res) => {
       fosters: usersWithUnreadCounts.filter(user => user.role === 'foster').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount,role:user.role })),
       petOwners: usersWithUnreadCounts.filter(user => user.role === 'pet_owner').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount,role:user.role })), // Corrected role name
       rescueShelters: usersWithUnreadCounts.filter(user => user.role === 'rescue-shelter').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount,role:user.role })), // Added rescue shelters
+      admins: usersWithUnreadCounts.filter(user => user.role === 'admin').map(user => ({ id: user._id, name: user.name, profilePic: user.profilePic, unreadCount: user.unreadCount,role:user.role })), // Added admins
     };
 
     res.status(200).json(structuredConversations);

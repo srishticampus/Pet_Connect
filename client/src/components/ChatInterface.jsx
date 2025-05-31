@@ -141,14 +141,19 @@ const ChatInterface = () => {
                 <p className="text-gray-600 text-sm">No conversations found.</p>
               ) : (
                 allFilteredConversations.map(user => (
-                  <div key={user.id} className="flex items-center justify-between space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md" onClick={() => setSelectedUser(user)}>
+                  <div key={user.id} className={`flex items-center justify-between space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md ${user.role === 'admin' ? 'border-2 border-purple-500' : ''}`} onClick={() => setSelectedUser(user)}>
                     <div className="flex items-center space-x-3">
                       <Avatar>
                         <AvatarImage src={import.meta.env.VITE_API_URL + "/" + user.profilePic} />
                         <AvatarFallback>{user.name.substring(0, 2)}</AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span>{user.name}</span>
+                        <span className="flex items-center">
+                          {user.name}
+                          {user.role === 'admin' && (
+                            <span className="ml-2 px-2 py-0.5 bg-purple-500 text-white text-xs rounded-full">Admin</span>
+                          )}
+                        </span>
                         {user.role && <span className="text-xs text-gray-500 capitalize">{user.role.replace('-', ' ')}</span>}
                       </div>
                     </div>

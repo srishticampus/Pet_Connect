@@ -8,6 +8,7 @@ import {
   Search,
   LogOut,
   Dog,
+  MessageSquare, // Import MessageSquare
 } from "lucide-react";
 import {
   Sidebar,
@@ -80,6 +81,11 @@ const items = [
     title: "Adoption Applications",
     url: "/admin/applications",
     icon: FileText, // Using FileText icon for applications
+  },
+  {
+    title: "Chat",
+    url: "/admin/chat",
+    icon: MessageSquare, // Using MessageSquare icon for chat
   },
 ];
 
