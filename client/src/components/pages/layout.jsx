@@ -309,7 +309,9 @@ export const Layout = () => {
   return (
     <div className="bg-[#F6F7F9] text-[#4c4c4c] min-h-screen flex flex-col">
       <Navbar />
+      <div className="flex-grow">
       <Outlet />
+      </div>
       <Footer />
     </div>
   );

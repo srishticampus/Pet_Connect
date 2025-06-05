@@ -61,21 +61,20 @@ const ManagePets = () => {
           </button>
         </Link>
       </div>
-      <div className="border rounded-lg p-4 bg-white shadow-md">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {userPets.length > 0 ? (
           userPets
             .filter(pet => pet.status === 'active') // Filter out lost/found pets
             .map(pet => (
-            // Pet component will need to be adapted to accept pet data as props
-            <Pet
-              key={pet._id}
-              pet={pet}
-              onEdit={() => handleEditPet(pet._id)}
-              onDelete={() => handleDeletePet(pet._id)}
-            /> // Use pet._id for the key
-          ))
+              <Pet
+                key={pet._id}
+                pet={pet}
+                onEdit={() => handleEditPet(pet._id)}
+                onDelete={() => handleDeletePet(pet._id)}
+              />
+            ))
         ) : (
-          <p>You don't have any pets listed yet.</p>
+          <p className="col-span-full text-center">You don't have any pets listed yet.</p>
         )}
       </div>
     </section>

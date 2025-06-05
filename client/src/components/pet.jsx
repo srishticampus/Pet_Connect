@@ -2,9 +2,9 @@ import React from 'react';
 
 const Pet = ({ pet, onEdit, onDelete }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="w-full mx-auto grid grid-cols-1 gap-4 border rounded-lg p-4 bg-white shadow-md">
       {/* Pet image */}
-      <img src={`${import.meta.env.VITE_API_URL}${pet.Photo}`} alt={pet.name} className="w-full aspect-[611/567] object-cover rounded-2xl" />
+      <img src={`${import.meta.env.VITE_API_URL}${pet.Photo}`} alt={pet.name} className="w-full h-48 object-cover rounded-lg" />
 
       {/* Pet details */}
       <div className="flex flex-col justify-between">
