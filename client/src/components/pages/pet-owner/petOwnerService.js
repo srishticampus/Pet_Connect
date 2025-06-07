@@ -87,11 +87,22 @@ const petOwnerService = {
       throw error;
     }
   },
+
+  // New function to fetch all lost pets for the authenticated pet owner
+  getOwnerLostPets: async () => {
+    try {
+      const response = await api.get('/pet-owner/my-lost-pets'); // New endpoint
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching owner lost pets:', error);
+      throw error;
+    }
+  },
 };
 
 export default petOwnerService;
 
-// Add a new function to fetch all pets for the authenticated user
+// Existing function to fetch all pets for the authenticated user
 petOwnerService.getUserPets = async () => {
   try {
     const response = await api.get('/pet-owner/my-pets');

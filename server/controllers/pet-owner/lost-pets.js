@@ -24,6 +24,17 @@ export const getLostFoundReportsForPetOwner = async (req, res) => {
   }
 };
 
+// Get all lost pets for the authenticated pet owner
+export const getOwnerLostPets = async (req, res) => {
+  try {
+    const lostPets = await Pets.find({ petOwner: req.user.id, status: 'lost' });
+    res.status(200).json(lostPets);
+  } catch (error) {
+    console.error('Error fetching owner lost pets:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Get a single lost pet by ID for the authenticated pet owner
 export const getLostPetById = async (req, res) => {
   const { id } = req.params;
@@ -50,8 +61,8 @@ export const addLostPet = async (req, res) => {
   //   return res.status(400).json({ errors: errors.array() });
   // }
 
-  const { name, species, breed, size, age, gender, shortDescription, description, healthVaccinations, location } = req.body;
-  const photoPath = req.file ? req.file.path : null; // Get the file path if a file was uploaded
+  const { name, species, breed, size, age, gender, shortDescription, description, healthVaccinations, location, lostDate } = req.body;
+  const photoPath = req.file ? `/uploads/${req.file.filename}` : null; // Get the file path if a file was uploaded
 
   try {
     const newLostPet = new Pets({
@@ -63,12 +74,13 @@ export const addLostPet = async (req, res) => {
       Gender: gender,
       shortDescription,
       description,
-      healthVaccinations: healthVaccinations.split(',').map(item => item.trim()).filter(item => item !== ''), // Split comma-separated health/vaccinations
+      healthVaccinations: healthVaccinations ? healthVaccinations.split(',').map(item => item.trim()).filter(item => item !== '') : [], // Split comma-separated health/vaccinations
       Location: location,
       Photo: photoPath, // Save the file path
       petOwner: req.user.id, // Associate with the authenticated user
       origin: 'owner', // Origin is owner
       status: 'lost', // Set status to lost
+      lostDate: lostDate, // Add lostDate
     });
 
     const pet = await newLostPet.save();
@@ -87,11 +99,21 @@ export const editLostPet = async (req, res) => {
   // }
 
   const { id } = req.params;
-  const updates = req.body;
+  const updates = { ...req.body }; // Create a mutable copy
+
+  // Handle photo update if a new file is uploaded
+  if (req.file) {
+    updates.Photo = `/uploads/${req.file.filename}`;
+  }
+
+  // Handle healthVaccinations string to array conversion
+  if (updates.healthVaccinations && typeof updates.healthVaccinations === 'string') {
+    updates.healthVaccinations = updates.healthVaccinations.split(',').map(item => item.trim()).filter(item => item !== '');
+  }
 
   try {
     const pet = await Pets.findOneAndUpdate(
-      { _id: id, petOwner: req.user.id, status: 'lost' }, // Ensure the pet belongs to the user and is lost
+      { _id: id, petOwner: req.user.id, status: { $in: ['lost', 'found'] } }, // Ensure the pet belongs to the user and is lost or found
       { $set: updates },
       { new: true }
     );

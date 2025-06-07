@@ -14,7 +14,7 @@ const FindPet = () => {
   useEffect(() => {
     const fetchLostPets = async () => {
       try {
-        const data = await petOwnerService.getLostPets();
+        const data = await petOwnerService.getOwnerLostPets();
         setLostPets(data);
       } catch (error) {
         console.error('Failed to fetch lost pets:', error);
@@ -62,7 +62,7 @@ const FindPet = () => {
       ) : lostPets.length === 0 ? (
         <p>You have not reported any lost pets yet.</p>
       ) : (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 px-5">
           {lostPets.map((pet) => (
             <Card key={pet._id}>
               <CardContent>

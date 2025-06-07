@@ -71,6 +71,7 @@ const AddLostPet = () => {
   const [petLocation, setPetLocation] = useState('');
   const [petPhoto, setPetPhoto] = useState(null); // State to store the selected file object
   const [existingPhotoUrl, setExistingPhotoUrl] = useState('');
+  const [backendError, setBackendError] = useState(''); // State to store backend error messages
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(formSchema),
@@ -156,13 +157,20 @@ const AddLostPet = () => {
       navigate('/pet-owner/find-pet');
     } catch (error) {
       console.error(`Failed to ${petId ? 'edit' : 'add'} lost pet:`, error);
-      // Handle error
+      setBackendError(error.response?.data?.message || 'An unexpected error occurred.');
     }
   };
 
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-2xl font-bold mb-6">{petId ? 'Edit Lost Pet' : 'Report a Lost Pet'}</h1>
+
+      {backendError && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <strong className="font-bold">Error:</strong>
+          <span className="block sm:inline"> {backendError}</span>
+        </div>
+      )}
 
       {/* Image Upload */}
       <div className="mb-6">
@@ -190,6 +198,15 @@ const AddLostPet = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Pet Name */}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="name">Pet Name</Label>
+          <Input id="name" {...register("name")} />
+          {errors.name && (
+            <p className="text-red-500 text-sm">{errors.name?.message}</p>
+          )}
+        </div>
+
         {/* Species */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="species">Species</Label>
