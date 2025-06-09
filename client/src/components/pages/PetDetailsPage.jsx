@@ -16,6 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from 'sonner'; // Using sonner for notifications
 import { useAuth } from '../../hooks/auth'; // Import useAuth to check user role
 import { useNavigate } from 'react-router'; // Import useNavigate
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PetDetailsPage = () => {
   const { petId } = useParams(); // Get petId from URL
@@ -103,7 +104,47 @@ const PetDetailsPage = () => {
 
 
   if (loading) {
-    return <div className="container mx-auto py-8">Loading pet details...</div>;
+    return (
+      <main className="container mx-auto px-3 lg:px-0 py-8 animate-pulse">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Pet image skeleton */}
+          <Skeleton className="w-full aspect-[611/567] rounded-2xl h-[400px]" />
+
+          {/* Pet details skeleton */}
+          <div className="flex flex-col justify-between space-y-4">
+            <Skeleton className="h-8 w-3/4" /> {/* Title */}
+            <div className="grid grid-cols-2 gap-4 py-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="flex gap-4 items-center">
+                  <Skeleton className="h-10 w-10 rounded-full" /> {/* Icon */}
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-16" /> {/* Label */}
+                    <Skeleton className="h-5 w-24" /> {/* Value */}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Skeleton className="h-4 w-24" /> {/* Description label */}
+            <Skeleton className="h-20 w-full" /> {/* Description text */}
+            <Skeleton className="h-4 w-32 mt-6" /> {/* Health & Vaccinations label */}
+            <Skeleton className="h-16 w-full" /> {/* Health & Vaccinations list */}
+            <Skeleton className="h-10 w-full mt-4" /> {/* Button */}
+          </div>
+        </div>
+        <section className="px-3 lg:px-0 container mx-auto py-4 text-[#4c4c4c]">
+          <Skeleton className="h-6 w-48 py-4" /> {/* Adoption Process title */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white p-4 space-y-2">
+                <Skeleton className="h-10 w-10 rounded-full" /> {/* Icon container */}
+                <Skeleton className="h-6 w-3/4" /> {/* Title */}
+                <Skeleton className="h-12 w-full" /> {/* Description */}
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+    );
   }
 
   if (error) {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'; // Import useEffect and useS
 import { Link, useNavigate } from 'react-router';
 import Pet from '@/components/pet';
 import petOwnerService from './petOwnerService'; // Import the petOwnerService
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 
 const ManagePets = () => {
   const [userPets, setUserPets] = useState([]); // State for fetched pets
@@ -43,10 +44,6 @@ const ManagePets = () => {
     fetchUserPets();
   }, []); // Empty dependency array means this effect runs once on mount
 
-  if (loading) {
-    return <section className="container mx-auto px-4 lg:px-0 py-8">Loading pets...</section>;
-  }
-
   if (error) {
     return <section className="container mx-auto px-4 lg:px-0 py-8 text-red-500">Error: {error}</section>;
   }
@@ -62,7 +59,25 @@ const ManagePets = () => {
         </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {userPets.length > 0 ? (
+        {loading ? (
+          // Skeleton loader for pet cards
+          Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="w-full">
+              <div className="card bg-white rounded-2xl">
+                <Skeleton className="w-full aspect-[137/115] rounded-t-2xl" />
+                <div className="content p-4 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-1/4" />
+                  </div>
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-10 w-full mt-3" />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : userPets.length > 0 ? (
           userPets
             .filter(pet => pet.status === 'active') // Filter out lost/found pets
             .map(pet => (

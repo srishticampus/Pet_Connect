@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import { Skeleton } from '../../ui/skeleton';
 import { Button } from '../../ui/button';
 import api from '../../../utils/api'; // Assuming an API utility for requests
 import { toast } from 'sonner'; // Using sonner for notifications
@@ -28,7 +29,26 @@ const AdopterApplicationStatus = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-8">Loading applications...</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Skeleton className="h-10 w-64 mb-8" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, index) => (
+            <Card key={index} className="overflow-hidden shadow-lg pt-0">
+              <Skeleton className="w-full h-48" />
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-10 w-full mt-4" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (error) {

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const EditPet = () => {
   const { id } = useParams(); // Get pet ID from URL
@@ -161,7 +162,77 @@ console.log('Update pet response:', res); // Log the response
   };
 
   if (loading) {
-    return <div>Loading pet details...</div>;
+    return (
+      <section className="container mx-auto px-4 lg:px-0 py-8">
+        <Skeleton className="h-8 w-48 mb-6" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Image Input Skeleton */}
+          <div className="space-y-2 md:col-span-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Name Skeleton */}
+          <div className="space-y-2 md:col-span-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Species Skeleton */}
+          <div className="space-y-2 md:col-span-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Short Description Skeleton */}
+          <div className="md:col-span-2 space-y-2">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Age Skeleton */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Gender Skeleton */}
+          <div className="space-y-2 w-full">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Breed Skeleton */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Size Skeleton */}
+          <div className="space-y-2 w-full">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Descriptions Skeleton */}
+          <div className="md:col-span-2 space-y-2">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+
+          {/* Health & Vaccinations Skeleton */}
+          <div className="md:col-span-2 space-y-2">
+            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+
+          {/* Submit Button Skeleton */}
+          <div className="md:col-span-2 flex justify-end">
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+      </section>
+    );
   }
 
   if (error && !formData.name) { // Show error only if pet data couldn't be fetched

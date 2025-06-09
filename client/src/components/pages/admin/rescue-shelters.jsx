@@ -37,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import { getAllRescueShelters, approveRescueShelter, rejectRescueShelter, getApprovedRescueShelters } from "./adminService" // Import the new API functions
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -281,22 +282,29 @@ export default function RescueSheltersTable() {
   const [data, setData] = useState([]);
   const [approvedData, setApprovedData] = useState([]);
   const [viewApproved, setViewApproved] = useState(false);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   const fetchRescueShelters = async () => {
+    setLoading(true); // Set loading to true before fetching
     try {
       const rescueSheltersData = await getAllRescueShelters();
       setData(rescueSheltersData);
     } catch (error) {
       console.error("Failed to fetch rescue shelters:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching (or on error)
     }
   };
 
   const fetchApprovedRescueShelters = async () => {
+    setLoading(true); // Set loading to true before fetching
     try {
       const approvedRescueSheltersData = await getApprovedRescueShelters();
       setApprovedData(approvedRescueSheltersData);
     } catch (error) {
       console.error("Failed to fetch approved rescue shelters:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching (or on error)
     }
   };
 
@@ -313,7 +321,14 @@ export default function RescueSheltersTable() {
           <Button onClick={() => setViewApproved(!viewApproved)} className="mb-4">
             {viewApproved ? "View Registered Requests" : "View Approved Rescue Shelters"}
           </Button>
-          <DataTable columns={columns} data={viewApproved ? approvedData : data} fetchRescueShelters={viewApproved ? fetchApprovedRescueShelters : fetchRescueShelters} />
+          {loading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-[400px] w-full" />
+            </div>
+          ) : (
+            <DataTable columns={columns} data={viewApproved ? approvedData : data} fetchRescueShelters={viewApproved ? fetchApprovedRescueShelters : fetchRescueShelters} />
+          )}
         </div>
       </main>
     </div>

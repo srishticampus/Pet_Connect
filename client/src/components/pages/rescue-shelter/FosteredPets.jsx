@@ -4,6 +4,7 @@ import { Input } from '../../ui/input';
 import { Button } from '../../ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../ui/dialog';
 import { Separator } from '../../ui/separator';
+import { Skeleton } from '../../ui/skeleton';
 import api from '@/utils/api'; // Import the API client
 
 const FosterPets = () => {
@@ -35,7 +36,31 @@ const FosterPets = () => {
   );
 
   if (loading) {
-    return <div className="container mx-auto p-4 text-center">Loading pets under foster care...</div>;
+    return (
+      <div className="container mx-auto p-4">
+        <div className="flex justify-between items-center mb-6">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-10 w-64" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, index) => (
+            <Card key={index} className="overflow-hidden shadow-lg rounded-lg pt-0">
+              <Skeleton className="w-full h-48" />
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-full" />
+              </CardContent>
+              <CardFooter>
+                <Skeleton className="h-10 w-full" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (error) {

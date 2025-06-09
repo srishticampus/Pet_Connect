@@ -37,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import { getAllPetOwners, addPetOwner, updatePetOwner,deletePetOwner } from "./petOwnerService" // Import the new API function
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -184,7 +185,8 @@ export const columns = [
 export function DataTable({
   columns,
   data,
-  fetchPetOwners
+  fetchPetOwners,
+  loading // Add loading prop
 }) {
   const [columnFilters, setColumnFilters] = useState([])
   const [currentFilter,setCurrentFilter] = useState("email")
@@ -254,7 +256,18 @@ export function DataTable({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {loading ? (
+            // Skeleton rows
+            Array.from({ length: 5 }).map((_, index) => (
+              <TableRow key={index}>
+                {columns.map((column, colIndex) => (
+                  <TableCell key={colIndex}>
+                    <Skeleton className="h-6 w-full" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -288,6 +301,7 @@ export function DataTable({
 export default function PetOwnersTable() {
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(true); // Add loading state
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -309,11 +323,14 @@ export default function PetOwnersTable() {
   }
 
   const fetchPetOwners = async () => {
+    setLoading(true); // Set loading to true before fetching
     try {
       const petOwnersData = await getAllPetOwners();
       setData(petOwnersData);
     } catch (error) {
       console.error("Failed to fetch pet owners:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching (or error)
     }
   };
 
@@ -325,7 +342,7 @@ export default function PetOwnersTable() {
     <div className="container mx-auto w-full">
       <main className="flex-1 px-6 pb-6 w-full">
         <div className="bg-white rounded-lg h-full p-6 w-full">
-          <DataTable columns={columns} data={data} fetchPetOwners={fetchPetOwners} />
+          <DataTable columns={columns} data={data} fetchPetOwners={fetchPetOwners} loading={loading} />
         </div>
       </main>
     </div>

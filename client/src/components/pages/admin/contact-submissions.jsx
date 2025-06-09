@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { DataTablePagination } from "@/components/ui/table-pagination"
+import { Skeleton } from "@/components/ui/skeleton";
 
 const columns = [
   {
@@ -182,17 +183,21 @@ function DataTable({ columns, data, fetchSubmissions }) {
 
 const ContactSubmissions = () => {
   const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     fetchSubmissions();
   }, []);
 
   const fetchSubmissions = async () => {
+    setLoading(true); // Set loading to true before fetching
     try {
       const response = await api.get('/contact');
       setSubmissions(response.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching
     }
   };
 
@@ -201,8 +206,42 @@ const ContactSubmissions = () => {
       <div className="container mx-auto w-full">
         <main className="flex-1 px-6 pb-6 w-full">
           <div className="bg-white rounded-lg h-full p-6 w-full">
-            {/* <h1 className="text-2xl font-semibold mb-4">Contact Form Submissions</h1> */}
-            <DataTable columns={columns} data={submissions} fetchSubmissions={fetchSubmissions} />
+            <h1 className="text-2xl font-semibold mb-4">Contact Form Submissions</h1>
+            {loading ? (
+              <div className="rounded-md border w-full">
+                <div className="flex items-center p-4 gap-2">
+                  <Skeleton className="h-10 w-[180px]" /> {/* Select skeleton */}
+                  <Skeleton className="h-10 w-full max-w-sm" /> {/* Input skeleton */}
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {[...Array(5)].map((_, index) => ( // Assuming 5 columns for headers
+                        <TableHead key={index}>
+                          <Skeleton className="h-6 w-full" />
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[...Array(5)].map((_, rowIndex) => ( // 5 skeleton rows
+                      <TableRow key={rowIndex}>
+                        {[...Array(5)].map((_, cellIndex) => ( // 5 skeleton cells per row
+                          <TableCell key={cellIndex}>
+                            <Skeleton className="h-6 w-full" />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div className="p-2">
+                  <Skeleton className="h-8 w-full" /> {/* Pagination skeleton */}
+                </div>
+              </div>
+            ) : (
+              <DataTable columns={columns} data={submissions} fetchSubmissions={fetchSubmissions} />
+            )}
           </div>
         </main>
       </div>

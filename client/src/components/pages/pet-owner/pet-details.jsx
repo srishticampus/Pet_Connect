@@ -13,6 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 
 
 const PetDetailsPage = () => {
@@ -81,12 +82,54 @@ const PetDetailsPage = () => {
   };
 
 
-  if (loading) {
-    return <div className="container mx-auto py-8">Loading pet details...</div>;
-  }
-
   if (error) {
     return <div className="container mx-auto py-8 text-red-500">Error loading pet details: {error.message}</div>;
+  }
+
+  if (loading) {
+    return (
+      <main className="container mx-auto px-3 lg:px-0 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Pet image skeleton */}
+          <Skeleton className="w-full aspect-[611/567] rounded-2xl" />
+
+          {/* Pet details skeleton */}
+          <div className="flex flex-col justify-between space-y-4">
+            <Skeleton className="h-8 w-3/4" />
+            <div className="grid grid-cols-2 gap-4 py-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="flex gap-4 items-center">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-10 w-full mt-4" />
+          </div>
+        </div>
+
+        {/* Adoption Process skeleton */}
+        <section className="px-3 lg:px-0 container mx-auto py-4 text-[#4c4c4c]">
+          <Skeleton className="h-8 w-1/3 mb-4" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="bg-white p-4 space-y-2">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+    );
   }
 
   if (!pet) {

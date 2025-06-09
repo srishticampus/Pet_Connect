@@ -16,6 +16,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Link } from "react-router"; // Import Link
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PetSearch = () => {
   const [filters, setFilters] = useState({
@@ -29,57 +30,65 @@ const PetSearch = () => {
 
   const [availableBreeds, setAvailableBreeds] = useState([]);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [loading, setLoading] = useState(true); // New loading state
+  const [pets, setPets] = useState([]); // State to hold pets after loading
 
-  // Mock data - replace with API call in real implementation
-  const mockPets = [
-    {
-      id: 1,
-      name: "Buddy",
-      species: "Dog",
-      breed: "Golden Retriever",
-      age: 3,
-      size: "large",
-      location: "New York",
-      image: "/placeholder.svg?height=400&width=600",
-    },
-    {
-      id: 2,
-      name: "Whiskers",
-      species: "Cat",
-      breed: "Siamese",
-      age: 2,
-      size: "small",
-      location: "Los Angeles",
-      image: "/placeholder.svg?height=400&width=600",
-    },
-    {
-      id: 3,
-      name: "Rex",
-      species: "Dog",
-      breed: "German Shepherd",
-      age: 5,
-      size: "large",
-      location: "Chicago",
-      image: "/placeholder.svg?height=400&width=600",
-    },
-    {
-      id: 4,
-      name: "Luna",
-      species: "Cat",
-      breed: "Maine Coon",
-      age: 1,
-      size: "medium",
-      location: "Miami",
-      image: "/placeholder.svg?height=400&width=600",
-    },
-  ];
+  useEffect(() => {
+    // Simulate API call
+    setTimeout(() => {
+      const mockPets = [
+        {
+          id: 1,
+          name: "Buddy",
+          species: "Dog",
+          breed: "Golden Retriever",
+          age: 3,
+          size: "large",
+          location: "New York",
+          image: "/placeholder.svg?height=400&width=600",
+        },
+        {
+          id: 2,
+          name: "Whiskers",
+          species: "Cat",
+          breed: "Siamese",
+          age: 2,
+          size: "small",
+          location: "Los Angeles",
+          image: "/placeholder.svg?height=400&width=600",
+        },
+        {
+          id: 3,
+          name: "Rex",
+          species: "Dog",
+          breed: "German Shepherd",
+          age: 5,
+          size: "large",
+          location: "Chicago",
+          image: "/placeholder.svg?height=400&width=600",
+        },
+        {
+          id: 4,
+          name: "Luna",
+          species: "Cat",
+          breed: "Maine Coon",
+          age: 1,
+          size: "medium",
+          location: "Miami",
+          image: "/placeholder.svg?height=400&width=600",
+        },
+      ];
+      setPets(mockPets);
+      setLoading(false);
+    }, 1500); // Simulate 1.5 seconds loading time
+  }, []);
 
   useEffect(() => {
     // Update breeds based on selected species
     if (filters.species) {
       const breeds = [
         ...new Set(
-          mockPets
+          pets
             .filter((pet) => pet.species === filters.species)
             .map((pet) => pet.breed),
         ),
@@ -88,7 +97,7 @@ const PetSearch = () => {
     } else {
       setAvailableBreeds([]);
     }
-  }, [filters.species]);
+  }, [filters.species, pets]); // Add pets to dependency array
 
   const handleFilterChange = (field, value) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -119,7 +128,7 @@ const PetSearch = () => {
     });
   };
 
-  const filteredPets = filterPets(mockPets);
+  const filteredPets = filterPets(pets);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
@@ -248,7 +257,26 @@ const PetSearch = () => {
               </Button>
             </div>
 
-            {filteredPets.length === 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, index) => (
+                  <Card key={index} className="animate-pulse">
+                    <CardHeader className="p-0">
+                      <Skeleton className="w-full h-48 rounded-t-lg" />
+                    </CardHeader>
+                    <CardContent className="p-4 space-y-2">
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </CardContent>
+                    <CardFooter className="p-4 pt-0">
+                      <Skeleton className="h-10 w-full" />
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            ) : filteredPets.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 No pets found matching your criteria. Try adjusting your
                 filters.

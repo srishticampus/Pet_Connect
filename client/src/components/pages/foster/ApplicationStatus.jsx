@@ -70,9 +70,6 @@ const ApplicationStatus = () => {
                   <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2m2-6h12m-1.124-9.725l1.121.125a1.5 1.5 0 011.344 1.348l-.099.995a1.5 1.5 0 01-1.176 1.412l-.775.113a1.5 1.5 0 00-1.197 1.423l.055.71a1.5 1.5 0 01-1.234 1.309l-.697.102a1.5 1.5 0 00-1.135 1.492l.077.648a1.5 1.5 0 01-1.299 1.201l-.614.075a1.5 1.5 0 00-1.159 1.566l.024.403a1.5 1.5 0 01-1.325 1.08l-.55.082a1.5 1.5 0 00-1.224 1.548L3.75 15.75m18 0v-2a6 6 0 00-6-6H3.75m18 0h-1.5m-2.25-15h.008v.008H21.75V.75m-5.25 0h.008v.008h-.008V.75m-8.498-1.242l.585.585a2.34 2.34 0 003.286 3.286l-.585.585m3.748 8.748l-.586.585M9.25 15.75H3.75"/></svg>
                   <span>Size: {application.pet.Size}</span>
                 </div>
-                <a href="#" className="text-blue-500 hover:underline">
-                  View More
-                </a>
               </div>
               <div className="md:w-1/3 p-4 flex flex-col justify-center items-center">
                 <div className="text-gray-600 mb-2">Application Status</div>

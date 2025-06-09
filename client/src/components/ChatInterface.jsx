@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import api from '@/utils/api'; // Import the API client
 import { useAuth } from '@/hooks/auth'; // Import the useAuth hook
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 
 const ChatInterface = () => {
   const { user: currentUser } = useAuth(); // Get the current authenticated user
@@ -117,9 +118,22 @@ const ChatInterface = () => {
     <div className="flex h-[80vh] text-gray-800">
       {/* Left Sidebar */}
       <div className="w-1/4 bg-gray-100 p-4 flex flex-col gap-4 overflow-y-auto">
-        {loading && <p>Loading conversations...</p>}
         {error && <p className="text-red-500">{error}</p>}
-        {!loading && !error && (
+        {loading ? (
+          <div className="bg-white rounded-lg shadow p-4 space-y-4">
+            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-10 w-full" />
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="flex items-center space-x-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="flex flex-col space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
           <div className="bg-white rounded-lg shadow p-4">
             <h3 className="text-lg font-semibold mb-2">
               {chatTargetRole ? `Chat with ${chatTargetRole.charAt(0).toUpperCase() + chatTargetRole.slice(1)}s` : 'All Chats'}
@@ -186,7 +200,31 @@ const ChatInterface = () => {
 
             {/* Chat Messages Area */}
             <div className="flex-1 p-4 overflow-y-auto w-full">
-              {loading && <p>Loading messages...</p>}
+              {loading && (
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-10 w-48" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3 justify-end">
+                    <div className="space-y-2 text-right">
+                      <Skeleton className="h-10 w-48 ml-auto" />
+                      <Skeleton className="h-3 w-24 ml-auto" />
+                    </div>
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-10 w-48" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                  </div>
+                </div>
+              )}
               {error && <p className="text-red-500">{error}</p>}
               {!loading && !error && messages.map((message, index) => (
                 <div key={index} className={`flex items-start space-x-3 mb-4 ${message.sender === selectedUser.id ? '' : 'justify-end'}`}>

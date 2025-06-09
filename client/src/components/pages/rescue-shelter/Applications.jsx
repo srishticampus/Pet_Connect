@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge"; // Assuming a Badge component for status
 import { ExternalLink } from "lucide-react"; // For View More link icon
 import { Cake, Heart, PawPrint, Ruler } from "lucide-react"; // For pet details icons
+import { Skeleton } from "@/components/ui/skeleton";
 
 const RescueShelterApplicationsPage = () => {
   const [applications, setApplications] = useState([]);
@@ -52,7 +53,47 @@ const RescueShelterApplicationsPage = () => {
   };
 
   if (loading) {
-    return <div>Loading applications...</div>;
+    return (
+      <div className="container mx-auto py-8">
+        <Skeleton className="h-8 w-64 mb-6" />
+        <div className="grid gap-6">
+          {[...Array(2)].map((_, index) => (
+            <Card key={index}>
+              <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                {/* Pet Info Skeleton */}
+                <div className="flex items-center gap-4">
+                  <Skeleton className="w-24 h-24 rounded-lg" />
+                  <div className="flex-1">
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <div className="grid grid-cols-2 gap-2 text-sm mt-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Applicant Info Skeleton */}
+                <div className="grid grid-cols-1 gap-2 text-sm">
+                  <Skeleton className="h-6 w-3/4 mb-1" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+
+                {/* Actions Skeleton */}
+                <div className="flex flex-col gap-2 justify-center">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (error) {

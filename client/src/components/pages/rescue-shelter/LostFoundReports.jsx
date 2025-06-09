@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import api from '@/utils/api'; // Assuming an API utility for requests
 import { toast } from 'sonner'; // For notifications
 import {
@@ -60,7 +61,30 @@ const RescueShelterLostFoundReports = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading lost/found reports...</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Skeleton className="h-10 w-64 mb-8" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, index) => (
+            <Card key={index} className="pt-0 overflow-hidden shadow-lg">
+              <Skeleton className="w-full h-48" />
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-4" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full mt-2" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (error) {

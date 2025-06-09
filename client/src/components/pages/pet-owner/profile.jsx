@@ -24,6 +24,7 @@ import api from '@/utils/api'; // Import the api instance
 import { useNavigate } from 'react-router'; // Import useNavigate
 import { useAuth } from '@/hooks/auth'; // Import useAuth
 import { Label } from '@/components/ui/label';
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 
 const PetOwnerProfile = () => {
   const { user } = useAuth();
@@ -152,14 +153,60 @@ const PetOwnerProfile = () => {
       }
     };
   
-    if (loading) {
-      return <div>Loading profile...</div>;
-    }
-  
     if (error) {
       return <div>Error: {error}</div>;
     }
   
+    if (loading) {
+      return (
+        <div className="w-full">
+          {/* Orange Banner Skeleton */}
+          <Skeleton className="bg-primary h-44 relative w-full" />
+  
+          {/* White Body Skeleton */}
+          <div className="bg-white p-4 relative -mt-16">
+            {/* Profile Picture Skeleton */}
+            <div className="flex flex-col items-center">
+              <Skeleton className="w-24 h-24 rounded-full -mt-20" />
+              <Skeleton className="h-6 w-1/3 mt-2" />
+              <Skeleton className="h-8 w-1/4 mt-2" />
+            </div>
+  
+            {/* Profile Details Skeleton */}
+            <div className="mt-4">
+              <Card className="w-full sm:w-2/3 lg:w-1/2 xl:w-1/3 mx-auto">
+                <CardHeader>
+                  <Skeleton className="h-6 w-1/2" />
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      {Array.from({ length: 4 }).map((_, index) => (
+                        <div key={index} className="space-y-2">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-4 w-32" />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      {Array.from({ length: 2 }).map((_, index) => (
+                        <div key={index} className="space-y-2">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-4 w-32" />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 flex justify-center">
+                      <Skeleton className="h-10 w-24" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      );
+    }
   
     return (
       <div className="w-full">

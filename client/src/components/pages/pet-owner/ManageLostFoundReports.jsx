@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 
 const ManageLostFoundReports = () => {
   const [reports, setReports] = useState([]);
@@ -57,10 +58,6 @@ const ManageLostFoundReports = () => {
     navigate(`/chat?initialChatPartnerId=${reporterId}&chatTargetRole=${reporterRole}`);
   };
 
-  if (loading) {
-    return <div className="text-center py-8">Loading lost/found reports...</div>;
-  }
-
   if (error) {
     return <div className="text-center py-8 text-red-500">{error}</div>;
   }
@@ -68,7 +65,25 @@ const ManageLostFoundReports = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Your Lost & Found Reports</h1>
-      {reports.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Card key={index} className="overflow-hidden shadow-lg">
+              <Skeleton className="w-full h-48" />
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-10 w-full mt-4" />
+                <Skeleton className="h-10 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : reports.length === 0 ? (
         <p className="text-gray-600">You have not submitted any lost or found pet reports yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

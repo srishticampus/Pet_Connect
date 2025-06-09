@@ -13,6 +13,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Dashboard() {
   const [userCount, setUserCount] = useState(0);
@@ -125,7 +126,28 @@ export default function Dashboard() {
       <div className="h-full">
         <h1 className="text-2xl font-semibold mb-4">Dashboard</h1>
         {loading ? (
-          <p>Loading...</p>
+          <div className="animate-pulse">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              {[...Array(9)].map((_, index) => (
+                <Card key={index}>
+                  <CardHeader>
+                    <Skeleton className="h-6 w-3/4" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-1/2" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-1/2" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-[400px] w-full" />
+              </CardContent>
+            </Card>
+          </div>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (

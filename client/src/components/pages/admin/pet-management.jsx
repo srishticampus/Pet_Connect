@@ -41,6 +41,7 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { addPet, deletePet, getAllPets, updatePet } from './petService';
 import { MoreHorizontal } from 'lucide-react';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -313,6 +314,7 @@ function DataTable({
 
 export default function PetManagement() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true); // New loading state
   const [open, setOpen] = useState(false)
 
   const form = useForm({
@@ -341,17 +343,18 @@ export default function PetManagement() {
   }
 
   const fetchPets = async () => {
+    setLoading(true); // Set loading to true before fetching
     try {
       let petsData = await getAllPets();
-      setData(petsData);
-      console.log(petsData)
       petsData = petsData.map((pet, idx) => {
         pet.id = idx + 1;
         return pet;
       });
-      setData(petsData)
+      setData(petsData);
     } catch (error) {
       console.error("Failed to fetch pets:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching (success or error)
     }
   };
 
@@ -379,61 +382,61 @@ export default function PetManagement() {
                   <Label htmlFor="name" className="text-right">
                     Name
                   </Label>
-                  <Input id="name"  className="col-span-3" {...form.register("name")} />
+                  <Input id="name" className="col-span-3" {...form.register("name")} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="species" className="text-right">
                     Species
                   </Label>
-                  <Input id="species"  className="col-span-3" {...form.register("species")} />
+                  <Input id="species" className="col-span-3" {...form.register("species")} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="shortDescription" className="text-right">
                     Short Description
                   </Label>
-                  <Input id="shortDescription"  className="col-span-3" {...form.register("shortDescription")} />
+                  <Input id="shortDescription" className="col-span-3" {...form.register("shortDescription")} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="age" className="text-right">
                     Age
                   </Label>
-                  <Input id="age"  className="col-span-3" {...form.register("age")} />
+                  <Input id="age" className="col-span-3" {...form.register("age")} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="gender" className="text-right">
                     Gender
                   </Label>
-                  <Input id="gender"  className="col-span-3" {...form.register("gender")} />
+                  <Input id="gender" className="col-span-3" {...form.register("gender")} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="breed" className="text-right">
                     Breed
                   </Label>
-                  <Input id="breed"  className="col-span-3" {...form.register("breed")} />
+                  <Input id="breed" className="col-span-3" {...form.register("breed")} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="size" className="text-right">
                     Size
                   </Label>
-                  <Input id="size"  className="col-span-3" {...form.register("size")} />
+                  <Input id="size" className="col-span-3" {...form.register("size")} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="description" className="text-right">
                     Description
                   </Label>
-                  <Input id="description"  className="col-span-3" {...form.register("description")} />
+                  <Input id="description" className="col-span-3" {...form.register("description")} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="healthVaccinations" className="text-right">
                     Health Vaccinations
                   </Label>
-                  <Input id="healthVaccinations"  className="col-span-3" {...form.register("healthVaccinations")} />
+                  <Input id="healthVaccinations" className="col-span-3" {...form.register("healthVaccinations")} />
                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="origin" className="text-right">
                     Origin
                   </Label>
-                  <Input id="origin"  className="col-span-3" {...form.register("origin")} />
+                  <Input id="origin" className="col-span-3" {...form.register("origin")} />
                 </div>
                 <DialogFooter>
                   <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
@@ -444,7 +447,44 @@ export default function PetManagement() {
               </form>
             </DialogContent>
           </Dialog>
-          <DataTable columns={columns} data={data} fetchPets={fetchPets} />
+          {loading ? (
+            <div className="animate-pulse">
+              <Skeleton className="h-8 w-1/2 mb-4" /> {/* Title skeleton */}
+              <div className="flex items-center p-4 gap-2">
+                <Skeleton className="h-10 w-[180px]" /> {/* Select skeleton */}
+                <Skeleton className="h-10 w-full max-w-sm" /> {/* Input skeleton */}
+              </div>
+              <div className="rounded-md border w-full">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {[...Array(9)].map((_, index) => ( // Assuming 9 columns for headers
+                        <TableHead key={index}>
+                          <Skeleton className="h-6 w-full" />
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[...Array(5)].map((_, rowIndex) => ( // 5 skeleton rows
+                      <TableRow key={rowIndex}>
+                        {[...Array(9)].map((_, cellIndex) => ( // 9 skeleton cells per row
+                          <TableCell key={cellIndex}>
+                            <Skeleton className="h-6 w-full" />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div className="p-2">
+                  <Skeleton className="h-8 w-full" /> {/* Pagination skeleton */}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <DataTable columns={columns} data={data} fetchPets={fetchPets} />
+          )}
         </div>
       </main>
     </div>

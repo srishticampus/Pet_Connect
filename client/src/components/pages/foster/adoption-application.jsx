@@ -3,6 +3,7 @@ import { useParams } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import { Separator } from '../../ui/separator';
+import { Skeleton } from '../../ui/skeleton';
 import api from '../../../utils/api'; // Assuming api.js is the axios client
 
 const AdoptionApplication = () => {
@@ -34,7 +35,56 @@ const AdoptionApplication = () => {
   }, [applicationId]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="container mx-auto p-4">
+        <Skeleton className="h-8 w-72 mb-6" />
+
+        <Card className="mb-6">
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-4 mb-4">
+              <Skeleton className="w-16 h-16 rounded-full" />
+              <div>
+                <Skeleton className="h-6 w-32 mb-2" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+            </div>
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-full" />
+          </CardContent>
+        </Card>
+
+        <Card className="mb-6">
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-4 mb-4">
+              <Skeleton className="w-24 h-24 rounded-md" />
+              <div>
+                <Skeleton className="h-6 w-32 mb-2" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (error) {

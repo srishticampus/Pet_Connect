@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, MoreHorizontal } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import {
   flexRender,
@@ -295,7 +296,46 @@ const AdminApplicationsPage = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading applications...</div>;
+    return (
+      <div className="container mx-auto w-full animate-pulse">
+        <main className="flex-1 px-6 pb-6 w-full">
+          <div className="bg-white rounded-lg h-full p-6 w-full">
+            <Skeleton className="h-8 w-1/2 mb-4" /> {/* Title skeleton */}
+            <div className="flex items-center p-4 gap-2">
+              <Skeleton className="h-10 w-[180px]" /> {/* Select skeleton */}
+              <Skeleton className="h-10 w-full max-w-sm" /> {/* Input skeleton */}
+            </div>
+            <div className="rounded-md border w-full">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {[...Array(5)].map((_, index) => ( // Assuming 5 columns for headers
+                      <TableHead key={index}>
+                        <Skeleton className="h-6 w-full" />
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...Array(5)].map((_, rowIndex) => ( // 5 skeleton rows
+                    <TableRow key={rowIndex}>
+                      {[...Array(5)].map((_, cellIndex) => ( // 5 skeleton cells per row
+                        <TableCell key={cellIndex}>
+                          <Skeleton className="h-6 w-full" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="p-2">
+                <Skeleton className="h-8 w-full" /> {/* Pagination skeleton */}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   if (error) {

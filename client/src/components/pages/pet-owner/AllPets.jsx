@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import api from "@/utils/api";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 
 export default function AllPetsPage() {
   const [pets, setPets] = useState([]);
@@ -13,20 +14,16 @@ export default function AllPetsPage() {
       try {
         const response = await api.get("/pets/available-for-adoption"); // Fetch pets available for adoption
         setPets(response.data);
-        setLoading(false);
       } catch (err) {
         setError("Failed to fetch pets.");
-        setLoading(false);
         console.error("Failed to fetch available pets:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchAvailablePets();
   }, []);
-
-  if (loading) {
-    return <div className="container mx-auto px-4 py-12 text-center">Loading pets...</div>;
-  }
 
   if (error) {
     return <div className="container mx-auto px-4 py-12 text-center text-red-500">{error}</div>;
@@ -41,7 +38,25 @@ export default function AllPetsPage() {
         Browse all pets currently available for adoption or foster.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {pets.length > 0 ? (
+        {loading ? (
+          // Skeleton loader for pet cards
+          Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="w-full">
+              <div className="card bg-white rounded-2xl">
+                <Skeleton className="w-full aspect-[137/115] rounded-t-2xl" />
+                <div className="content p-4 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-1/4" />
+                  </div>
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-10 w-full mt-3" />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : pets.length > 0 ? (
           pets.map((pet) => (
             <div key={pet._id} className="w-full">
               <div className="card bg-white rounded-2xl">

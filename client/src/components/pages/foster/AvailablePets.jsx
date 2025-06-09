@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router';
+import { Skeleton } from "@/components/ui/skeleton";
 // Assuming an API service for foster features will be created
 import { getAvailablePets, getSpeciesList } from './fosterService';
 
@@ -71,26 +72,44 @@ const AvailablePets = () => {
         </Select>
       </div>
 
-      {loading && <p>Loading pets...</p>}
+      {loading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, index) => (
+            <Card key={index}>
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="w-full h-48 mb-4 rounded" />
+                <Skeleton className="h-4 w-1/2 mb-2" />
+                <Skeleton className="h-4 w-1/3 mb-4" />
+                <Skeleton className="h-10 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
       {error && <p className="text-red-500">Error loading pets: {error.message}</p>}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {pets.map(pet => (
-          <Card key={pet.id}>
-            <CardHeader>
-              <CardTitle>{pet.Breed}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <img src={`${import.meta.env.VITE_API_URL}${pet.Photo}`} alt={pet.Breed} className="w-full h-48 object-cover mb-4 rounded" />
-              <p><strong>Species:</strong> {pet.Species}</p>
-              <p><strong>Age:</strong> {pet.Age}</p>
-              <Link to={`/foster/apply/${pet._id}`}>
-                <Button className="mt-4 w-full">View More</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {!loading && !error && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {pets.map(pet => (
+            <Card key={pet.id}>
+              <CardHeader>
+                <CardTitle>{pet.Breed}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <img src={`${import.meta.env.VITE_API_URL}${pet.Photo}`} alt={pet.Breed} className="w-full h-48 object-cover mb-4 rounded" />
+                <p><strong>Species:</strong> {pet.Species}</p>
+                <p><strong>Age:</strong> {pet.Age}</p>
+                <Link to={`/foster/apply/${pet._id}`}>
+                  <Button className="mt-4 w-full">View More</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {pets.length === 0 && !loading && !error && (
         <p className="text-center text-gray-500">No pets available for the selected species.</p>

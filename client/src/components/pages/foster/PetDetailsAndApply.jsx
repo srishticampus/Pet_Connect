@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns"; // Import format from date-fns
 import { Calendar as CalendarIcon } from "lucide-react"; // Import CalendarIcon
 import { cn } from "@/lib/utils"; // Import cn utility
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -95,7 +96,37 @@ const PetDetailsAndApply = () => {
   };
 
   if (loading) {
-    return <div className="container mx-auto py-8">Loading pet details...</div>;
+    return (
+      <section className="container mx-auto px-3 lg:px-0 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Pet image skeleton */}
+          <Skeleton className="w-full aspect-[611/567] rounded-2xl" />
+
+          {/* Pet details skeleton */}
+          <div className="flex flex-col justify-between">
+            <Skeleton className="h-8 w-3/4 mb-4" /> {/* Title skeleton */}
+            <div className="grid grid-cols-2 gap-4 py-4">
+              {[...Array(4)].map((_, index) => (
+                <div key={index} className="flex gap-4 items-center">
+                  <Skeleton className="w-10 h-10 rounded-full" /> {/* Icon skeleton */}
+                  <div>
+                    <Skeleton className="h-4 w-20 mb-1" /> {/* Label skeleton */}
+                    <Skeleton className="h-6 w-24" /> {/* Value skeleton */}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Skeleton className="h-6 w-48 mb-4" /> {/* Health Status title skeleton */}
+            <div className="space-y-2">
+              {[...Array(3)].map((_, index) => (
+                <Skeleton key={index} className="h-4 w-full" />
+              ))}
+            </div>
+            <Skeleton className="h-12 w-full mt-6" /> {/* Apply button skeleton */}
+          </div>
+        </div>
+      </section>
+    );
   }
 
   if (error) {

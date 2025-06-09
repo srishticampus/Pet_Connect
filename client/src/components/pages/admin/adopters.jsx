@@ -37,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { getAllAdopters, approveAdopter, rejectAdopter, getApprovedAdopters } from "./adminService" // Import the new API functions
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -286,22 +287,29 @@ export default function AdoptersTable() {
   const [data, setData] = useState([]);
   const [approvedData, setApprovedData] = useState([]);
   const [viewApproved, setViewApproved] = useState(false);
+  const [loading, setLoading] = useState(true); // New loading state
 
   const fetchAdopters = async () => {
+    setLoading(true); // Set loading to true before fetching
     try {
       const adoptersData = await getAllAdopters();
       setData(adoptersData);
     } catch (error) {
       console.error("Failed to fetch adopters:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching
     }
   };
 
   const fetchApprovedAdopters = async () => {
+    setLoading(true); // Set loading to true before fetching
     try {
       const approvedAdoptersData = await getApprovedAdopters();
       setApprovedData(approvedAdoptersData);
     } catch (error) {
       console.error("Failed to fetch approved adopters:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching
     }
   };
 
@@ -309,6 +317,50 @@ export default function AdoptersTable() {
     fetchAdopters();
     fetchApprovedAdopters();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto w-full animate-pulse">
+        <main className="flex-1 px-6 pb-6 w-full">
+          <div className="bg-white rounded-lg h-full p-6 w-full">
+            <Skeleton className="h-8 w-1/2 mb-4" /> {/* Title skeleton */}
+            <Skeleton className="h-10 w-48 mb-4" /> {/* Button skeleton */}
+            <div className="flex items-center p-4 gap-2">
+              <Skeleton className="h-10 w-[180px]" /> {/* Select skeleton */}
+              <Skeleton className="h-10 w-full max-w-sm" /> {/* Input skeleton */}
+            </div>
+            <div className="rounded-md border w-full">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {[...Array(8)].map((_, index) => ( // Assuming 8 columns for headers
+                      <TableHead key={index}>
+                        <Skeleton className="h-6 w-full" />
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...Array(5)].map((_, rowIndex) => ( // 5 skeleton rows
+                    <TableRow key={rowIndex}>
+                      {[...Array(8)].map((_, cellIndex) => ( // 8 skeleton cells per row
+                        <TableCell key={cellIndex}>
+                          <Skeleton className="h-6 w-full" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="p-2">
+                <Skeleton className="h-8 w-full" /> {/* Pagination skeleton */}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto w-full">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Card, CardContent } from '../../ui/card';
+import { Skeleton } from '../../ui/skeleton';
 import { Input } from '../../ui/input';
 import { Button } from '../../ui/button';
 import { Search } from 'lucide-react';
@@ -35,7 +36,27 @@ const AdoptedPets = () => {
   );
 
   if (loading) {
-    return <div className="text-center py-10">Loading adopted pets...</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-10 w-full max-w-md" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, index) => (
+            <Card key={index} className="overflow-hidden shadow-lg py-0">
+              <Skeleton className="w-full h-48" />
+              <CardContent className="p-4">
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2 mb-1" />
+                <Skeleton className="h-4 w-full mb-4" />
+                <Skeleton className="h-10 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (error) {
