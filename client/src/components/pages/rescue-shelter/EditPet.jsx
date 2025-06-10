@@ -25,6 +25,7 @@ const EditPet = () => {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(true); // Set initial loading to true for fetching data
   const [submitting, setSubmitting] = useState(false); // Loading state for form submission
+  const [generatingDescription, setGeneratingDescription] = useState(false); // New state for AI generation
   const [error, setError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({}); // State for validation errors
 
@@ -84,6 +85,49 @@ const EditPet = () => {
     }));
   };
 
+
+  const handleGenerateDescription = async () => {
+    setGeneratingDescription(true);
+    setError(null);
+    try {
+      const petData = {
+        name: formData.name,
+        species: formData.species,
+        breed: formData.breed,
+        age: formData.age,
+        gender: formData.gender,
+        size: formData.size,
+        temperament: '', // Assuming temperament is not a direct input, or needs to be added
+        medicalHistory: formData.healthVaccinations,
+        specialNeeds: '', // Assuming special needs is not a direct input
+        behavior: '', // Assuming behavior is not a direct input
+        color: '', // Assuming color is not a direct input
+        location: '', // Assuming location is not a direct input
+        status: 'Available for adoption', // Default status
+      };
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/llm/generate-pet-description`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(petData),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || 'Failed to generate description');
+      }
+
+      const data = await response.json();
+      setFormData(prev => ({ ...prev, description: data.description }));
+    } catch (err) {
+      setError(err.message);
+      console.error('Error generating description:', err);
+    } finally {
+      setGeneratingDescription(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -328,6 +372,14 @@ console.log('Update pet response:', res); // Log the response
         <div className="md:col-span-2 space-y-2">
           <Label htmlFor="description">Full Description</Label>
           <Textarea id="description" name="description" rows="3" value={formData.description} onChange={handleInputChange} />
+          <Button
+            type="button"
+            onClick={handleGenerateDescription}
+            className="bg-blue-500 hover:bg-blue-600 text-white mt-2"
+            disabled={generatingDescription}
+          >
+            {generatingDescription ? 'Generating...' : 'Generate Description with AI'}
+          </Button>
           {validationErrors.description && <p className="text-red-500 text-sm">{validationErrors.description}</p>}
         </div>
 

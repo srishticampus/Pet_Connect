@@ -9,6 +9,7 @@ import "./db_driver";
 import apiRouter from "./controllers";
 import adminRouter from "./controllers/admin"; // Import admin routes
 import rescueShelterRouter from "./controllers/rescue-shelter"; // Import rescue-shelter routes
+import llmRouter from "./controllers/llm/index.js"; // Import LLM routes
 import path from "path";
 import { fileURLToPath } from "url";
 export const app = express();
@@ -46,6 +47,7 @@ app.get("/", (req, res) => {
 app.use("/api", apiRouter);
 app.use("/api/admin", adminRouter); // Use admin routes
 app.use("/api/rescue-shelter", rescueShelterRouter); // Use rescue-shelter routes
+app.use("/api/llm", llmRouter); // Use LLM routes
 
 
 //static files for uploads servedin /uploads url
