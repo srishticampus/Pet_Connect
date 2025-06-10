@@ -78,7 +78,7 @@ const ManagePets = () => {
                                     <h3 className="text-xl font-semibold">{pet.name}</h3>
                                     <span className="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Available</span>
                                 </div>
-                                <p className="text-gray-500 text-sm">{pet.Breed} - 8 months</p>
+                                <p className="text-gray-500 text-sm">{pet.Breed} - {pet.Age} years</p>
                                 <p className="mt-2 text-gray-700">
                                     {pet.description}
                                 </p>
