@@ -129,7 +129,7 @@ const AdoptionApplication = () => {
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-4 mb-4">
-            <img src={`${import.meta.env.VITE_API_URL}/${pet.Photo}`} alt={pet?.breed} className="w-24 h-24 object-cover rounded-md" />
+            <img src={`${import.meta.env.VITE_API_URL}${pet.Photo}`} alt={pet?.breed} className="w-24 h-24 object-cover rounded-md" />
             <div>
               <p className="text-lg font-semibold">{pet?.breed} ({pet?.species})</p>
               <p className="text-sm text-gray-500">Size: {pet?.size}, Age: {pet?.age}</p>

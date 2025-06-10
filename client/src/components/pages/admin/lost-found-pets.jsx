@@ -39,7 +39,7 @@ function PetCard({ pet, fetchPets }) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <img
-        src={pet.Photo ? `${import.meta.env.VITE_API_URL}/${pet.Photo}` : 'https://via.placeholder.com/150'}
+        src={pet.Photo ? `${import.meta.env.VITE_API_URL}${pet.Photo}` : 'https://via.placeholder.com/150'}
         alt={pet.name}
         className="w-full h-48 object-cover"
       />
@@ -60,7 +60,7 @@ function PetCard({ pet, fetchPets }) {
               <div className="flex flex-col items-center">
                 <div className="w-full h-96 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
                   {pet.Photo ? (
-                    <img src={`${import.meta.env.VITE_API_URL}/${pet.Photo}`} alt={pet.name} className="w-full h-full object-cover" />
+                    <img src={`${import.meta.env.VITE_API_URL}${pet.Photo}`} alt={pet.name} className="w-full h-full object-cover" />
                   ) : (
                     <span className="text-gray-500">No Image</span>
                   )}
