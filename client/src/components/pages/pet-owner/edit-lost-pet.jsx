@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import petOwnerService from '@/components/pages/pet-owner/petOwnerService'; // Import petOwnerService
 import { useNavigate, useParams } from 'react-router'; // Import useParams
+import api from '@/utils/api'; // Import the api service
 
 const EditLostPet = () => {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ const EditLostPet = () => {
   const [existingPhotoUrl, setExistingPhotoUrl] = useState(''); // State to store existing photo URL
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null); // New state for image preview
 
 
   useEffect(() => {
@@ -65,27 +67,46 @@ const EditLostPet = () => {
     }
   }, [petId, navigate]); // Depend on petId and navigate
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     if (event.target.files && event.target.files[0]) {
-      setPetPhoto(event.target.files[0]);
+      const file = event.target.files[0];
+      setPetPhoto(file);
       setExistingPhotoUrl(''); // Clear existing photo URL when a new file is selected
+      setImagePreviewUrl(URL.createObjectURL(file)); // Set image preview
+
+      const mlFormData = new FormData();
+      mlFormData.append('image', file);
+
+      try {
+        const mlResponse = await api.post('http://localhost:3000/api/ml/predict', mlFormData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        setPetBreed(mlResponse.data.breed || petBreed);
+        setPetSpecies(mlResponse.data.type || petSpecies); // Assuming 'type' from API maps to 'species'
+      } catch (mlError) {
+        console.error('Error predicting pet type/breed:', mlError);
+        // Optionally, set an error message for the user
+      }
     } else {
       setPetPhoto(null);
+      setImagePreviewUrl(null);
     }
   };
 
   const handleSavePet = async () => {
     const formData = new FormData();
     formData.append('name', petName);
-    formData.append('species', petSpecies);
+    formData.append('Species', petSpecies);
     formData.append('shortDescription', petOneLineDescription);
-    formData.append('age', parseInt(petAge, 10));
-    formData.append('gender', petGender);
-    formData.append('breed', petBreed);
-    formData.append('size', petSize);
+    formData.append('Age', parseInt(petAge, 10));
+    formData.append('Gender', petGender);
+    formData.append('Breed', petBreed);
+    formData.append('Size', petSize);
     formData.append('description', petDescription);
     formData.append('healthVaccinations', petHealthVaccinations);
-    formData.append('location', petLocation);
+    formData.append('Location', petLocation);
     formData.append('lostDate', petLostDate);
     if (petPhoto) {
       formData.append('photo', petPhoto);
@@ -127,12 +148,15 @@ const EditLostPet = () => {
       {/* Image Upload */}
       <div className="mb-6">
         <Label htmlFor="photo">Pet Photo</Label>
+        {imagePreviewUrl && (
+          <img src={imagePreviewUrl} alt="Pet Preview" className="w-full h-48 object-cover rounded-md mb-2" />
+        )}
         <Input id="photo" type="file" accept="image/*" onChange={handleFileChange} />
         {petPhoto && <p className="text-sm mt-2">Selected file: {petPhoto.name}</p>}
         {!petPhoto && existingPhotoUrl && (
           <div className="mt-4">
             <p className="text-sm mb-2">Existing Photo:</p>
-            <img src={`${import.meta.env.VITE_API_URL}/${existingPhotoUrl}`} alt="Existing Pet" className="w-32 h-32 object-cover rounded-md" />
+            <img src={`${import.meta.env.VITE_API_URL}${existingPhotoUrl}`} alt="Existing Pet" className="w-32 h-32 object-cover rounded-md" />
           </div>
         )}
       </div>

@@ -25,13 +25,44 @@ const AddPet = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({}); // State for validation errors
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null); // New state for image preview
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const { name, value, type, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'file' ? files[0] : value
-    });
+
+    if (type === 'file' && name === 'image') {
+      const file = files[0];
+      setFormData(prev => ({ ...prev, image: file }));
+      if (file) {
+        setImagePreviewUrl(URL.createObjectURL(file));
+
+        const mlFormData = new FormData();
+        mlFormData.append('image', file);
+
+        try {
+          const mlResponse = await api.post('http://localhost:3000/api/ml/predict', mlFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          setFormData(prev => ({
+            ...prev,
+            breed: mlResponse.data.breed || prev.breed,
+            species: mlResponse.data.type || prev.species, // Assuming 'type' from API maps to 'species'
+          }));
+        } catch (mlError) {
+          console.error('Error predicting pet type/breed:', mlError);
+          // Optionally, set an error message for the user
+        }
+      } else {
+        setImagePreviewUrl(null);
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
     // Clear validation error for the field when it changes
     setValidationErrors(prevErrors => ({
       ...prevErrors,

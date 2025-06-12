@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import petOwnerService from '@/components/pages/pet-owner/petOwnerService'; // Import petOwnerService
 import { useNavigate, useParams } from 'react-router'; // Import useParams
 import imagePrev from "@/assets/imageprev.png";
+import api from '@/utils/api'; // Import the api service
 
 const Gender = z.enum(['male', 'female', 'other']);
 const Size = z.enum(['small', 'medium', 'large']);
@@ -72,6 +73,7 @@ const AddLostPet = () => {
   const [petPhoto, setPetPhoto] = useState(null); // State to store the selected file object
   const [existingPhotoUrl, setExistingPhotoUrl] = useState('');
   const [backendError, setBackendError] = useState(''); // State to store backend error messages
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null); // New state for image preview
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(formSchema),
@@ -119,12 +121,31 @@ const AddLostPet = () => {
     }
   }, [petId, navigate]); // Depend on petId and navigate
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     if (event.target.files && event.target.files[0]) {
-      setPetPhoto(event.target.files[0]);
+      const file = event.target.files[0];
+      setPetPhoto(file);
       setExistingPhotoUrl(''); // Clear existing photo URL when a new file is selected
+      setImagePreviewUrl(URL.createObjectURL(file)); // Set image preview
+
+      const mlFormData = new FormData();
+      mlFormData.append('image', file);
+
+      try {
+        const mlResponse = await api.post('http://localhost:3000/api/ml/predict', mlFormData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        setValue('breed', mlResponse.data.breed);
+        setValue('species', mlResponse.data.type); // Assuming 'type' from API maps to 'species'
+      } catch (mlError) {
+        console.error('Error predicting pet type/breed:', mlError);
+        // Optionally, set an error message for the user
+      }
     } else {
       setPetPhoto(null);
+      setImagePreviewUrl(null);
     }
   };
 
@@ -176,7 +197,7 @@ const AddLostPet = () => {
       <div className="mb-6">
         <Label htmlFor="photo">Pet Photo</Label>
         <img
-          src={imagePrev}
+          src={imagePreviewUrl || imagePrev} // Use imagePreviewUrl or fallback to imagePrev
           alt="Upload"
           style={{ cursor: 'pointer', maxWidth: '500px', display: 'block', margin: '0 auto' }}
           onClick={() => document.getElementById('photoInput').click()}

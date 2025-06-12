@@ -7,6 +7,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import api from '@/utils/api'; // Import the api service
 
 const EditPet = () => {
   const { id } = useParams(); // Get pet ID from URL
@@ -28,6 +29,7 @@ const EditPet = () => {
   const [generatingDescription, setGeneratingDescription] = useState(false); // New state for AI generation
   const [error, setError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({}); // State for validation errors
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null); // New state for image preview
 
   useEffect(() => {
     const fetchPet = async () => {
@@ -55,16 +57,41 @@ const EditPet = () => {
     fetchPet();
   }, [id]); // Refetch when ID changes
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const { name, value, type, files } = e.target;
-    if (type === 'file' && name === 'image') { // Check for file input with name 'image'
-        console.log('Image file selected. File:', files[0]); // Log the file
-        setImage(files[0]); // Update the image state
+
+    if (type === 'file' && name === 'image') {
+      const file = files[0];
+      setImage(file); // Update the image state
+      if (file) {
+        setImagePreviewUrl(URL.createObjectURL(file));
+
+        const mlFormData = new FormData();
+        mlFormData.append('image', file);
+
+        try {
+          const mlResponse = await api.post('http://localhost:3000/api/ml/predict', mlFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          setFormData(prev => ({
+            ...prev,
+            breed: mlResponse.data.breed || prev.breed,
+            species: mlResponse.data.type || prev.species, // Assuming 'type' from API maps to 'species'
+          }));
+        } catch (mlError) {
+          console.error('Error predicting pet type/breed:', mlError);
+          // Optionally, set an error message for the user
+        }
+      } else {
+        setImagePreviewUrl(null);
+      }
     } else {
-        setFormData({
-          ...formData,
-          [name]: type === 'file' ? files[0] : value // Keep existing logic for other inputs
-        });
+      setFormData({
+        ...formData,
+        [name]: value
+      });
     }
     // Clear validation error for the field when it changes
     setValidationErrors(prevErrors => ({
@@ -175,12 +202,12 @@ const EditPet = () => {
 
     const petData = new FormData();
     petData.append('name', formData.name);
-    petData.append('Species', formData.species); // Note capitalization for backend
+    petData.append('Species', formData.species);
     petData.append('shortDescription', formData.shortDescription);
-    petData.append('Age', formData.age); // Note capitalization for backend
-    petData.append('Gender', formData.gender); // Note capitalization for backend
-    petData.append('Breed', formData.breed); // Note capitalization for backend
-    petData.append('Size', formData.size); // Note capitalization for backend
+    petData.append('Age', formData.age);
+    petData.append('Gender', formData.gender);
+    petData.append('Breed', formData.breed);
+    petData.append('Size', formData.size);
     petData.append('description', formData.description);
     const healthVaccinationsArray = formData.healthVaccinations.split(',').map(item => item.trim()).filter(item => item);
     petData.append('healthVaccinations', JSON.stringify(healthVaccinationsArray));
@@ -291,6 +318,9 @@ console.log('Update pet response:', res); // Log the response
         {/* Image Input */}
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="image">Pet Image</Label>
+          {imagePreviewUrl && (
+            <img src={imagePreviewUrl} alt="Pet Preview" className="w-full h-48 object-cover rounded-md mb-2" />
+          )}
           <Input
             id="image"
             name="image"

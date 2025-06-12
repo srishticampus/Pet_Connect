@@ -10,6 +10,7 @@ import apiRouter from "./controllers";
 import adminRouter from "./controllers/admin"; // Import admin routes
 import rescueShelterRouter from "./controllers/rescue-shelter"; // Import rescue-shelter routes
 import llmRouter from "./controllers/llm/index.js"; // Import LLM routes
+import mlRouter from "./controllers/ml/pet-detect.js"; // Import ML routes
 import path from "path";
 import { fileURLToPath } from "url";
 export const app = express();
@@ -48,6 +49,7 @@ app.use("/api", apiRouter);
 app.use("/api/admin", adminRouter); // Use admin routes
 app.use("/api/rescue-shelter", rescueShelterRouter); // Use rescue-shelter routes
 app.use("/api/llm", llmRouter); // Use LLM routes
+app.use("/api/ml", mlRouter); // Use LLM routes
 
 
 //static files for uploads servedin /uploads url

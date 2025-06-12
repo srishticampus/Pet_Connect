@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from 'react-router';
 import petOwnerService from './petOwnerService'; // Import the petOwnerService
+import api from '@/utils/api'; // Import the api service
 
 const EditPet = () => {
   const navigate = useNavigate(); // Initialize useNavigate
@@ -28,6 +29,7 @@ const EditPet = () => {
   const [submitting, setSubmitting] = useState(false); // State for form submission loading
   const [error, setError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({}); // State for validation errors
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null); // New state for image preview
 
   useEffect(() => {
     const fetchPetData = async () => {
@@ -57,12 +59,42 @@ const EditPet = () => {
     fetchPetData();
   }, [petId]); // Refetch when petId changes
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const { name, value, type, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'file' ? files[0] : value
-    });
+
+    if (type === 'file' && name === 'image') {
+      const file = files[0];
+      setFormData(prev => ({ ...prev, image: file }));
+      if (file) {
+        setImagePreviewUrl(URL.createObjectURL(file));
+
+        const mlFormData = new FormData();
+        mlFormData.append('image', file);
+
+        try {
+          const mlResponse = await api.post('http://localhost:3000/api/ml/predict', mlFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          setFormData(prev => ({
+            ...prev,
+            breed: mlResponse.data.breed || prev.breed,
+            species: mlResponse.data.type || prev.species, // Assuming 'type' from API maps to 'species'
+          }));
+        } catch (mlError) {
+          console.error('Error predicting pet type/breed:', mlError);
+          // Optionally, set an error message for the user
+        }
+      } else {
+        setImagePreviewUrl(null);
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
     // Clear validation error for the field when it changes
     setValidationErrors(prevErrors => ({
       ...prevErrors,
@@ -126,12 +158,12 @@ const EditPet = () => {
 
     const petData = new FormData();
     petData.append('name', formData.name);
-    petData.append('species', formData.species);
+    petData.append('Species', formData.species);
     petData.append('shortDescription', formData.shortDescription);
-    petData.append('age', formData.age);
-    petData.append('gender', formData.gender);
-    petData.append('breed', formData.breed);
-    petData.append('size', formData.size);
+    petData.append('Age', formData.age);
+    petData.append('Gender', formData.gender);
+    petData.append('Breed', formData.breed);
+    petData.append('Size', formData.size);
     petData.append('description', formData.description);
     const healthVaccinations = formData.health.split(',').map(item => item.trim()).filter(item => item);
     petData.append('healthVaccinations', JSON.stringify(healthVaccinations));
@@ -180,6 +212,9 @@ const EditPet = () => {
         {/* Image Input */}
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="image">Pet Image</Label>
+          {imagePreviewUrl && (
+            <img src={imagePreviewUrl} alt="Pet Preview" className="w-full h-48 object-cover rounded-md mb-2" />
+          )}
           <Input
             id="image"
             name="image"
