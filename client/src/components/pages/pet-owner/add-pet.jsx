@@ -167,10 +167,10 @@ const AddPet = () => {
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="image">Pet Image</Label>
           <img
-            src={imagePrev}
-             alt="Upload"
-             style={{ cursor: 'pointer', maxWidth: '500px', display: 'block', margin: '0 auto' }}
-             onClick={() => document.getElementById('imageInput').click()}
+            src={imagePreviewUrl || imagePrev}
+            alt="Upload"
+            style={{ cursor: 'pointer', maxWidth: '500px', display: 'block', margin: '0 auto' }}
+            onClick={() => document.getElementById('imageInput').click()}
           />
           <Input
             id="imageInput"
