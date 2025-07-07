@@ -206,7 +206,7 @@ const AddPet = () => {
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="image">Pet Image</Label>
           {imagePreviewUrl && (
-            <img src={imagePreviewUrl} alt="Pet Preview" className="w-full h-48 object-cover rounded-md mb-2" />
+            <img src={imagePreviewUrl} alt="Pet Preview" className="w-80 aspect-square object-cover rounded-md mb-2" />
           )}
           <Input
             id="image"

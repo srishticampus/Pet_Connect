@@ -48,8 +48,8 @@ const ApplicationStatus = () => {
               <div className="md:w-1/3">
                 <img
                   className="w-full h-72 object-cover"
-                  src={application.pet.Photo? `${import.meta.env.VITE_API_URL}${application.pet.Photo}`: 'https://placedog.net/200/150'} // Use actual image or placeholder
-                  alt={application.pet.name}
+                  src={application.pet?.Photo? `${import.meta.env.VITE_API_URL}${application.pet.Photo}`: 'https://placedog.net/200/150'} // Use actual image or placeholder
+                  alt={application.pet?.name}
                 />
               </div>
               <div className="md:w-2/3 p-4">
