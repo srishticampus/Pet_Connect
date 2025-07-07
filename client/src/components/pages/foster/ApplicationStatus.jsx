@@ -42,7 +42,7 @@ const ApplicationStatus = () => {
     <div className="container mx-auto py-8">
       <h1 className="text-2xl font-bold mb-4">Application Status</h1>
       <div className="grid grid-cols-1 gap-6">
-        {applications.map((application) => (
+        {applications.map((application) => application.pet && (
           <div key={application.id} className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="md:flex">
               <div className="md:w-1/3">
