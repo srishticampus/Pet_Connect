@@ -99,7 +99,7 @@ const ManageLostFoundReports = () => {
             return (
               <Card key={report._id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <img
-                  src={report.image ? `${import.meta.env.VITE_API_URL}/${report.image}`:'https://via.placeholder.com/300'} // Use report.image
+                  src={report.image ? `${import.meta.env.VITE_API_URL}${report.image}`:'https://via.placeholder.com/300'} // Use report.image
                   alt={petName}
                   className="w-full h-48 object-cover"
                 />

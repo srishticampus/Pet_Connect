@@ -1,17 +1,26 @@
 import Pets from '../../models/pets.js';
 import Report from '../../models/report.js'; // Import the Report model
+import User from '../../models/user.js'; // Import the User model
 import { validationResult } from 'express-validator'; // Will use later for validation
 
 // Get all lost/found reports relevant to the authenticated pet owner
 export const getLostFoundReportsForPetOwner = async (req, res) => {
   try {
+    // Get IDs of pets owned by the current pet owner
+    const ownerPetIds = await Pets.find({ petOwner: req.user.id }).distinct('_id');
+
+    // Get IDs of all rescue shelters
+    const rescueShelterUsers = await User.find({ role: 'rescue-shelter' }).distinct('_id');
+
     // Find reports where:
     // 1. The reportType is 'found' AND the matchedPet belongs to the current pet owner
     // 2. The reportingUser is the current pet owner (for reports they made)
+    // 3. The reportType is 'found' AND the reportingUser is a rescue shelter
     const reports = await Report.find({
       $or: [
-        { reportType: 'found', matchedPet: { $in: await Pets.find({ petOwner: req.user.id }).distinct('_id') } },
-        { reportingUser: req.user.id } // Include reports made by the current pet owner
+        { reportType: 'found', matchedPet: { $in: ownerPetIds } },
+        { reportingUser: req.user.id },
+        { reportType: 'found', reportingUser: { $in: rescueShelterUsers } } // Include found reports made by rescue shelters
       ]
     })
     .populate('reportingUser', 'username email role') // Populate reporter's basic info

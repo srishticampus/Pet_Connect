@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from "react-router";
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import { Dog, MoveRight, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../../hooks/auth";
@@ -6,10 +6,16 @@ import React, { useState, useEffect } from 'react'; // Import useState and useEf
 import api from '@/utils/api'; // Import the API client
 
 const Navbar = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   const [loadingUnreadCount, setLoadingUnreadCount] = useState(true);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   useEffect(() => {
     const fetchTotalUnreadCount = async () => {
@@ -235,6 +241,9 @@ const Navbar = () => {
                 <span className="absolute top-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-red-500" /> // Red bubble
               )}
             </Link>
+            <Button onClick={handleLogout} variant="default" size="sm">
+              Logout
+            </Button>
           </div>
         )}
 

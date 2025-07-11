@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import Pets from '../../models/pets.js';
+import Report from '../../models/report.js'; // Import the Report model
 import auth from '../../middleware/auth.js'; // Assuming auth middleware is here
 import { body, validationResult } from 'express-validator';
 
@@ -101,6 +102,23 @@ router.put('/:id/status', auth, [
 
     pet.status = status;
     await pet.save();
+
+    // If the pet is marked as 'found', create a new report
+    if (status === 'found') {
+      const newReport = new Report({
+        reportType: 'found',
+        reportingUser: req.user.id, // The rescue shelter is the reporting user
+        matchedPet: pet._id, // The pet that was marked as found
+        petName: pet.name,
+        species: pet.Species,
+        breed: pet.Breed,
+        foundLocation: pet.Location, // Assuming pet.Location is the found location
+        image: pet.Photo, // Assuming pet.Photo is the image
+        petDescription: pet.description,
+        createdAt: new Date(), // Set creation date
+      });
+      await newReport.save();
+    }
 
     res.json(pet);
   } catch (err) {

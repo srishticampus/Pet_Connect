@@ -71,10 +71,28 @@ router.put("/", auth, async (req, res) => {
     }
 
     // Update user fields
+    // Email validation and update
+    if (req.body.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(req.body.email)) {
+        return res.status(400).json({ msg: "Please enter a valid email address." });
+      }
+
+      // Check for email uniqueness only if email is being changed
+      if (req.body.email !== user.email) {
+        const existingUser = await User.findOne({ email: req.body.email });
+        if (existingUser) {
+          return res.status(400).json({ msg: "Email already registered." });
+        }
+      }
+      user.email = req.body.email;
+    }
+
     if (req.body.name) user.name = req.body.name;
     if (req.body.phoneNumber) user.phoneNumber = req.body.phoneNumber;
     if (req.body.address) user.address = req.body.address;
-    if (req.body.profilePic) user.profilePic = req.body.profilePic;
+    // profilePic is handled by a separate route, so no need to update here
+    // if (req.body.profilePic) user.profilePic = req.body.profilePic;
 
     await user.save();
 

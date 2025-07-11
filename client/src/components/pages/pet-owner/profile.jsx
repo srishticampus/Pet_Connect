@@ -62,6 +62,7 @@ const PetOwnerProfile = () => {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // State for edit dialog
     const [selectedProfilePic, setSelectedProfilePic] = useState(null); // State for selected profile picture file
     const [profilePicPreview, setProfilePicPreview] = useState(''); // State for profile picture preview URL
+    const [emailError, setEmailError] = useState(''); // State for email validation error
     const navigate = useNavigate(); // Initialize useNavigate
     const { logout } = useAuth(); // Get the logout function from useAuth
   
@@ -84,10 +85,14 @@ const PetOwnerProfile = () => {
   
     const handleEditClick = () => {
       setEditFormData(profile); // Populate dialog form with current profile data
+      setEmailError(''); // Clear any previous email errors when opening the dialog
       setIsEditDialogOpen(true); // Open the edit dialog
     };
   
     const handleSaveClick = async () => {
+      if (emailError) { // Prevent saving if there's a client-side email error
+        return;
+      }
       try {
         // Assuming a PUT or PATCH endpoint for profile updates
         const res = await api.put('/profile', editFormData); // Send updated data to backend
@@ -96,11 +101,24 @@ const PetOwnerProfile = () => {
       } catch (err) {
         console.error('Failed to save profile:', err);
         // Handle save error (e.g., display error message)
+        if (err.response && err.response.data && err.response.data.msg) {
+          setError(err.response.data.msg); // Display server-side error message
+        } else {
+          setError('Failed to save profile.');
+        }
       }
     };
   
     const handleEditInputChange = (e) => {
       const { name, value } = e.target;
+      if (name === 'email') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (value && !emailRegex.test(value)) {
+          setEmailError('Please enter a valid email address.');
+        } else {
+          setEmailError('');
+        }
+      }
       setEditFormData({ ...editFormData, [name]: value });
     };
 
@@ -353,6 +371,12 @@ const PetOwnerProfile = () => {
                             </Label>
                             <Input id="email" name="email" value={editFormData.email || ''} onChange={handleEditInputChange} className="col-span-3" />
                           </div>
+                          {emailError && (
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <div className="col-span-1"></div> {/* Empty div for alignment */}
+                              <p className="text-red-500 text-sm col-span-3">{emailError}</p>
+                            </div>
+                          )}
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="address" className="text-left">
                               {profile.role === 'rescue-shelter' ? 'Place' : 'Address'}
