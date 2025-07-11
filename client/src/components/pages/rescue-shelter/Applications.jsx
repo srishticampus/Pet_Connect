@@ -141,7 +141,19 @@ const RescueShelterApplicationsPage = () => {
                 <div><strong>Email:</strong> {app.applicant?.email || 'N/A'}</div>
                 <div><strong>Location:</strong> {app.applicant?.place || 'N/A'}</div>
                 <div><strong>Aadhaar:</strong> {app.applicant?.aadharNumber || 'N/A'}</div>
-                
+                {app.applicant?.aadhaarImage && (
+                  <div className="mt-2">
+                    <strong>Aadhaar Image:</strong>
+                    <a 
+                      href={`${import.meta.env.VITE_API_URL}${app.applicant.aadhaarImage}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="block text-blue-600 hover:underline"
+                    >
+                      View Aadhaar Image
+                    </a>
+                  </div>
+                )}
               </div>
 
               {/* Actions */}

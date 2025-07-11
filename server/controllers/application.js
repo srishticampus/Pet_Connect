@@ -24,7 +24,7 @@ router.get("/owned", auth, async (req, res) => {
     // Find applications for these pets
     console.log("Finding applications for owned pet IDs...");
     const applications = await Application.find({ pet: { $in: ownedPetIds } })
-      .populate('applicant', 'name email phoneNumber aadharNumber place') // Populate applicant details
+      .populate('applicant', 'name email phoneNumber aadharNumber place aadhaarImage') // Populate applicant details
       .populate('pet', 'name Photo Breed Age Gender Size'); // Populate pet details
     console.log("Found applications:", applications.length);
     // Log applicant data for each application to check for aadharNumber

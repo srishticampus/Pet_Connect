@@ -319,7 +319,7 @@ const PetDetailsPage = () => {
         </div>
       </div>
 
-      {/* Adoption Process */}
+      {/* Adoption Process
       {!pet.isAdopted && user?.role !== 'rescue-shelter' && (
         <section className="px-3 lg:px-0 container mx-auto py-4 text-[#4c4c4c]">
           <h2 className="text-xl font-medium py-4">Adoption Process</h2>
@@ -371,7 +371,7 @@ const PetDetailsPage = () => {
             </div>
           </div>
         </section>
-      )}
+      )} */}
     </main>
   );
 };

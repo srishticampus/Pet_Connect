@@ -61,27 +61,29 @@ const Navbar = () => {
           >
             Home
           </Link>
-          <Link
-            to="/about"
-            className="hover:text-primary transition"
-            style={{
-              textDecoration: pathname === "/about" ? "underline" : "none",
-              color: pathname === "/about" ? "#E54C00" : "",
-            }}
-          >
-            About
-          </Link>
-          {user?.role !== 'admin' && (
-            <Link
-              to="/contact"
-              className="hover:text-primary transition"
-              style={{
-                textDecoration: pathname === "/contact" ? "underline" : "none",
-                color: pathname === "/contact" ? "#E54C00" : "",
-              }}
-            >
-              Contact
-            </Link>
+          {!isAuthenticated && (
+            <>
+              <Link
+                to="/about"
+                className="hover:text-primary transition"
+                style={{
+                  textDecoration: pathname === "/about" ? "underline" : "none",
+                  color: pathname === "/about" ? "#E54C00" : "",
+                }}
+              >
+                About
+              </Link>
+              <Link
+                to="/contact"
+                className="hover:text-primary transition"
+                style={{
+                  textDecoration: pathname === "/contact" ? "underline" : "none",
+                  color: pathname === "/contact" ? "#E54C00" : "",
+                }}
+              >
+                Contact
+              </Link>
+            </>
           )}
         </div>
 
@@ -253,7 +255,7 @@ const Navbar = () => {
   );
 };
 
-const Footer = () => {
+const Footer = ({ isAuthenticated }) => {
   return (
     <footer className="bg-[#4c4c4c] text-white mt-auto">
       <div className="container mx-auto px-4 py-8">
@@ -275,12 +277,16 @@ const Footer = () => {
               {/* <Link to="/shop" className="hover:text-primary transition">
                 Shop
               </Link> */}
-              <Link to="/about" className="hover:text-primary transition">
-                About
-              </Link>
-              <Link to="/contact" className="hover:text-primary transition">
-                Contact
-              </Link>
+              {!isAuthenticated && (
+                <>
+                  <Link to="/about" className="hover:text-primary transition">
+                    About
+                  </Link>
+                  <Link to="/contact" className="hover:text-primary transition">
+                    Contact
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>
@@ -306,13 +312,15 @@ const Footer = () => {
 };
 
 export const Layout = () => {
+  const { isAuthenticated } = useAuth(); // Get isAuthenticated from useAuth
+
   return (
     <div className="bg-[#F6F7F9] text-[#4c4c4c] min-h-screen flex flex-col">
       <Navbar />
       <div className="flex-grow">
       <Outlet />
       </div>
-      <Footer />
+      <Footer isAuthenticated={isAuthenticated} /> {/* Pass isAuthenticated as a prop */}
     </div>
   );
 };

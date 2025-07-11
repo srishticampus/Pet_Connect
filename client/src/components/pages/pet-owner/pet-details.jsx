@@ -274,7 +274,7 @@ const PetDetailsPage = () => {
       </div>
 
       {/* Adoption Process */}
-      <section className="px-3 lg:px-0 container mx-auto py-4 text-[#4c4c4c]">
+      {/* <section className="px-3 lg:px-0 container mx-auto py-4 text-[#4c4c4c]">
         <h2 className="text-xl font-medium py-4">Adoption Process</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white p-4">
@@ -323,7 +323,7 @@ const PetDetailsPage = () => {
             <p className="text-sm text-[#7f7f7f]">Complete the adoption and welcome your new family member!</p>
           </div>
         </div>
-      </section>
+      </section> */}
     </main>
   );
 };
