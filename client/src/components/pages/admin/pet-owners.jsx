@@ -71,7 +71,9 @@ export const columns = [
   },
   {
     accessorKey: "name",
-    header: "Profile",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Profile" />
+    ),
     name:"Profile"
   },
   {
@@ -81,9 +83,6 @@ export const columns = [
   },
   {
     accessorKey: "email",
-    // header: ({ column }) => (
-    //   <DataTableColumnHeader column={column} title="Email ID" />
-    // ),
     header: "Email ID",
     name:"Email ID"
   },
@@ -214,8 +213,10 @@ export function DataTable({
             <SelectValue placeholder="Filter by..." />
           </SelectTrigger>
           <SelectContent>
-            {table.getAllLeafColumns().map(column => {
-              return  column.columnDef.name&&(
+            {table.getAllLeafColumns().filter(
+              column => ["name", "email", "address"].includes(column.id)
+            ).map(column => {
+              return column.columnDef.name && (
                 <SelectItem
                   key={column.id}
                   value={column.id}

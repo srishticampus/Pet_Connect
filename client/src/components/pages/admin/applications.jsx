@@ -198,7 +198,9 @@ export function DataTable({
             <SelectValue placeholder="Filter by..." />
           </SelectTrigger>
           <SelectContent>
-            {table.getAllLeafColumns().map(column => {
+            {table.getAllLeafColumns().filter(
+              column => ["applicantName", "petName"].includes(column.id)
+            ).map(column => {
               return column.columnDef.name && (
                 <SelectItem
                   key={column.id}

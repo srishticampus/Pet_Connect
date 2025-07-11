@@ -91,51 +91,37 @@ export const columns = [
   },
   {
     accessorKey: "Species",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Species" />
-    ),
+    header: "Species",
     name: "Species"
   },
   {
     accessorKey: "Breed",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Breed" />
-    ),
+    header: "Breed",
     name: "Breed"
   },
   {
     accessorKey: "Age",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Age" />
-    ),
+    header: "Age",
     name: "Age"
   },
   {
     accessorKey: "Gender",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Gender" />
-    ),
+    header: "Gender",
     name: "Gender"
   },
   {
     accessorKey: "Size",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Size" />
-    ),
+    header: "Size",
     name: "Size"
   },
   {
     accessorKey: "origin",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Origin" />
-    ),
+    header: "Origin",
     name: "Origin"
   },
   {
     accessorKey: "owner",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Owner" />
-    ),
+    header: "Owner",
     cell: ({ row }) => {
       const pet = row.original;
       return pet.petOwner ? pet.petOwner.name : "No owner";
@@ -239,7 +225,9 @@ function DataTable({
             <SelectValue placeholder="Filter by..." />
           </SelectTrigger>
           <SelectContent>
-            {table.getAllLeafColumns().map(column => {
+            {table.getAllLeafColumns().filter(
+              column => ["name"].includes(column.id)
+            ).map(column => {
               return column.columnDef.name && (
                 <SelectItem
                   key={column.id}
