@@ -33,27 +33,44 @@ const PetDetailsPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // State for dialog visibility
   const { user, isAuthenticated } = useAuth(); // Get current user and auth status
   const navigate = useNavigate();
+  const [hasSubmittedAdoptionApplication, setHasSubmittedAdoptionApplication] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState(''); // To store the status of the existing application
 
   useEffect(() => {
-    const fetchPetDetails = async () => {
+    const fetchPetDetailsAndApplicationStatus = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await api.get(`/pets/${petId}`); // Fetch pet details by ID
-        setPet(response.data);
+        const petResponse = await api.get(`/pets/${petId}`); // Fetch pet details by ID
+        setPet(petResponse.data);
+
+        if (isAuthenticated && user?.role === 'adopter') {
+          const applicationsResponse = await api.get('/applications/my-adoptions');
+          const existingApplication = applicationsResponse.data.find(
+            (app) => app.pet._id === petId && app.applicationType === 'adoption'
+          );
+
+          if (existingApplication) {
+            setHasSubmittedAdoptionApplication(true);
+            setApplicationStatus(existingApplication.status);
+          } else {
+            setHasSubmittedAdoptionApplication(false);
+            setApplicationStatus('');
+          }
+        }
       } catch (err) {
         setError(err);
-        console.error("Failed to fetch pet details:", err);
-        toast.error("Failed to load pet details.");
+        console.error("Failed to fetch pet details or application status:", err);
+        toast.error("Failed to load pet details or application status.");
       } finally {
         setLoading(false);
       }
     };
 
     if (petId) {
-      fetchPetDetails();
+      fetchPetDetailsAndApplicationStatus();
     }
-  }, [petId]); // Re-run effect if petId changes
+  }, [petId, isAuthenticated, user]); // Re-run effect if petId, isAuthenticated, or user changes
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -77,6 +94,8 @@ const PetDetailsPage = () => {
       setSubmitSuccess(true);
       setIsDialogOpen(false); // Close dialog on successful submission
       setFormData({ message: '', confirmAdoption: false }); // Reset form
+      setHasSubmittedAdoptionApplication(true); // Immediately disable the button
+      setApplicationStatus('pending'); // Set status to pending
       toast.success("Adoption application submitted successfully!");
     } catch (err) {
       console.error("Failed to submit application:", err);
@@ -242,55 +261,67 @@ const PetDetailsPage = () => {
             </>
           )}
 
-          {/* Conditional Buttons based on user role */}
-          {!pet.isAdopted && isAuthenticated && user?.role === 'adopter' && (
+          {/* Conditional Buttons based on user role and pet status */}
+          {isAuthenticated && user?.role === 'adopter' && (
             <div className="flex flex-col gap-4 mt-4">
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="w-full">Apply to Adopt</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Adoption Application</DialogTitle>
-                    <DialogDescription>
-                      Fill out the form below to apply to adopt this pet.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div>
-                        <Label htmlFor="message">Tell us about yourself and why you want to adopt this pet:</Label>
-                        <Textarea
-                          id="message"
-                          name="message"
-                          value={formData.message}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="confirmAdoption"
-                          name="confirmAdoption"
-                          checked={formData.confirmAdoption}
-                          onCheckedChange={(checked) => setFormData({...formData, confirmAdoption: checked})}
-                          required
-                        />
-                        <Label htmlFor="confirmAdoption">
-                          I confirm I am ready to adopt this pet and provide a loving home.
-                        </Label>
-                      </div>
+              {pet.isAdopted ? (
+                <div className="mt-4">
+                  <p className="text-lg font-semibold text-green-600">This pet has been adopted!</p>
+                </div>
+              ) : hasSubmittedAdoptionApplication ? (
+                <div className="mt-4">
+                  <Button className="w-full" disabled>
+                    Application {applicationStatus}
+                  </Button>
+                </div>
+              ) : (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="w-full">Apply to Adopt</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Adoption Application</DialogTitle>
+                      <DialogDescription>
+                        Fill out the form below to apply to adopt this pet.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                          <Label htmlFor="message">Tell us about yourself and why you want to adopt this pet:</Label>
+                          <Textarea
+                            id="message"
+                            name="message"
+                            value={formData.message}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="confirmAdoption"
+                            name="confirmAdoption"
+                            checked={formData.confirmAdoption}
+                            onCheckedChange={(checked) => setFormData({...formData, confirmAdoption: checked})}
+                            required
+                          />
+                          <Label htmlFor="confirmAdoption">
+                            I confirm I am ready to adopt this pet and provide a loving home.
+                          </Label>
+                        </div>
 
-                      {submitError && <p className="text-red-500">Error submitting application: {submitError.message}</p>}
-                      {submitSuccess && <p className="text-green-500">Application submitted successfully!</p>}
+                        {submitError && <p className="text-red-500">Error submitting application: {submitError.message}</p>}
+                        {submitSuccess && <p className="text-green-500">Application submitted successfully!</p>}
 
-                      <Button type="submit" disabled={submitting || !formData.confirmAdoption}>
-                        {submitting ? 'Submitting...' : 'Submit Application'}
-                      </Button>
-                    </form>
-                  </div>
-                </DialogContent>
-              </Dialog>
+                        <Button type="submit" disabled={submitting || !formData.confirmAdoption}>
+                          {submitting ? 'Submitting...' : 'Submit Application'}
+                        </Button>
+                      </form>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
               {pet.petOwner?._id && (
                 <Button variant="outline" className="w-full" onClick={handleChatWithShelter}>
                   Contact Rescue/Shelter
@@ -298,7 +329,7 @@ const PetDetailsPage = () => {
               )}
             </div>
           )}
-          {/* If not authenticated or not an adopter, show only view details or other general actions */}
+          {/* If not authenticated, show only view details or other general actions */}
           {!isAuthenticated && (
             <div className="mt-4">
               <Button className="w-full" onClick={() => toast.info("Please log in to apply or chat.")}>
@@ -306,12 +337,13 @@ const PetDetailsPage = () => {
               </Button>
             </div>
           )}
-          {pet.isAdopted && pet.status !== 'fostered' && (
+          {/* Display pet status if not an adopter or not authenticated */}
+          {pet.isAdopted && (!isAuthenticated || user?.role !== 'adopter') && (
             <div className="mt-4">
               <p className="text-lg font-semibold text-green-600">This pet has been adopted!</p>
             </div>
           )}
-          {pet.status === 'fostered' && (
+          {pet.status === 'fostered' && (!isAuthenticated || user?.role !== 'adopter') && (
             <div className="mt-4">
               <p className="text-lg font-semibold text-green-600">This pet has been fostered!</p>
             </div>
