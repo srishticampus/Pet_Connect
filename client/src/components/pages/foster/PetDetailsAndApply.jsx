@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog"; // Import Dialog components
 
 // Assuming an API service for foster features will be created
-import { getPetDetails, applyToFoster } from './fosterService';
+import { getPetDetails, applyToFoster, checkFosterApplicationStatus } from './fosterService';
 
 const PetDetailsAndApply = () => {
   const { petId } = useParams();
@@ -40,15 +40,23 @@ const PetDetailsAndApply = () => {
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false); // State for dialog visibility
+  const [hasApplied, setHasApplied] = useState(false); // New state for application status
+  const [applicationStatus, setApplicationStatus] = useState(''); // New state to store application status (e.g., 'pending', 'approved')
 
 
   useEffect(() => {
-    const fetchPetDetails = async () => {
+    const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await getPetDetails(petId);
-        setPet(data);
+        const petData = await getPetDetails(petId);
+        setPet(petData);
+
+        // Check foster application status
+        const applicationStatusData = await checkFosterApplicationStatus(petId);
+        setHasApplied(applicationStatusData.hasApplied);
+        setApplicationStatus(applicationStatusData.status || '');
+
       } catch (err) {
         setError(err);
       } finally {
@@ -56,7 +64,7 @@ const PetDetailsAndApply = () => {
       }
     };
 
-    fetchPetDetails();
+    fetchData();
 
   }, [petId]);
 
@@ -226,7 +234,9 @@ const PetDetailsAndApply = () => {
                 {/* Foster Application Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} modal={false}>
         <DialogTrigger asChild>
-          <Button className="mt-4 w-full">Apply to Foster</Button>
+          <Button className="mt-4 w-full" disabled={hasApplied}>
+            {hasApplied ? `Application ${applicationStatus} ` : 'Apply to Foster'}
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] z-30">
           <DialogHeader>

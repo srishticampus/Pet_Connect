@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router"; // Import useNavigate
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const { login, error, clearError, isLoading, isAuthenticated } = useAuth(); // Get login function, error, clearError, and isLoading from context
+  const { login, error, clearError, isLoading, isAuthenticated, user } = useAuth(); // Get login function, error, clearError, isLoading, and user from context
   const navigate = useNavigate(); // Hook for navigation
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,12 +20,16 @@ export default function Login() {
     }
   }, [isAuthenticated, loginAttempted, navigate]);
 
-  // Redirect to home after successful login attempt
+  // Redirect after successful login attempt based on user role
   useEffect(() => {
     if (isAuthenticated && loginAttempted && !isLoading) {
-      navigate("/home");
+      if (user && user.role === 'admin') {
+        navigate("/admin");
+      } else {
+        navigate("/home");
+      }
     }
-  }, [isAuthenticated, loginAttempted, isLoading, navigate]);
+  }, [isAuthenticated, loginAttempted, isLoading, navigate, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

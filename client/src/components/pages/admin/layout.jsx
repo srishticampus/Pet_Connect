@@ -87,6 +87,11 @@ const items = [
     url: "/admin/chat",
     icon: MessageSquare, // Using MessageSquare icon for chat
   },
+  {
+    title: "Profile",
+    url: "/admin/profile",
+    icon: User,
+  },
 ];
 
 function AppSidebar() {

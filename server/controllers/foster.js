@@ -240,4 +240,50 @@ router.get('/assigned-pets', auth, async (req, res) => {
   }
 });
 
+// @route   GET /api/foster/applications/status/:petId
+// @desc    Check if the authenticated foster user has an application for a specific pet
+// @access  Private (Foster users only)
+router.get(
+  '/applications/status/:petId',
+  auth, // Authenticate user
+  [
+    // Validate petId parameter
+    param('petId', 'Invalid pet ID').isMongoId(),
+  ],
+  async (req, res) => {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Check if the authenticated user is a foster
+    if (req.user.role !== 'foster') {
+      return res.status(403).json({ msg: 'Access denied. Only foster users can check application status.' });
+    }
+
+    const { petId } = req.params;
+    const applicantId = req.user.id;
+
+    try {
+      const existingApplication = await Application.findOne({
+        applicant: applicantId,
+        pet: petId,
+        applicationType: 'foster',
+        status: { $in: ['pending', 'approved'] }
+      });
+
+      if (existingApplication) {
+        return res.json({ hasApplied: true, status: existingApplication.status });
+      } else {
+        return res.json({ hasApplied: false });
+      }
+
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
 export default router;

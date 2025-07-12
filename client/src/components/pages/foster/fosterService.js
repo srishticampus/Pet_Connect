@@ -14,6 +14,17 @@ export const getAvailablePets = async (species = '') => {
   }
 };
 
+// Function to check if a foster application already exists for a pet
+export const checkFosterApplicationStatus = async (petId) => {
+  try {
+    const response = await api.get(`/foster/applications/status/${petId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error checking foster application status for ${petId}:`, error);
+    throw error;
+  }
+};
+
 // Function to fetch details for a specific pet
 export const getPetDetails = async (petId) => {
   try {

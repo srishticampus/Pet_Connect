@@ -19,8 +19,27 @@ import { getAllRescueShelters, approveRescueShelter, rejectRescueShelter, getApp
 import lostFoundPetsRouter from './lost-found-pets.js';
 import applicationsRouter from './applications.js'; // Import applications router
 import documentsRouter from './documents.js'; // Import documents router
+import User from '../../models/user.js'; // Import the User model
 
 const router = express.Router();
+
+// Get Admin Profile
+router.get('/profile', async (req, res) => {
+  try {
+    // Assuming the admin user ID is available in req.user after authentication
+    const adminId = req.user.id; 
+    const admin = await User.findById(adminId).select('-password'); // Exclude password
+
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin profile not found' });
+    }
+
+    res.status(200).json(admin);
+  } catch (error) {
+    console.error('Error fetching admin profile:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
 
 router.get('/pet-owners', getAllPetOwners);
 router.post('/pet-owners', addPetOwner);

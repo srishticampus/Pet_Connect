@@ -15,6 +15,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 export const app = express();
 import fs from "fs";
+import adminAuth from "./middleware/adminAuth.js"; // Import admin authentication middleware
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,7 +47,7 @@ app.get("/", (req, res) => {
 
 // API routes
 app.use("/api", apiRouter);
-app.use("/api/admin", adminRouter); // Use admin routes
+app.use("/api/admin", adminAuth, adminRouter); // Apply authentication middleware to admin routes
 app.use("/api/rescue-shelter", rescueShelterRouter); // Use rescue-shelter routes
 app.use("/api/llm", llmRouter); // Use LLM routes
 app.use("/api/ml", mlRouter); // Use LLM routes

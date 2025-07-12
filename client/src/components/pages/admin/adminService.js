@@ -280,3 +280,13 @@ export const rejectApplication = async (applicationId) => {
     throw error;
   }
 };
+
+export const getAdminProfile = async () => {
+  try {
+    const response = await api.get('/admin/profile');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching admin profile:', error);
+    throw error;
+  }
+};

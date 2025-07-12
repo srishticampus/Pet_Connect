@@ -51,6 +51,7 @@ import AdminApplicationsPage from "./components/pages/admin/applications"; // Im
 import RescueShelterApplicationsPage from "./components/pages/rescue-shelter/Applications"; // Import RescueShelterApplicationsPage
 import ChatInterface from "./components/ChatInterface"; // Import ChatInterface
 import AdminChatPage from "./components/pages/admin/chat"; // Import AdminChatPage
+import AdminProfilePage from "./components/pages/admin/profile"; // Import AdminProfilePage
 
 import EditPet from "./components/pages/pet-owner/edit-pet"; // Import EditPet
 import FosterApplicationStatus from "./components/pages/foster/ApplicationStatus"; // Renamed to avoid conflict
@@ -153,6 +154,7 @@ function App() {
         <Route path="lost-found-pets" element={<LostFoundPets />} />
         <Route path="applications" element={<AdminApplicationsPage />} /> {/* Added Applications route */}
         <Route path="chat" element={<AdminChatPage />} /> {/* Added Admin Chat route */}
+        <Route path="profile" element={<AdminProfilePage />} /> {/* Added Admin Profile route */}
       </Route>
     </Routes>
   );
