@@ -117,7 +117,7 @@ const ManageLostFoundReports = () => {
                   <p className="text-gray-700"><strong>Location:</strong> {displayLocation}</p>
                   {report.reportingUser && (
                     <p className="text-gray-700">
-                      <strong>Reported By:</strong> {isReportedByMe ? 'You' : report.reportingUser.username}
+                      <strong>Reported By:</strong> {isReportedByMe ? 'You' : report.reportingUser.name}
                     </p>
                   )}
                   <div className="mt-4 flex flex-col gap-2">

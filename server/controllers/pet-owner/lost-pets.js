@@ -23,8 +23,8 @@ export const getLostFoundReportsForPetOwner = async (req, res) => {
         { reportType: 'found', reportingUser: { $in: rescueShelterUsers } } // Include found reports made by rescue shelters
       ]
     })
-    .populate('reportingUser', 'username email role') // Populate reporter's basic info
-    .populate('matchedPet', 'name species breed'); // Populate matched pet's basic info
+    .populate('reportingUser', '-password -__v') // Populate reporter's basic info
+    .populate('matchedPet'); // Populate matched pet's basic info
 
     res.status(200).json(reports);
   } catch (error) {
