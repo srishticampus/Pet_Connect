@@ -37,7 +37,7 @@ function PetCard({ pet, fetchPets }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5">
       <img
         src={pet.Photo ? `${import.meta.env.VITE_API_URL}${pet.Photo}` : 'https://via.placeholder.com/150'}
         alt={pet.name}
