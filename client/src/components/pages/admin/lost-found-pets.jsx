@@ -107,8 +107,8 @@ function PetCard({ pet, fetchPets }) {
 
                 <h3 className="text-lg font-semibold mb-2">Health & Vaccinations</h3>
                 <ul className="list-none p-0 mb-4">
-                  {pet.health && pet.health.vaccinations && pet.health.vaccinations.length > 0 ? (
-                    pet.health.vaccinations.map((vaccine, index) => (
+                  {pet.healthVaccinations && pet.healthVaccinations.length > 0 ? (
+                    pet.healthVaccinations.map((vaccine, index) => (
                       <li key={index} className="flex items-center text-green-600">
                         <span className="mr-2">✔</span> {vaccine}
                       </li>
@@ -170,7 +170,7 @@ function PetCard({ pet, fetchPets }) {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="text-lg font-semibold mb-2">Reported By</h3>
                   <div className="flex items-center space-x-3">
-                    <img src={pet?.petOwner?.profilePic ? `${import.meta.env.VITE_API_URL}/${pet.petOwner.profilePic}` : 'https://via.placeholder.com/40'} alt={pet.petOwner.name} className="w-10 h-10 rounded-full object-cover" />
+                    <img src={pet?.petOwner?.profilePic ? `${import.meta.env.VITE_API_URL}${pet.petOwner.profilePic}` : 'https://via.placeholder.com/40'} alt={pet.petOwner.name} className="w-10 h-10 rounded-full object-cover" />
                     <div>
                       <p className="font-medium">{pet.petOwner.name || 'N/A'}</p>
                       <p className="text-sm text-gray-500">Owner Name</p>
